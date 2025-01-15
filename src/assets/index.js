@@ -1,0 +1,16 @@
+import mainLogo from "./mainLogo.svg"
+import NotificationIcon from "./Notification.svg"
+import logOutIcon from "./logOut.svg"
+import beauty from "./beauty.svg"
+import statics from "./statistics.svg"
+import dollarIcon from "./transfermoney.svg"
+import profile from "./profile.svg"
+import xrays from "./xrays.svg"
+import tests from "./tests.svg"
+import wallet from "./wallet.svg"
+import doctor from "./doctor.svg"
+import bookingIcon from "./bookingIcon.svg"
+import exportIcon from "./exportIcon.svg"
+import loader from "./loader.gif"
+
+export {mainLogo ,NotificationIcon ,logOutIcon ,beauty ,statics ,dollarIcon ,profile ,xrays ,tests ,wallet ,doctor ,bookingIcon ,exportIcon ,loader}

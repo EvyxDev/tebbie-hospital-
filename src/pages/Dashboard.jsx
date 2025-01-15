@@ -1,0 +1,71 @@
+import { Link } from "react-router-dom";
+import { IoIosAdd } from "react-icons/io";
+import { useQuery } from "@tanstack/react-query";
+import {  getSpecializations } from "../utlis/https";
+import LoaderComponent from "../components/LoaderComponent";
+
+const Dashboard = () => {
+  const token = localStorage.getItem("authToken");
+  const {
+    data: specializationData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["specializations"],
+    queryFn: () => getSpecializations({ token }),
+  });
+
+  if (isLoading) {
+    return <LoaderComponent />;
+  }
+
+  if (error) {
+    return (
+      <div className="h-screen w-full flex justify-center items-center text-2xl">
+        <p>
+        Error: {error.message}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <section className="h-full flex flex-col justify-between my-8">
+      <div className="grid grid-cols-2 gap-4">
+        {specializationData.length > 0 ? (
+          specializationData.map((data) => (
+            <Link
+              to={`/specialization/${data.id}`}
+              key={data.id}
+              className="col-span-1 w-full bg-[#F3F3F3] flex-col flex gap-2 rounded-lg text-center justify-center items-center py-8"
+            >
+              <div className="w-16">
+                <img
+                  src={data.first_image_url}
+                  alt="Beauty Icon"
+                  className="w-16 rounded-full"
+                />
+              </div>
+              <h2 className="text-black">{data.name}</h2>
+            </Link>
+          ))
+        ) : (
+          <div className="h-[60vh] w-full flex justify-center items-center text-2xl">
+            عذرًا، لا توجد تخصصات لعرضها
+          </div>
+        )}
+      </div>
+
+      <div className="h-full w-full mt-auto flex justify-end items-start">
+        <Link
+          to={`/add-specialization`}
+          className="border-[2px] border-dashed border-[#CBCBCB] text-[#CBCBCB] hover:bg-gray-100 w-full h-12 my-8 rounded-md flex justify-center items-center"
+        >
+          <IoIosAdd size={40} />
+        </Link>
+      </div>
+    </section>
+  );
+};
+
+export default Dashboard;
