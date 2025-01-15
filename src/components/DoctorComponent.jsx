@@ -69,7 +69,7 @@ const DoctorComponent = ({ data }) => {
               >
                 <div className="my-4 flex flex-col gap-2 w-auto shrink-0  ">
                   <img
-                    className="object-cover w-24 h-24 rounded-full shrink-0"
+                    className="object-cover w-24 h-24 rounded-full shrink-0 text-md"
                     alt={doctor.user_name}
                     src={doctor.user_image}
                   />
@@ -78,12 +78,12 @@ const DoctorComponent = ({ data }) => {
 
                 <div className="w-full">
                   <div className="flex justify-between items-center">
-                    <p className="text-2xl">{doctor.user_name}</p>
+                    <p className="lg:text-2xl md:text-xl text-md">{doctor.user_name}</p>
                     <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2">
                       {doctor.price}
                     </p>
                   </div>
-                  <div className="my-4 text-md flex justify-between ">
+                  <div className="my-4 lg:text-md md:text-sm text-xs flex justify-between ">
                     <div>
                     {doctor.start_from.split(":").slice(0, 2).join(":")} - {doctor.end_at.split(":").slice(0, 2).join(":")}
                     </div>
