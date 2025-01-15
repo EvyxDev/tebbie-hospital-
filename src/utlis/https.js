@@ -259,12 +259,15 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
         },
       });
   
-      if (response.ok) {
-        const data = await response.json();
-        
-        return data.data;
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.msg || "An error occurred while updating the Hospital");
       }
+  
+      return result.data;
     } catch (error) {
+      console.error("Error:", error);
       throw error;
     }
   };

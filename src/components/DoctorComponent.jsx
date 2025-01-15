@@ -73,18 +73,18 @@ const DoctorComponent = ({ data }) => {
                     alt={doctor.user_name}
                     src={doctor.user_image}
                   />
-                  <p>{doctor.human_type === "0" ? "ذكر" : "أنثى"}</p>
-                </div>
+                  <p className="text-sm">{doctor.human_type === "0" ? "ذكر" : "أنثى"}</p>
+                  </div>
 
                 <div className="w-full">
                   <div className="flex justify-between items-center">
-                    <p className="lg:text-2xl md:text-xl text-md">{doctor.user_name}</p>
-                    <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2">
-                      {doctor.price}
+                  <p className="lg:text-lg text-md truncate">{doctor.user_name}</p>
+                  <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] md:text-md text-sm  text-white rounded-lg p-2">
+                  {doctor.price}
                     </p>
                   </div>
-                  <div className="my-4 lg:text-md md:text-sm text-xs flex justify-between ">
-                    <div>
+                  <div className="my-4 md:text-md text-sm  flex justify-between ">
+                  <div>
                     {doctor.start_from.split(":").slice(0, 2).join(":")} - {doctor.end_at.split(":").slice(0, 2).join(":")}
                     </div>
                     <span className="ml-2">{doctor.date}</span>
@@ -123,19 +123,19 @@ const DoctorComponent = ({ data }) => {
                 )}
               </div>
               {doctor?.price === "0.00" && (
-                <div className="flex justify-between my-4">
+                <div className="flex justify-between my-4 text-sm">
                   <button
                     onClick={() => {
                       setCurrentDoctorId(doctor.id);
                       setTimeIsModalOpen(true);
                     }}
-                    className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-32"
+                    className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
                   >
                     قبول
                   </button>
                   <button
                     onClick={() => handleReject(doctor.id)}
-                    className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-32"
+                    className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
                   >
                     رفض
                   </button>

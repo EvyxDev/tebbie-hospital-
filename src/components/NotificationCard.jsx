@@ -15,14 +15,14 @@ const NotificationCard = ({ TransactionDetail, TransactionTitle, type }) => {
       to={`/${path}`}
       className="bg-white border-none rounded-lg shadow-sm p-4 mb-4 flex justify-center items-center"
     >
-      <div className="bg-[#D6EEF6] rounded-full w-16 h-16 flex justify-center items-center me-4 shrink-0">
+      <div className="bg-[#D6EEF6] rounded-full w-14 h-14 flex justify-center items-center me-4 shrink-0">
         <img src={NotificationIcon} alt="Notification Icon" />
       </div>
       <div className="flex-grow text-right">
-        <h6 className="text-base font-bold text-[#263257] m-0">
+        <h6 className="text-sm font-bold text-[#263257] m-0">
           {TransactionTitle}
         </h6>
-        <p className="text-sm text-black mt-1 leading-5">{TransactionDetail}</p>
+        <p className="text-xs text-black mt-1 leading-5">{TransactionDetail}</p>
       </div>
     </Link>
   );

@@ -4,13 +4,13 @@ import { FaHome } from "react-icons/fa";
 import { IoWalletOutline } from "react-icons/io5";
 
 const links = [
-  { label: "الرئيسية", href: "/", icon: <FaHome size={30} /> },
+  { label: "الرئيسية", href: "/", icon: <FaHome size={25} /> },
   {
     label: "زيارة منزلية",
     href: "/home-visit",
-    icon: <LuNotepadText size={30} />,
+    icon: <LuNotepadText size={25} />,
   },
-  { label: "المحفظة", href: "/wallet", icon: <IoWalletOutline size={30} /> },
+  { label: "المحفظة", href: "/wallet", icon: <IoWalletOutline size={25} /> },
 ];
 
 const isActiveClass =

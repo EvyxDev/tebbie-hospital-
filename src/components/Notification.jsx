@@ -5,9 +5,9 @@ import NotificationsHeader from "./NotificationsHeader";
 import { getNotifications } from "../utlis/https";
 import LoaderComponent from "./LoaderComponent";
 
-const token = localStorage.getItem("authToken");
 
 const Notifications = () => {
+  const token = localStorage.getItem("authToken");
   const { data, isLoading, error } = useQuery({
     queryKey: ["notifications"],
     queryFn: () => getNotifications({ token }),
@@ -21,7 +21,7 @@ const Notifications = () => {
     return (
       <div className="h-screen flex justify-center items-center">
         <p className="text-center text-red-600">
-          حدث خطأ أثناء تحميل الإشعارات.
+         {error}
         </p>
       </div>
     );
@@ -49,7 +49,7 @@ const Notifications = () => {
       <div className="p-4">
         {data?.map((notification) => (
           <div key={notification.id}>
-            <h5 className="text-lg font-bold text-gray-800 mb-4 text-right">
+            <h5 className="text-md font-bold text-gray-800 mb-4 text-right">
               {getNotificationDate(notification.created_at)}
             </h5>
             <NotificationCard

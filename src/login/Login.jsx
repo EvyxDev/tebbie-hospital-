@@ -104,7 +104,7 @@ const Login = () => {
             id="password"
             name="password"
             placeholder="كلمة المرور"
-            className={`w-full p-3 border ${
+            className={`w-full p-3 border lg:text-md text-sm ${
               formik.errors.password && formik.touched.password
                 ? "border-red-500"
                 : "border-[#67729429]"

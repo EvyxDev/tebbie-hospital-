@@ -73,38 +73,38 @@ const PhysiotherapyComponent = ({ data }) => {
                     alt={doctor.user_name}
                     src={doctor.user_image}
                   />
-                  <p>{doctor.human_type === "0" ? "ذكر" : "أنثى"}</p>
-                </div>
+                  <p className="text-sm">{doctor.human_type === "0" ? "ذكر" : "أنثى"}</p>
+                  </div>
 
-                <div className="w-full">
-                  <div className="flex justify-between items-center">
-                    <p className="text-2xl">{doctor.user_name}</p>
-                    <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2">
-                      {doctor.price}
-                    </p>
-                  </div>
-                  <div className="my-4 text-md">
-                    <span>
-                      {doctor.start_from} - {doctor.end_at}
-                    </span>
-                    <span className="ml-2">{doctor.date}</span>
-                  </div>
-                  <div className="flex justify-between text-[#33A9C5] text-lg underline">
-                    {doctor.files.map((file, index) => (
-                      <a
-                        key={index}
-                        href={file}
-                        className="flex gap-2 items-center"
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <img alt="xrays icon" className="w-5" src={xrays} />
-                        المرفقات
-                      </a>
-                    ))}
-                  </div>
-                </div>
+                 <div className="w-full">
+                          <div className="flex justify-between items-center">
+                          <p className="lg:text-lg text-md truncate">{doctor.user_name}</p>
+                          <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] md:text-md text-sm  text-white rounded-lg p-2">
+                          {doctor.price}
+                            </p>
+                          </div>
+                          <div className="my-4 md:text-md text-sm  flex justify-between ">
+                          <div>
+                            {doctor.start_from.split(":").slice(0, 2).join(":")} - {doctor.end_at.split(":").slice(0, 2).join(":")}
+                            </div>
+                            <span className="ml-2">{doctor.date}</span>
+                          </div>
+                          <div className="flex justify-between text-[#33A9C5] text-lg underline">
+                            {doctor.files.map((file, index) => (
+                              <a
+                                key={index}
+                                href={file}
+                                className="flex gap-2 items-center"
+                                download
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <img alt="xrays icon" className="w-5" src={xrays} />
+                                المرفقات
+                              </a>
+                            ))}
+                          </div>
+                        </div>
               </div>
               <div
                 className={`transition-all overflow-hidden ${

@@ -45,17 +45,17 @@ const Walett = () => {
           <p>الحساب</p>
         </div>
         <div className="flex  items-center justify-between">
-          <p className="text-3xl text-white my-2"> LD {formattedPrice}</p>
+          <p className="text-2xl text-white my-2"> LD {formattedPrice}</p>
           <Link
             to="/wallet/1"
-            className="flex gap-1 items-center  text-[#5E5F60] bg-[#D6EEF6] p-2 w-22 rounded-full"
+            className="flex gap-1 items-center  text-base  text-[#5E5F60] bg-[#D6EEF6] p-2 w-22 rounded-full"
           >
             التفاصيل
             <IoIosArrowBack size={17} />
           </Link>
         </div>
       </div>
-      <h2 className="text-black font-[450] text-2xl my-6">المعاملات</h2>
+      <h2 className="text-black font-[500] text-lg my-6">المعاملات</h2>
 
       {walletData && walletData.length > 0 ? (
         walletData.map((wallet) => {
@@ -80,7 +80,7 @@ const Walett = () => {
           );
         })
       ) : (
-        <div className="h-[50vh] w-full flex justify-center items-center text-2xl">
+        <div className="h-[50vh] w-full flex justify-center items-center text-lg">
           <p>عذرا لا يوجد بيانات لعرضها</p>
         </div>
       )}
