@@ -44,9 +44,9 @@ const Notifications = () => {
   };
 
   return (
-    <>
+    <section className="p-4">
       <NotificationsHeader />
-      <div className="p-4">
+      <div >
         {data?.map((notification) => (
           <div key={notification.id}>
             <h5 className="text-md font-bold text-gray-800 mb-4 text-right">
@@ -64,7 +64,7 @@ const Notifications = () => {
           <p className="text-right text-gray-500">لا توجد إشعارات حالياً.</p>
         )}
       </div>
-    </>
+    </section>
   );
 };
 

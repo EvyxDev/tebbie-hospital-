@@ -36,18 +36,16 @@ const Reviews = () => {
   }
 
   return (
-    <>
-      {/* ثابتة */}
+    <div className="p-4">
       <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-10 max-w-md mx-auto">
-        <div className="flex text-lg justify-start items-center gap-3 p-4">
+        <div className="flex text-lg text-[#5E5F60] justify-start items-center gap-3 p-4">
           <button onClick={goBack} className="text-lg flex items-center gap-1">
             <FaArrowRightLong />
           </button>
           <h1 className="font-bold">الآراء السابقة</h1>
         </div>
       </header>
-
-      <section className="pt-20 p-4">
+      <div className="pt-20 ">
         <div className="grid gap-4">
           {reviewsData.map((review) => (
             <div
@@ -82,8 +80,8 @@ const Reviews = () => {
             </div>
           ))}
         </div>
-      </section>
-    </>
+      </div>
+    </div>
   );
 };
 

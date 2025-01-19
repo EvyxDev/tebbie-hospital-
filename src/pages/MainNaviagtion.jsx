@@ -5,9 +5,9 @@ import BottomNavbar from "../components/BottomNavbar";
 
 const MainLayout = () => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col p-4">
       <MainNaviagtion />
-      <main className="flex-grow h-[80vh] overflow-y-auto">
+      <main className="flex-grow h-[80vh] overflow-y-auto ">
         <Outlet />
       </main>
       <BottomNavbar />
