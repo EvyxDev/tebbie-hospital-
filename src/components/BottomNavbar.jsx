@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { LuNotepadText } from "react-icons/lu";
 import { FaHome } from "react-icons/fa";
 import { IoWalletOutline } from "react-icons/io5";
+import { MdReviews } from "react-icons/md";
 
 const links = [
   { label: "الرئيسية", href: "/", icon: <FaHome size={25} /> },
@@ -11,10 +12,12 @@ const links = [
     icon: <LuNotepadText size={25} />,
   },
   { label: "المحفظة", href: "/wallet", icon: <IoWalletOutline size={25} /> },
+  { label: "التقييمات", href: "/reviews", icon: <MdReviews size={25} /> },
+
 ];
 
 const isActiveClass =
-  "flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-4 py-1";
+  "flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 py-1";
 const isNotActiveClass =
   "flex gap-2 justify-center items-center text-[#5E5F60] px-4 py-1";
 

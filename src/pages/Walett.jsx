@@ -38,8 +38,8 @@ const Walett = () => {
   }
 
   return (
-    <section>
-      <div className="sticky top-0 bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] h-28 rounded-2xl  p-4 z-10">
+    <section className="z-10">
+      <div className="sticky top-0  bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] h-28 rounded-2xl  p-4 z-10">
         <div className="text-white flex gap-3 items-center text-md">
           <img alt="statics Icon" className="w-5" src={statics} />
           <p>الحساب</p>

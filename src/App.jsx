@@ -17,6 +17,7 @@ import BookingDetails from "./components/BookingDetails";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AddsSecialization from "./pages/AddsSecialization";
 import Search from "./pages/Search";
+import Reviews from "./pages/Reviews";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,8 @@ const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { index: true, element: <Dashboard /> },
-          { path: "home-visit", element: <HomeVisit /> },
+          { path: "home-visit", element: <HomeVisit /> },   
+
           {
             path: "wallet",
             children: [
@@ -46,12 +48,14 @@ const router = createBrowserRouter([
           }
         ],
       },
+      { path: "reviews", element: <Reviews /> },
       {
         path: "/specialization",
         element: <SecondLayout />,
         children: [
           { path: ":speizId", element: <Speizlization /> },
           { path: "refunds", element: <Refunds /> },
+
           {
             path: "booking",
             children: [
@@ -84,7 +88,7 @@ const router = createBrowserRouter([
 function App() {
   return (
     <main
-      className="max-w-md container mx-auto relative min-h-screen overflow-hidden p-4"
+      className="max-w-md container mx-auto relative min-h-screen overflow-hidden "
       dir="rtl"
     >
       <QueryClientProvider client={queryClient}>

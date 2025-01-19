@@ -15,10 +15,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getBooking } from "../utlis/https";
 import LoaderComponent from "../components/LoaderComponent";
 
-const token = localStorage.getItem("authToken");
 
 const Booking = () => {
   const {BookId} = useParams()
+  const token = localStorage.getItem("authToken");
 
   const {
     data: DataBooking,
@@ -29,7 +29,6 @@ const Booking = () => {
     queryFn: () => getBooking({ token , id:BookId}),
   });
   const navigate = useNavigate();
-  console.log(BookId)
   const [currentDate, setCurrentDate] = useState(new Date(2025, 0));
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -70,12 +69,10 @@ const Booking = () => {
   const filteredBookings = selectedDate
     ? bookings.filter((booking) => booking.date === selectedDate)
     : bookings;
-    console.log(filteredBookings)
 
     const handleBookingClick = (booking) => {
       localStorage.setItem("selectedDate", JSON.stringify(booking)); 
       navigate(`/specialization/booking/details/${BookId}`);
-      console.log(booking.doctor.id)
     };
     
     
