@@ -5,9 +5,12 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { mainLogo } from "../assets";
+import { AiOutlineLoading } from "react-icons/ai";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const API_URL = import.meta.env.VITE_APP_API_URL;
   const navigate = useNavigate();
 
@@ -29,6 +32,8 @@ const Login = () => {
         .required("كلمة المرور مطلوبة"),
     }),
     onSubmit: async (values) => {
+      setLoading(true); 
+
       try {
         const response = await fetch(`${API_URL}/hospital/login-hospital`, {
           method: "POST",
@@ -59,6 +64,10 @@ const Login = () => {
           formik.setFieldError("email", "خطأ في تسجيل الدخول. حاول مرة أخرى.");
         }
         console.error("Error:", error.message);
+        
+      }
+      finally {
+        setLoading(false); 
       }
     },
   });
@@ -128,9 +137,17 @@ const Login = () => {
 
         <button
           type="submit"
-          className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white w-full h-14 text-xl font-bold rounded-tr-lg rounded-bl-lg hover:bg-transparent my-6"
+          className={`bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white w-full h-14 text-xl font-bold rounded-tr-lg rounded-bl-lg hover:bg-transparent my-6 flex items-center justify-center ${
+            loading ? "cursor-not-allowed opacity-70" : ""
+          }`}
+          disabled={loading}
         >
-          تسجيل دخول
+          {loading ? (
+            <AiOutlineLoading className="h-5 w-5 text-white animate-spin duration-75" />
+
+          ) : (
+            "تسجيل دخول"
+          )}
         </button>
       </form>
     </section>
