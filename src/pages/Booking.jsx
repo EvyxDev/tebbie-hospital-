@@ -113,36 +113,36 @@ const Booking = () => {
               </div>
             ))}
 
-            {days.map((day) => {
-              const dayKey = format(day, "yyyy-MM-dd");
-              const bookingsForDay = bookings.filter(
-                (booking) => booking.date === dayKey
-              );
+{days.map((day) => {
+  const dayKey = format(day, "yyyy-MM-dd");
+  const isSelected = selectedDate === dayKey; 
+  const bookingsForDay = bookings.filter(
+    (booking) => booking.date === dayKey
+  );
 
-              return (
-                <div
-                  key={dayKey}
-                  className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer ${
-                    bookingsForDay.length > 0 ? "bg-green-100" : ""
-                  }`}
-                  onClick={() => handleDayClick(day)}
-                >
-                  <span className="font-bold text-gray-800">
-                    {format(day, "d")}
-                  </span>
-                  {bookingsForDay.length > 0 && (
-                    <div className="absolute bottom-1 flex gap-1">
-                      {bookingsForDay.slice(0, 3).map((_, i) => (
-                        <span
-                          key={i}
-                          className="w-1.5 h-1.5 bg-green-500 rounded-full"
-                        ></span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+  return (
+    <div
+      key={dayKey}
+      className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer ${
+        bookingsForDay.length > 0 ? "bg-green-100" : ""
+      } ${isSelected ? "border-2 border-blue-300 bg-blue-100" : ""}`} 
+      onClick={() => handleDayClick(day)}
+    >
+      <span className="font-bold text-gray-800">{format(day, "d")}</span>
+      {bookingsForDay.length > 0 && (
+        <div className="absolute bottom-1 flex gap-1">
+          {bookingsForDay.slice(0, 3).map((_, i) => (
+            <span
+              key={i}
+              className="w-1.5 h-1.5 bg-green-500 rounded-full"
+            ></span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+})}
+
           </div>
         </div>
         <div className="flex-1 overflow-y-auto my-4">

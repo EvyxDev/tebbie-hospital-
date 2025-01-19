@@ -112,6 +112,8 @@ if (error) {
 
               {days.map((day) => {
                 const dayKey = format(day, "yyyy-MM-dd");
+                const isSelected = selectedDate === dayKey; 
+
                 const bookingsForDay = bookings.filter(
                   (booking) => booking.created_at === dayKey
                 );
@@ -121,7 +123,7 @@ if (error) {
                     key={dayKey}
                     className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer ${
                       bookingsForDay.length > 0 ? "bg-green-100" : ""
-                    }`}
+                    }  ${isSelected ? "border-2 border-blue-300 bg-blue-100" : ""}`}
                     onClick={() => handleDayClick(day)}
                   >
                     <span className="font-bold text-gray-800">
