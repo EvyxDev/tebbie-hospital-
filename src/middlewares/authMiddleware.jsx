@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import {  Outlet, useNavigate } from "react-router-dom";
 import { checkToken } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
+import LoaderComponent from "../components/LoaderComponent";
 
 export const AuthMiddleware = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export const AuthMiddleware = () => {
     }
   }, [isError, data, isLoading, navigate]);
 
-  if (isLoading) return <p>جارٍ التحقق من البيانات...</p>;
+  if (isLoading) return <LoaderComponent/>;
 
   return <Outlet />;
 };
