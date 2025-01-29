@@ -9,24 +9,22 @@ import {
   getDate,
 } from "date-fns";
 import { IoChevronForward, IoChevronBack } from "react-icons/io5";
-import Switch from "../components/Switch";
-import {  useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getBooking } from "../utlis/https";
 import LoaderComponent from "../components/LoaderComponent";
-
+import BookingData from "../components/BookingData";
 
 const Booking = () => {
-  const {BookId} = useParams()
+  const { BookId } = useParams();
   const token = localStorage.getItem("authToken");
-
   const {
     data: DataBooking,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["bookings"],
-    queryFn: () => getBooking({ token , id:BookId}),
+    queryFn: () => getBooking({ token, id: BookId }),
   });
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date(2025, 0));
@@ -46,12 +44,10 @@ const Booking = () => {
   const handleNextMonth = () =>
     setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)));
 
-
   const handleDayClick = (day) => {
     const formattedDay = format(day, "yyyy-MM-dd");
     setSelectedDate(formattedDay);
   };
-
 
   if (isLoading) {
     return <LoaderComponent />;
@@ -70,12 +66,11 @@ const Booking = () => {
     ? bookings.filter((booking) => booking.date === selectedDate)
     : bookings;
 
-    const handleBookingClick = (booking) => {
-      localStorage.setItem("selectedDate", JSON.stringify(booking)); 
-      navigate(`/specialization/booking/details/${BookId}`);
-    };
-    
-    
+  const handleBookingClick = (booking) => {
+    localStorage.setItem("selectedDate", JSON.stringify(booking));
+    navigate(`/specialization/booking/details/${BookId}`);
+  };
+
   return (
     <div className="flex flex-col overflow-scroll">
       <div className="flex flex-col h-screen">
@@ -113,70 +108,43 @@ const Booking = () => {
               </div>
             ))}
 
-{days.map((day) => {
-  const dayKey = format(day, "yyyy-MM-dd");
-  const isSelected = selectedDate === dayKey; 
-  const bookingsForDay = bookings.filter(
-    (booking) => booking.date === dayKey
-  );
+            {days.map((day) => {
+              const dayKey = format(day, "yyyy-MM-dd");
+              const isSelected = selectedDate === dayKey;
+              const bookingsForDay = bookings.filter(
+                (booking) => booking.date === dayKey
+              );
 
-  return (
-    <div
-      key={dayKey}
-      className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer ${
-        bookingsForDay.length > 0 ? "bg-green-100" : ""
-      } ${isSelected ? "border-2 border-blue-300 bg-blue-100" : ""}`} 
-      onClick={() => handleDayClick(day)}
-    >
-      <span className="font-bold text-gray-800">{format(day, "d")}</span>
-      {bookingsForDay.length > 0 && (
-        <div className="absolute bottom-1 flex gap-1">
-          {bookingsForDay.slice(0, 3).map((_, i) => (
-            <span
-              key={i}
-              className="w-1.5 h-1.5 bg-green-500 rounded-full"
-            ></span>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-})}
-
+              return (
+                <div
+                  key={dayKey}
+                  className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer ${
+                    bookingsForDay.length > 0 ? "bg-green-100" : ""
+                  } ${
+                    isSelected ? "border-2 border-blue-300 bg-blue-100" : ""
+                  }`}
+                  onClick={() => handleDayClick(day)}
+                >
+                  <span className="font-bold text-gray-800">
+                    {format(day, "d")}
+                  </span>
+                  {bookingsForDay.length > 0 && (
+                    <div className="absolute bottom-1 flex gap-1">
+                      {bookingsForDay.slice(0, 3).map((_, i) => (
+                        <span
+                          key={i}
+                          className="w-1.5 h-1.5 bg-green-500 rounded-full"
+                        ></span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
         <div className="flex-1 overflow-y-auto my-4">
-          {filteredBookings.length > 0 ? (
-            filteredBookings.map((booking) => (
-              <div
-                key={booking.id}
-                className="my-4 shadow-sm bg-white rounded-lg py-2 cursor-pointer"
-              >
-                <div className="hover:bg-gray-50 p-4 rounded-lg" onClick={() => handleBookingClick(booking)}>
-                  <span className="flex gap-2">
-                    <div className="InputPrimary mt-1" />
-                    <p className="font-medium">{booking.date}</p>
-                  </span>
-                  <h3 className="text-xl font-normal my-1">
-                    {booking.user?.name || "اسم غير متوفر"}
-                  </h3>
-                  <div className="flex justify-between">
-                    <h3 className="text-[#8F9BB3] text-md">
-                      {booking.doctor?.name || "غير متوفر"}
-                    </h3>
-                    <div className="flex gap-1 justify-center items-center">
-                      <p className="text-[#8F9BB3] text-md">تأكيد حضور</p>
-                      <Switch checked={booking.status === "finished"} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-600">
-              لا توجد حجوزات لليوم المختار
-            </p>
-          )}
+       <BookingData handleBookingClick={handleBookingClick} filteredBookings={filteredBookings}/>
         </div>
       </div>
     </div>

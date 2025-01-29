@@ -197,7 +197,6 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw new Error(error.message || "An unexpected error occurred");
     }
   };
-  
   export const updateHomeVisit = async ({ token, home_visit_id, price, status }) => {
     const formdata = new FormData();
     formdata.append("home_visit_id", home_visit_id);
@@ -249,9 +248,13 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw new Error(error.message || "An unexpected error occurred");
     }
   };
-  export const getWallet = async ({ token }) => {
+  export const getWallet = async ({ token, start, end }) => {
     try {
-      const response = await fetch(`${API_URL}/hospital/v1/get-wallet`, {
+      const queryParams = new URLSearchParams();
+      if (start) queryParams.append('start', start);
+      if (end) queryParams.append('end', end);
+  
+      const response = await fetch(`${API_URL}/hospital/v1/get-wallet?${queryParams.toString()}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -271,6 +274,7 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw error;
     }
   };
+  
   export const getDoctorBooking = async ({ token ,id}) => {
     try {
       const response = await fetch(`${API_URL}/hospital/v1/get-one-booking/${id}`, {
@@ -331,3 +335,54 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw new Error(error.message || "An unexpected error occurred");
     }
   };
+  export const getHomeVisitService= async ({ token }) => {
+    try {
+      const response = await fetch(`${API_URL}/hospital/v1/HomeVisitService`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch reviews ");
+      }
+  
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      throw new Error(error.message || "An unexpected error occurred");
+    }
+  };
+
+  export const assignAllVisitServices = async ({ token, services }) => {
+    try {
+      const formdata = new FormData();
+      services.forEach((service, index) => {
+        formdata.append(`services[${index}][id]`, service.id);
+        formdata.append(`services[${index}][price]`, service.price);
+      });
+  
+      const response = await fetch(`${API_URL}/hospital/v1/assignHomeVisitService`, {
+        method: "POST",
+        body: formdata,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.msg || "An error occurred while adding the Service");
+      }
+  
+      return result;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  };
+  
+  

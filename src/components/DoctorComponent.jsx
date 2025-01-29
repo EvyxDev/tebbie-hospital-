@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Field, Form, Formik } from "formik";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateHomeVisit } from "../utlis/https";
-import { xrays } from "../assets";
+import { mainLogo, xrays } from "../assets";
 
 const DoctorComponent = ({ data }) => {
   const [visibleDoctorId, setVisibleDoctorId] = useState(null);
@@ -71,7 +71,7 @@ const DoctorComponent = ({ data }) => {
                   <img
                     className="object-cover w-24 h-24 rounded-full shrink-0 text-md"
                     alt={doctor.user_name}
-                    src={doctor.user_image}
+                    src={doctor.user_image ||mainLogo}
                   />
                   <p className="text-sm">{doctor.human_type === "0" ? "ذكر" : "أنثى"}</p>
                   </div>

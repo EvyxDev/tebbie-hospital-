@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Field, Form, Formik } from "formik";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateHomeVisit } from "../utlis/https";
-import { xrays } from "../assets";
+import { mainLogo, xrays } from "../assets";
 
 const NursingComponent = ({ data }) => {
   const [visibleDoctorId, setVisibleDoctorId] = useState(null);
@@ -70,7 +70,7 @@ const NursingComponent = ({ data }) => {
               <div className="my-4 flex flex-col gap-2 w-auto shrink-0  ">
                   <img
                     className="object-cover w-24 h-24 rounded-full shrink-0"
-                    alt={doctor.user_name}
+                    alt={doctor.user_name ||mainLogo}
                     src={doctor.user_image}
                   />
                   <p className="text-sm">{doctor.human_type === "0" ? "ذكر" : "أنثى"}</p>

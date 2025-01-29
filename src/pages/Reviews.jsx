@@ -5,6 +5,7 @@ import LoaderComponent from "../components/LoaderComponent";
 import { getreviews } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
 import { FaStar } from "react-icons/fa6";
+import { mainLogo } from "../assets";
 
 const Reviews = () => {
   const token = localStorage.getItem("authToken");
@@ -52,9 +53,9 @@ const Reviews = () => {
               key={review.id}
               className="flex items-start gap-4 border-[0.5px] shadow-sm rounded-2xl p-4"
             >
-              <div className="w-20 h-20 rounded-3xl bg-gray-200 flex-shrink-0">
+              <div className="w-20 h-20 rounded-3xl  flex-shrink-0">
                 <img
-                  src="/dummy-avatar.png"
+                  src={review.media_url || mainLogo}
                   alt="User Avatar"
                   className="w-full h-full object-cover rounded-full"
                 />

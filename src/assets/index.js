@@ -12,5 +12,10 @@ import doctor from "./doctor.svg"
 import bookingIcon from "./bookingIcon.svg"
 import exportIcon from "./exportIcon.svg"
 import loader from "./loader.gif"
+import physicaltherapy from "./physicaltherapy.svg"
+import doctorImg from "./doctorImg.svg"
+import nurseImg from "./nurseImg.svg"
 
-export {mainLogo ,NotificationIcon ,logOutIcon ,beauty ,statics ,dollarIcon ,profile ,xrays ,tests ,wallet ,doctor ,bookingIcon ,exportIcon ,loader}
+
+
+export {mainLogo ,NotificationIcon ,logOutIcon ,beauty ,statics ,dollarIcon ,profile ,xrays ,tests ,wallet ,doctor ,bookingIcon ,exportIcon ,loader ,physicaltherapy ,doctorImg ,nurseImg}

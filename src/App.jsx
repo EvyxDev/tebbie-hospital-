@@ -18,20 +18,21 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AddsSecialization from "./pages/AddsSecialization";
 import Search from "./pages/Search";
 import Reviews from "./pages/Reviews";
+import HomeVisitPricing from "./components/HomeVisitPricing";
 
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AuthMiddleware />, 
+    element: <AuthMiddleware />,
     children: [
       {
         path: "",
         element: <MainLayout />,
         children: [
           { index: true, element: <Dashboard /> },
-          { path: "home-visit", element: <HomeVisit /> },   
+          { path: "home-visit", element: <HomeVisit /> },
 
           {
             path: "wallet",
@@ -44,11 +45,17 @@ const router = createBrowserRouter([
             ],
           },
           {
-            path:"search", element:<Search/>
-          }
+            path: "search",
+            element: <Search />,
+          },
         ],
       },
       { path: "reviews", element: <Reviews /> },
+      ,
+      {
+        path: "home-visit-pricing",
+        element: <HomeVisitPricing />,
+      },
       {
         path: "/specialization",
         element: <SecondLayout />,
@@ -62,12 +69,11 @@ const router = createBrowserRouter([
               { path: "details/:doctorId", element: <BookingDetails /> },
             ],
           },
-          
         ],
       },
       {
         path: "/add-specialization",
-        element: <AddsSecialization />
+        element: <AddsSecialization />,
       },
 
       {
@@ -91,9 +97,8 @@ function App() {
       dir="rtl"
     >
       <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+        <RouterProvider router={router} />
       </QueryClientProvider>
-
     </main>
   );
 }

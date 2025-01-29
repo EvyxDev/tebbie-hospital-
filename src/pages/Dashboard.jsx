@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { IoIosAdd } from "react-icons/io";
 import { useQuery } from "@tanstack/react-query";
-import {  getSpecializations } from "../utlis/https";
+import { getSpecializations } from "../utlis/https";
 import LoaderComponent from "../components/LoaderComponent";
 
 const Dashboard = () => {
@@ -22,15 +22,17 @@ const Dashboard = () => {
   if (error) {
     return (
       <div className="h-screen w-full flex justify-center items-center text-2xl">
-        <p>
-        Error: {error.message}
-        </p>
+        <p>Error: {error.message}</p>
       </div>
     );
   }
 
   return (
-    <section className="h-full flex flex-col justify-between my-8">
+    <section className="h-full flex flex-col justify-between my-8 w-full">
+      <Link to="/home-visit-pricing" className="py-1 my-4 flex  items-center  bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-60">
+        <IoIosAdd size={35} />
+        تسعير خدمات الزيارة المنزلية
+      </Link>
       <div className="grid grid-cols-2 gap-4">
         {specializationData.length > 0 ? (
           specializationData.map((data) => (
