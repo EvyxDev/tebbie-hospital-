@@ -13,7 +13,7 @@ export const AuthMiddleware = () => {
     queryFn: () => (token ? checkToken({ token }) : Promise.reject("No token")),
     retry: false,
     staleTime: 1000 * 60 * 5,
-    enabled: !!token, // لا تبدأ التحقق إذا لم يكن هناك توكن
+    enabled: !!token, 
   });
 
   useEffect(() => {

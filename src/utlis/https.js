@@ -355,7 +355,6 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw new Error(error.message || "An unexpected error occurred");
     }
   };
-
   export const assignAllVisitServices = async ({ token, services }) => {
     try {
       const formdata = new FormData();
@@ -375,16 +374,19 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       const result = await response.json();
   
       if (!response.ok) {
-        throw new Error(result.msg || "An error occurred while adding the Service");
+        throw new Error(result.message || "An error occurred while adding the Service");
+      }
+  
+      if (!response.ok) {
+        throw new Error(result.message || result.error || "An error occurred while adding the Service");
       }
   
       return result;
     } catch (error) {
       console.error("Error:", error);
-      throw error;
+      throw error; 
     }
   };
-  
   export const checkToken = async ({token})=>{
     try{
       const response = await fetch(`${API_URL}/hospital/hospital-check-token` , {

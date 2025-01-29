@@ -1,19 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
 import { Formik, Field, Form, FieldArray } from "formik";
 import { assignAllVisitServices } from "../utlis/https";
+import { useState } from "react";
 
 const DoctorPrice = ({ data }) => {
   const token = localStorage.getItem("authToken");
+  const [error, setError] = useState("");
 
   const mutation = useMutation({
     mutationFn: assignAllVisitServices,
     onSuccess: (response) => {
+      setError(false);
       console.log("Specialization assigned successfully:", response);
-      alert("تم حفظ التخصص بنجاح");
     },
     onError: (error) => {
-      console.error("Error assigning specialization:", error);
-      alert("حدث خطأ أثناء حفظ الزيارة المنزلية");
+      setError(error.message);
     },
   });
 
@@ -96,6 +97,7 @@ const DoctorPrice = ({ data }) => {
           </Form>
         )}
       </Formik>
+      <p className="text-xl text-red-500">{error && <span>{error}</span>}</p>
     </section>
   );
 };
