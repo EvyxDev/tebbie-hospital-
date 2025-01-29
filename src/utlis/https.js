@@ -385,4 +385,22 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
     }
   };
   
-  
+  export const checkToken = async ({token})=>{
+    try{
+      const response = await fetch(`${API_URL}/hospital/hospital-check-token` , {
+        method:"POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.msg || "An error occurred while checking the token");
+      }
+ 
+      return result;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  };
