@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateHomeVisit } from "../utlis/https";
 import { mainLogo, xrays } from "../assets";
 import { FaLocationDot } from "react-icons/fa6";
+import { IoCall } from "react-icons/io5";
 
 const DoctorComponent = ({ data }) => {
   const [visibleDoctorId, setVisibleDoctorId] = useState(null);
@@ -83,7 +84,10 @@ const DoctorComponent = ({ data }) => {
                     src={doctor.user_image || mainLogo}
                     onError={(e) => (e.target.src = mainLogo)}
                   />
-                  <p className="text-sm font-medium"> الدكتور المطلوب : {doctor.human_type === "0" ? "ذكر" : "أنثى"}
+                  <p className="text-sm font-medium">
+                    {" "}
+                    الدكتور المطلوب :{" "}
+                    {doctor.human_type === "0" ? "ذكر" : "أنثى"}
                   </p>
                 </div>
 
@@ -126,16 +130,25 @@ const DoctorComponent = ({ data }) => {
                       </a>
                     ))}
                   </div>
-                  <div className="flex gap-2 items-center underline text-[#3AAB95]"> 
-                  <a 
-  href={`https://www.google.com/maps?q=${doctor.lat},${doctor.long}`} 
-  target="_blank" 
-  rel="noopener noreferrer" 
-  className="flex gap-2 items-center underline text-[#3AAB95]"
->
-  الموقع
-  <FaLocationDot />
-</a>
+                  <div className="flex justify-around">
+                    <div className="flex gap-2 items-center underline text-[#3AAB95]">
+                      <a
+                        href={`https://www.google.com/maps?q=${doctor.lat},${doctor.long}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex gap-2 items-center underline text-[#3AAB95]"
+                      >
+                        الموقع
+                        <FaLocationDot />
+                      </a>
+                    </div>
+
+                      <a
+                        href={`tel:${doctor.user_phone}`}
+                        className="cursor-pointer flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2 w-auto"
+                      >
+                        <IoCall size={18} />
+                      </a>
 
                   </div>
                 </div>
