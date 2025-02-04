@@ -34,7 +34,7 @@ const BookingData = ({filteredBookings ,handleBookingClick}) => {
             ))
           ) : (
             <p className="text-center text-gray-600">
-              لا توجد حجوزات لليوم المختار
+              لا توجد حجوزات للفتره المختاره
             </p>
           )}
     </>

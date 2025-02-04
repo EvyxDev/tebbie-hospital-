@@ -137,9 +137,12 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw new Error(error.message || "An unexpected error occurred");
     }
   };
-  export const getBooking = async ({ token , id }) => {
+  export const getBooking = async ({ token , id , start, end}) => {
     try {
-      const response = await fetch(`${API_URL}/hospital/v1/get-booking/${id}`, {
+      const queryParams = new URLSearchParams();
+      if (start) queryParams.append('start', start);
+      if (end) queryParams.append('end', end);
+      const response = await fetch(`${API_URL}/hospital/v1/get-booking/${id}?${queryParams.toString()}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -274,7 +277,6 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw error;
     }
   };
-  
   export const getDoctorBooking = async ({ token ,id}) => {
     try {
       const response = await fetch(`${API_URL}/hospital/v1/get-one-booking/${id}`, {

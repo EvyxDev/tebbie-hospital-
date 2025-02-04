@@ -18,17 +18,45 @@ import BookingData from "../components/BookingData";
 const Booking = () => {
   const { BookId } = useParams();
   const token = localStorage.getItem("authToken");
+  const [selectedRange, setSelectedRange] = useState({
+    start: null,
+    end: null,
+  });
+  const [isSelecting, setIsSelecting] = useState(false);
+  const handleDayClick = (day) => {
+    if (!isSelecting) {
+      setSelectedRange({ start: day, end: null });
+      setIsSelecting(true);
+    } else {
+      setSelectedRange((prev) => ({
+        ...prev,
+        end: day,
+      }));
+      setIsSelecting(false);
+    }
+  };
+
   const {
     data: DataBooking,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["bookings"],
-    queryFn: () => getBooking({ token, id: BookId }),
+    queryKey: ["bookings", selectedRange.start, selectedRange.end],
+    enabled: true,
+    queryFn: () =>
+      getBooking({
+        token,
+        id: BookId,
+        start: selectedRange.start
+          ? format(selectedRange.start, "yyyy-MM-dd")
+          : null,
+        end: selectedRange.end ? format(selectedRange.end, "yyyy-MM-dd") : null,
+      }),
+    
   });
+
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date(2025, 0));
-  const [selectedDate, setSelectedDate] = useState(null);
 
   const startDay = startOfMonth(currentDate);
   const endDay = endOfMonth(currentDate);
@@ -44,11 +72,6 @@ const Booking = () => {
   const handleNextMonth = () =>
     setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)));
 
-  const handleDayClick = (day) => {
-    const formattedDay = format(day, "yyyy-MM-dd");
-    setSelectedDate(formattedDay);
-  };
-
   if (isLoading) {
     return <LoaderComponent />;
   }
@@ -62,10 +85,15 @@ const Booking = () => {
   }
 
   const bookings = DataBooking?.bookings || [];
-  const filteredBookings = selectedDate
-    ? bookings.filter((booking) => booking.date === selectedDate)
-    : bookings;
-
+  const filteredBookings =
+    selectedRange.start && selectedRange.end
+      ? bookings.filter(
+          (booking) =>
+            new Date(booking.date) >= selectedRange.start &&
+            new Date(booking.date) <= selectedRange.end
+        )
+      : bookings; // بدون فلترة، يتم عرض كل الحجوزات
+  
   const handleBookingClick = (booking) => {
     localStorage.setItem("selectedDate", JSON.stringify(booking));
     navigate(`/specialization/booking/details/${BookId}`);
@@ -110,19 +138,33 @@ const Booking = () => {
 
             {days.map((day) => {
               const dayKey = format(day, "yyyy-MM-dd");
-              const isSelected = selectedDate === dayKey;
               const bookingsForDay = bookings.filter(
                 (booking) => booking.date === dayKey
               );
 
+              const isStartDay =
+                selectedRange.start &&
+                day.getTime() === selectedRange.start.getTime();
+              const isEndDay =
+                selectedRange.end &&
+                day.getTime() === selectedRange.end.getTime();
+              const isInRange =
+                selectedRange.start &&
+                selectedRange.end &&
+                day.getTime() > selectedRange.start.getTime() &&
+                day.getTime() < selectedRange.end.getTime();
+
               return (
                 <div
                   key={dayKey}
-                  className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer ${
-                    bookingsForDay.length > 0 ? "bg-green-100" : ""
-                  } ${
-                    isSelected ? "border-2 border-blue-300 bg-blue-100" : ""
-                  }`}
+                  className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer
+                    ${bookingsForDay.length > 0 ? "bg-green-100" : ""}
+                    ${isStartDay ? "bg-blue-200 border-2 border-blue-300" : ""}
+                    ${isEndDay ? "bg-blue-200 border-2 border-blue-300" : ""}
+                    ${isInRange ? "bg-blue-100" : ""}
+                    ${bookingsForDay.length > 0 && (isStartDay || isEndDay) ? "border-green-500" : ""}
+                  `}
+                  
                   onClick={() => handleDayClick(day)}
                 >
                   <span className="font-bold text-gray-800">
@@ -144,7 +186,10 @@ const Booking = () => {
           </div>
         </div>
         <div className="flex-1 overflow-y-auto my-4">
-       <BookingData handleBookingClick={handleBookingClick} filteredBookings={filteredBookings}/>
+          <BookingData
+            handleBookingClick={handleBookingClick}
+            filteredBookings={filteredBookings}
+          />
         </div>
       </div>
     </div>
