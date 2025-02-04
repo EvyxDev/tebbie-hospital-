@@ -4,6 +4,7 @@ import { Field, Form, Formik } from "formik";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateHomeVisit } from "../utlis/https";
 import { mainLogo, xrays } from "../assets";
+import { FaLocationDot } from "react-icons/fa6";
 
 const DoctorComponent = ({ data }) => {
   const [visibleDoctorId, setVisibleDoctorId] = useState(null);
@@ -53,6 +54,14 @@ const DoctorComponent = ({ data }) => {
     visible: { y: 0, opacity: 1 },
     exit: { y: "100%", opacity: 0 },
   };
+  const formatTime = (time) => {
+    if (!time) return "";
+    const [hours, minutes] = time.split(":").slice(0, 2);
+    const hour = parseInt(hours, 10);
+    const period = hour < 12 ? "ص" : "م";
+    const formattedHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    return `${formattedHour}:${minutes} ${period}`;
+  };
 
   return (
     <>
@@ -71,23 +80,36 @@ const DoctorComponent = ({ data }) => {
                   <img
                     className="object-cover w-24 h-24 rounded-full shrink-0 text-md"
                     alt={doctor.user_name}
-                    src={doctor.user_image ||mainLogo}
+                    src={doctor.user_image || mainLogo}
+                    onError={(e) => (e.target.src = mainLogo)}
                   />
-                  <p className="text-sm">{doctor.human_type === "0" ? "ذكر" : "أنثى"}</p>
-                  </div>
+                  <p className="text-sm font-medium"> الدكتور المطلوب : {doctor.human_type === "0" ? "ذكر" : "أنثى"}
+                  </p>
+                </div>
 
                 <div className="w-full">
                   <div className="flex justify-between items-center">
-                  <p className="lg:text-lg text-md truncate">{doctor.user_name}</p>
-                  <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] md:text-md text-sm  text-white rounded-lg p-2">
-                  {doctor.price}
+                    <p className="lg:text-lg text-md truncate font-medium">
+                      {doctor.user_name}
+                    </p>
+                    <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] md:text-md text-sm  text-white rounded-lg p-2">
+                      {doctor.price} دينار
                     </p>
                   </div>
-                  <div className="my-4 md:text-md text-sm  flex justify-between ">
-                  <div>
-                    {doctor.start_from.split(":").slice(0, 2).join(":")} - {doctor.end_at.split(":").slice(0, 2).join(":")}
+                  <div className="my-4 md:text-md text-sm font-semibold  flex flex-col gap-2 text-center items-start">
+                    <div className="flex gap-2 justify-center items-center">
+                      <div className="relative bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] w-3 h-3 rounded-full">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                        </div>
+                      </div>
+                      {formatTime(doctor.start_from)} -
+                      {formatTime(doctor.end_at)}
                     </div>
-                    <span className="ml-2">{doctor.date}</span>
+
+                    <span className="ml-2 flex justify-center items-center text-center ms-5">
+                      {doctor.date}
+                    </span>
                   </div>
                   <div className="flex justify-between text-[#33A9C5] text-lg underline">
                     {doctor.files.map((file, index) => (
@@ -104,6 +126,18 @@ const DoctorComponent = ({ data }) => {
                       </a>
                     ))}
                   </div>
+                  <div className="flex gap-2 items-center underline text-[#3AAB95]"> 
+                  <a 
+  href={`https://www.google.com/maps?q=${doctor.lat},${doctor.long}`} 
+  target="_blank" 
+  rel="noopener noreferrer" 
+  className="flex gap-2 items-center underline text-[#3AAB95]"
+>
+  الموقع
+  <FaLocationDot />
+</a>
+
+                  </div>
                 </div>
               </div>
               <div
@@ -113,14 +147,10 @@ const DoctorComponent = ({ data }) => {
                     : "max-h-0 opacity-0"
                 }`}
               >
-                {doctor.notes ? (
-                  <p className="my-4 text-start">
-                    <strong>حالة المريض: </strong>
-                    {doctor.notes}
-                  </p>
-                ) : (
-                  <p>عذراً، لا توجد بيانات</p>
-                )}
+                <p className="my-4 text-start">
+                  <strong>حالة المريض: </strong>
+                  {doctor.notes}
+                </p>
               </div>
               {doctor?.price === "0.00" && (
                 <div className="flex justify-between my-4 text-sm">
