@@ -101,8 +101,8 @@ const PhysiotherapyComponent = ({ data }) => {
 
                 <div className="w-full">
                   <div className="flex justify-between items-center">
-                  <p className="lg:text-lg text-md truncate font-medium">
-                  {doctor.user_name}
+                    <p className="lg:text-lg text-md truncate font-medium">
+                      {doctor.user_name}
                     </p>
                     <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] md:text-md text-sm  text-white rounded-lg p-2">
                       {doctor.price} دينار
@@ -139,26 +139,25 @@ const PhysiotherapyComponent = ({ data }) => {
                     ))}
                   </div>
                   <div className="flex justify-around">
-                                     <div className="flex gap-2 items-center underline text-[#3AAB95]">
-                                       <a
-                                         href={`https://www.google.com/maps?q=${doctor.lat},${doctor.long}`}
-                                         target="_blank"
-                                         rel="noopener noreferrer"
-                                         className="flex gap-2 items-center underline text-[#3AAB95]"
-                                       >
-                                         الموقع
-                                         <FaLocationDot />
-                                       </a>
-                                     </div>
-                 
-                                       <a
-                                         href={`tel:${doctor.user_phone}`}
-                                         className="cursor-pointer flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2 w-auto"
-                                       >
-                                         <IoCall size={18} />
-                                       </a>
-                 
-                                   </div>
+                    <div className="flex gap-2 items-center underline text-[#3AAB95]">
+                      <a
+                        href={`https://www.google.com/maps?q=${doctor.lat},${doctor.long}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex gap-2 items-center underline text-[#3AAB95]"
+                      >
+                        الموقع
+                        <FaLocationDot />
+                      </a>
+                    </div>
+
+                    <a
+                      href={`tel:${doctor.user_phone}`}
+                      className="cursor-pointer flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2 w-auto"
+                    >
+                      <IoCall size={18} />
+                    </a>
+                  </div>
                 </div>
               </div>
               <div
@@ -176,7 +175,6 @@ const PhysiotherapyComponent = ({ data }) => {
               {doctor?.price === "0.00" ? (
                 <div className="flex justify-between my-4 text-sm">
                   <button
-                  
                     onClick={() => {
                       setCurrentDoctorId(doctor.id);
                       setTimeIsModalOpen(true);
@@ -192,20 +190,22 @@ const PhysiotherapyComponent = ({ data }) => {
                     رفض
                   </button>
                 </div>
-              ) : ( <div className="flex justify-between my-4 text-sm">
-                <button
-                  onClick={() => handleAccept(doctor.id)}
-                  className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
-                >
-                  قبول
-                </button>
-                <button
-                  onClick={() => handleReject(doctor.id)}
-                  className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
-                >
-                  رفض
-                </button>
-              </div>)}
+              ) : (
+                <div className="flex justify-between my-4 text-sm">
+                  <button
+                    onClick={() => handleAccept(doctor.id)}
+                    className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
+                  >
+                    قبول
+                  </button>
+                  <button
+                    onClick={() => handleReject(doctor.id)}
+                    className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
+                  >
+                    رفض
+                  </button>
+                </div>
+              )}
             </div>
           ))
         ) : (

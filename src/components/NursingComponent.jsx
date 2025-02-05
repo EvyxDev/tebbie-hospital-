@@ -83,26 +83,30 @@ const NursingComponent = ({ data }) => {
                 onClick={() => toggleDetails(doctor.id)}
                 className="flex gap-4 cursor-pointer"
               >
-              <div className="my-4 flex flex-col gap-2 w-auto shrink-0  ">
-             <img
-                               className="object-cover w-24 h-24 rounded-full shrink-0 text-md"
-                               alt={doctor.user_name}
-                               src={doctor.user_image || mainLogo}
-                               onError={(e) => (e.target.src = mainLogo)}
-                             />
-                  <p className="text-sm font-medium"> الدكتور المطلوب : {doctor.human_type === "0" ? "ذكر" : "أنثى"}</p>
+                <div className="my-4 flex flex-col gap-2 w-auto shrink-0  ">
+                  <img
+                    className="object-cover w-24 h-24 rounded-full shrink-0 text-md"
+                    alt={doctor.user_name}
+                    src={doctor.user_image || mainLogo}
+                    onError={(e) => (e.target.src = mainLogo)}
+                  />
+                  <p className="text-sm font-medium">
+                    {" "}
+                    الدكتور المطلوب :{" "}
+                    {doctor.human_type === "0" ? "ذكر" : "أنثى"}
+                  </p>
+                </div>
+
+                <div className="w-full">
+                  <div className="flex justify-between items-center">
+                    <p className="lg:text-lg text-md truncate font-medium">
+                      {doctor.user_name}
+                    </p>
+                    <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] md:text-md text-sm  text-white rounded-lg p-2">
+                      {doctor.price} دينار
+                    </p>
                   </div>
-
-
-                    <div className="w-full">
-                             <div className="flex justify-between items-center">
-                             <p className="lg:text-lg text-md truncate font-medium">
-                             {doctor.user_name}</p>
-                             <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] md:text-md text-sm  text-white rounded-lg p-2">
-                             {doctor.price} دينار
-                             </p>
-                             </div>
-                             <div className="my-4 md:text-md text-sm font-semibold  flex flex-col gap-2 text-center items-start">
+                  <div className="my-4 md:text-md text-sm font-semibold  flex flex-col gap-2 text-center items-start">
                     <div className="flex gap-2 justify-center items-center">
                       <div className="relative bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] w-3 h-3 rounded-full">
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -117,43 +121,42 @@ const NursingComponent = ({ data }) => {
                       {doctor.date}
                     </span>
                   </div>
-                             <div className="flex justify-between text-[#33A9C5] text-lg underline">
-                               {doctor.files.map((file, index) => (
-                                 <a
-                                   key={index}
-                                   href={file}
-                                   className="flex gap-2 items-center"
-                                   download
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                 >
-                                   <img alt="xrays icon" className="w-5" src={xrays} />
-                                   المرفقات
-                                 </a>
-                               ))}
-                             </div>
-                            <div className="flex justify-around">
-                                               <div className="flex gap-2 items-center underline text-[#3AAB95]">
-                                                 <a
-                                                   href={`https://www.google.com/maps?q=${doctor.lat},${doctor.long}`}
-                                                   target="_blank"
-                                                   rel="noopener noreferrer"
-                                                   className="flex gap-2 items-center underline text-[#3AAB95]"
-                                                 >
-                                                   الموقع
-                                                   <FaLocationDot />
-                                                 </a>
-                                               </div>
-                           
-                                                 <a
-                                                   href={`tel:${doctor.user_phone}`}
-                                                   className="cursor-pointer flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2 w-auto"
-                                                 >
-                                                   <IoCall size={18} />
-                                                 </a>
-                           
-                                             </div>
-                           </div>
+                  <div className="flex justify-between text-[#33A9C5] text-lg underline">
+                    {doctor.files.map((file, index) => (
+                      <a
+                        key={index}
+                        href={file}
+                        className="flex gap-2 items-center"
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img alt="xrays icon" className="w-5" src={xrays} />
+                        المرفقات
+                      </a>
+                    ))}
+                  </div>
+                  <div className="flex justify-around">
+                    <div className="flex gap-2 items-center underline text-[#3AAB95]">
+                      <a
+                        href={`https://www.google.com/maps?q=${doctor.lat},${doctor.long}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex gap-2 items-center underline text-[#3AAB95]"
+                      >
+                        الموقع
+                        <FaLocationDot />
+                      </a>
+                    </div>
+
+                    <a
+                      href={`tel:${doctor.user_phone}`}
+                      className="cursor-pointer flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2 w-auto"
+                    >
+                      <IoCall size={18} />
+                    </a>
+                  </div>
+                </div>
               </div>
               <div
                 className={`transition-all overflow-hidden ${
@@ -162,15 +165,14 @@ const NursingComponent = ({ data }) => {
                     : "max-h-0 opacity-0"
                 }`}
               >
-               <p className="my-4 text-start">
-                    <strong>حالة المريض: </strong>
-                    {doctor.notes}
-                  </p>
+                <p className="my-4 text-start">
+                  <strong>حالة المريض: </strong>
+                  {doctor.notes}
+                </p>
               </div>
               {doctor?.price === "0.00" ? (
                 <div className="flex justify-between my-4 text-sm">
                   <button
-                  
                     onClick={() => {
                       setCurrentDoctorId(doctor.id);
                       setTimeIsModalOpen(true);
@@ -186,21 +188,22 @@ const NursingComponent = ({ data }) => {
                     رفض
                   </button>
                 </div>
-              ) : ( <div className="flex justify-between my-4 text-sm">
-                <button
-                  onClick={() => handleAccept(doctor.id)}
-                  className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
-                >
-                  قبول
-                </button>
-                <button
-                  onClick={() => handleReject(doctor.id)}
-                  className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
-                >
-                  رفض
-                </button>
-              </div>)}
-             
+              ) : (
+                <div className="flex justify-between my-4 text-sm">
+                  <button
+                    onClick={() => handleAccept(doctor.id)}
+                    className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
+                  >
+                    قبول
+                  </button>
+                  <button
+                    onClick={() => handleReject(doctor.id)}
+                    className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
+                  >
+                    رفض
+                  </button>
+                </div>
+              )}
             </div>
           ))
         ) : (
