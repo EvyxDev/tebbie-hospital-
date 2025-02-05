@@ -204,7 +204,7 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
     const formdata = new FormData();
     formdata.append("home_visit_id", home_visit_id);
   
-    if (status !== "rejected") {
+    if (status !== "rejected" && price) {
       formdata.append("price", price);
     }
   
@@ -231,6 +231,7 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw error;
     }
   };
+  
   export const getRefunds = async ({ token }) => {
     try {
       const response = await fetch(`${API_URL}/hospital/v1/get-refund`, {

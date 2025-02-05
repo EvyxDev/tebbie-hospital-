@@ -36,6 +36,14 @@ const PhysiotherapyComponent = ({ data }) => {
     updateVisitMutation.mutate(dataToSubmit);
     setTimeIsModalOpen(false);
   };
+  const handleAccept = (id) => {
+    const dataToSubmit = {
+      token,
+      home_visit_id: id,
+      status: "accepted",
+    };
+    updateVisitMutation.mutate(dataToSubmit);
+  };
 
   const handleReject = (id) => {
     const dataToSubmit = {
@@ -165,25 +173,39 @@ const PhysiotherapyComponent = ({ data }) => {
                   {doctor.notes}
                 </p>
               </div>
-              {doctor?.price === "0.00" && (
-                <div className="flex justify-between my-4">
+              {doctor?.price === "0.00" ? (
+                <div className="flex justify-between my-4 text-sm">
                   <button
+                  
                     onClick={() => {
                       setCurrentDoctorId(doctor.id);
                       setTimeIsModalOpen(true);
                     }}
-                    className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-32"
+                    className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
                   >
                     قبول
                   </button>
                   <button
                     onClick={() => handleReject(doctor.id)}
-                    className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-32"
+                    className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
                   >
                     رفض
                   </button>
                 </div>
-              )}
+              ) : ( <div className="flex justify-between my-4 text-sm">
+                <button
+                  onClick={() => handleAccept(doctor.id)}
+                  className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
+                >
+                  قبول
+                </button>
+                <button
+                  onClick={() => handleReject(doctor.id)}
+                  className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
+                >
+                  رفض
+                </button>
+              </div>)}
             </div>
           ))
         ) : (
