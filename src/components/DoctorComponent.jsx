@@ -103,7 +103,7 @@ const DoctorComponent = ({ data }) => {
                     <p className="lg:text-lg text-md truncate font-medium">
                       {doctor.user_name}
                     </p>
-                    <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] md:text-md text-sm  text-white rounded-lg p-2">
+                    <p className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] md:text-md text-sm  text-white rounded-lg p-2 whitespace-nowrap">
                       {doctor.price} دينار
                     </p>
                   </div>

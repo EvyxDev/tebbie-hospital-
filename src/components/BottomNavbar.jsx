@@ -17,13 +17,13 @@ const links = [
 ];
 
 const isActiveClass =
-  "flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 py-1";
+  "flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 py-1 ";
 const isNotActiveClass =
-  "flex gap-2 justify-center items-center text-[#5E5F60] px-4 py-1";
+  "flex gap-2 justify-center items-center text-[#5E5F60] px-4 py-1 ";
 
 const BottomNavbar = () => {
   return (
-    <div className="absolute bottom-0 w-full h-14 items-center py-2 flex justify-around text-white shadow-sm bg-white mx-auto max-w-md container  rounded-xl z-40">
+    <div className="absolute bottom-0 w-full h-14 items-center py-2 flex justify-around text-white shadow-sm bg-white mx-auto max-w-md container  rounded-xl z-40 ">
       {links.map((link, index) => (
         <div key={index}>
           <NavLink
@@ -36,7 +36,7 @@ const BottomNavbar = () => {
                 <div className="flex gap-1 items-center">
                 <span>{link.icon}</span>
                 <span
-                  className={`text-sm transition-opacity duration-300 ${
+                  className={`text-sm transition-opacity duration-300 whitespace-nowrap ${
                     isActive ? "opacity-100" : "opacity-0"
                   }`}
                 >
