@@ -122,7 +122,8 @@ const DoctorComponent = ({ data }) => {
                       {doctor.date}
                     </span>
                   </div>
-                  <div className="flex justify-between text-[#33A9C5] text-lg underline">
+
+                  <div className="flex gap-2 text-[#33A9C5] text-lg underline w-full my-4 flex-wrap">
                     {doctor.files.map((file, index) => (
                       <a
                         key={index}
@@ -137,6 +138,7 @@ const DoctorComponent = ({ data }) => {
                       </a>
                     ))}
                   </div>
+
                   <div className="flex justify-around">
                     <div className="flex gap-2 items-center underline text-[#3AAB95]">
                       <a

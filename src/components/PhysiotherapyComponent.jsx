@@ -65,11 +65,11 @@ const PhysiotherapyComponent = ({ data }) => {
   };
 
   const formatTime = (time) => {
-    if (!time) return ""; // التأكد من أن القيمة ليست فارغة
+    if (!time) return ""; 
     const [hours, minutes] = time.split(":").slice(0, 2);
     const hour = parseInt(hours, 10);
     const period = hour < 12 ? "ص" : "م";
-    const formattedHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour; // تحويل 24 ساعة إلى 12 ساعة
+    const formattedHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
     return `${formattedHour}:${minutes} ${period}`;
   };
 
@@ -123,7 +123,7 @@ const PhysiotherapyComponent = ({ data }) => {
                       {doctor.date}
                     </span>
                   </div>
-                  <div className="flex justify-between text-[#33A9C5] text-lg underline">
+                  <div className="flex gap-2 text-[#33A9C5] text-lg underline w-full my-4 flex-wrap">
                     {doctor.files.map((file, index) => (
                       <a
                         key={index}
@@ -208,7 +208,6 @@ const PhysiotherapyComponent = ({ data }) => {
     </div>
   )
 )}
-
             </div>
           ))
         ) : (

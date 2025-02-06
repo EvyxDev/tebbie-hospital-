@@ -23,7 +23,7 @@ const isNotActiveClass =
 
 const BottomNavbar = () => {
   return (
-    <div className="absolute bottom-0 w-full h-14 items-center py-2 flex justify-around text-white shadow-sm  mx-auto max-w-md container  rounded-xl z-40">
+    <div className="absolute bottom-0 w-full h-14 items-center py-2 flex justify-around text-white shadow-sm bg-white mx-auto max-w-md container  rounded-xl z-40">
       {links.map((link, index) => (
         <div key={index}>
           <NavLink
