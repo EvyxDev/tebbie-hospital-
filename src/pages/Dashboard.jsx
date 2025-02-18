@@ -39,6 +39,7 @@ const Dashboard = () => {
             <Link
               to={`/specialization/${data.id}`}
               key={data.id}
+              state={{ clinicName: data.name }} 
               className="col-span-1 w-full bg-[#F3F3F3] flex-col flex gap-2 rounded-lg text-center justify-center items-center py-8"
             >
               <div className="w-16">
@@ -48,7 +49,7 @@ const Dashboard = () => {
                   className="w-16 rounded-full"
                 />
               </div>
-              <h2 className="text-black">{data.name}</h2>
+              <h2 className="text-black font-[500]">عيادة {data.name} </h2>
             </Link>
           ))
         ) : (

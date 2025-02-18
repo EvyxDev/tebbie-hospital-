@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { NotificationIcon, wallet } from "../assets";
@@ -8,20 +7,20 @@ const SecondNavigation = () => {
   const navigate = useNavigate();
 
   const getTranslatedTitle = (pathname) => {
-    const parts = pathname.split("/").filter(Boolean); // Split the path into parts
-
-    if (parts.includes("speizlization")) {
+    const parts = pathname.split("/").filter(Boolean); 
+  
+    if (parts[0] === "specialization" && location.state?.clinicName) {
+      return `عيادة ${location.state.clinicName}`; 
+    }
+  
+    if (parts.includes("specialization")) {
       if (parts.includes("booking")) return "الحجوزات";
       if (parts.includes("refunds")) return "الاستردادات";
     }
-
-    if (parts.length > 1) {
-      const decodedPart = decodeURIComponent(parts[1]); // Decode the second part
-      return decodedPart;
-    }
-
+  
     return "لوحة التحكم";
   };
+  
 
   const pageTitle = getTranslatedTitle(location.pathname);
 

@@ -58,6 +58,25 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw error;
     }
   };
+  export const getDoctorsBooking = async ({ token ,id}) => {
+    try {
+      const response = await fetch(`${API_URL}/hospital/v1/get-doctors-by-specialization/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        
+        return data.data;
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
   export const getNotifications = async ({ token }) => {
     try {
       const response = await fetch(`${API_URL}/hospital/v1/notification-hospital`, {
@@ -117,7 +136,7 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw error;
     }
   };
- export const getSpecialization = async ({ token ,id }) => {
+  export const getSpecialization = async ({ token ,id }) => {
     try {
       const response = await fetch(`${API_URL}/hospital/v1/get-booking/${id}`, {
         method: "GET",
@@ -231,7 +250,6 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw error;
     }
   };
-  
   export const getRefunds = async ({ token }) => {
     try {
       const response = await fetch(`${API_URL}/hospital/v1/get-refund`, {
@@ -404,6 +422,57 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       }
  
       return result;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  };
+  export const getBookingsAttendance = async ({ token , id , date}) => {
+    try {
+      const queryParams = new URLSearchParams();
+      if (date) queryParams.append('date', date);
+      const response = await fetch(`${API_URL}/hospital/v1/get-booking-by-doctor-id/${id}?${queryParams.toString()}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch booking for that doctor ");
+      }
+  
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      throw new Error(error.message || "An unexpected error occurred");
+    }
+  };
+  export const attendanceDoctor = async ({
+    token,
+    doctor_id,
+    date,
+  }) => {
+    const formdata = new FormData();
+    formdata.append("doctor_id", doctor_id);
+    formdata.append("date", date);
+    try {
+      const response = await fetch(`${API_URL}/hospital/v1/update-doctor-attendance`, {
+        method: "POST",
+        body: formdata,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.msg || "An error occurred while updating the attendance");
+      }
+  
+      return result.data;
     } catch (error) {
       console.error("Error:", error);
       throw error;

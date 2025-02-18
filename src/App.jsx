@@ -1,4 +1,3 @@
-import React from "react";
 import "./global.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Login from "./login/Login";
@@ -19,6 +18,8 @@ import AddsSecialization from "./pages/AddsSecialization";
 import Search from "./pages/Search";
 import Reviews from "./pages/Reviews";
 import HomeVisitPricing from "./components/HomeVisitPricing";
+import Doctors from "./pages/Doctors";
+import DoctorBooking from "./pages/DoctorBooking";
 
 const queryClient = new QueryClient();
 
@@ -51,7 +52,6 @@ const router = createBrowserRouter([
         ],
       },
       { path: "reviews", element: <Reviews /> },
-      ,
       {
         path: "home-visit-pricing",
         element: <HomeVisitPricing />,
@@ -75,6 +75,10 @@ const router = createBrowserRouter([
         path: "/add-specialization",
         element: <AddsSecialization />,
       },
+      { path: "doctors",children:[
+        { index: true, element: <Doctors /> },
+        {path:":doctorId", element:<DoctorBooking/>}
+      ] },
 
       {
         path: "/notification",

@@ -1,10 +1,9 @@
-import React, { useState } from "react";
 import Switch from "./Switch";
 import { Link, useParams } from "react-router-dom";
 import { getSpecialization } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
 import LoaderComponent from "./LoaderComponent";
-import { bookingIcon, exportIcon } from "../assets";
+import { bookingIcon, doctorIcon, exportIcon } from "../assets";
 
 const Speizlization = () => {
   const { speizId } = useParams();
@@ -16,14 +15,8 @@ const Speizlization = () => {
     isLoading,
   } = useQuery({
     queryKey: ["Specialization", speizId],
-    queryFn: () => getSpecialization({ id: speizId, token }),
-    onSuccess: (data) => {
-      const initialStatus = data.bookings.reduce((acc, booking) => {
-        acc[booking.id] = booking.status?.toLowerCase() === "finished";
-        return acc;
-      }, {});
-    },
-  });
+    queryFn: () => getSpecialization({ id: speizId, token })
+    });
 
   if (isLoading) return <LoaderComponent />;
   if (error)
@@ -47,7 +40,16 @@ const Speizlization = () => {
           </div>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-3">
+        <Link
+            to="/doctors"
+            className="bg-[#EDF0FA] h-36 rounded-md w-full p-4 flex flex-col justify-between"
+          >
+            <div className="h-14">
+              <img className="h-12 w-12" alt="Refund Icon" src={doctorIcon} />
+            </div>
+            <h2 className="text-[#677294] font-[500]">الدكاترة</h2>
+          </Link>
           <Link
             to={`/specialization/booking/${specializationData.specialization.id}`}
             className="bg-[#EDF0FA] h-36 rounded-md w-full p-4 flex flex-col justify-between"
@@ -66,6 +68,7 @@ const Speizlization = () => {
             </div>
             <h2 className="text-[#677294] font-[500]">الاستردادات</h2>
           </Link>
+        
         </div>
 
         <div className="w-full h-full">
