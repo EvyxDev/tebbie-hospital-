@@ -26,7 +26,7 @@ const Doctors = () => {
   return (
     <section>
       <DoctorsHeader />
-      <div className="pt-20 ">
+      <div className="pt-20 p-4">
         <div className="grid gap-4">
           {doctorsData.map((doctor) => (
             <Link

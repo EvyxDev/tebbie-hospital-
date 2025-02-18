@@ -145,10 +145,17 @@ const DoctorBooking = () => {
             </div>
           ) : (
       <>
-                
-            <div className="flex-1 overflow-y-auto my-4">
-              <BookingDataDoctor   filteredBookings={filteredBookings} />
-            </div>
+           {selectedDate ? (
+  <div className="flex-1 overflow-y-auto my-4">
+    <BookingDataDoctor filteredBookings={filteredBookings} />
+  </div>
+) : (
+  <div className="flex justify-center items-center my-4">
+    <p className="text-xl text-gray-500">الرجاء اختيار تاريخ لعرض البيانات</p>
+  </div>
+)}
+  
+            
       </>
           )}
         </div>
