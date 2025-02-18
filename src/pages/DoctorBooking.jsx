@@ -62,7 +62,7 @@ const DoctorBooking = () => {
   };
 
   return (
-    <section>
+    <section className="p-4">
       <DoctorBookingHeader />
       <div className="flex flex-col overflow-scroll">
         <div className="flex flex-col h-screen">
