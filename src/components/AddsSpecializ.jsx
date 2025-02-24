@@ -47,6 +47,9 @@ const AddsSpecializ = ({
       slots: slots,
     };
     mutation.mutate(dataToSend);
+    setIsModalOpen(false)
+    setSlots("")
+
   };
 
   const handleRemoveSlot = (indexToRemove) => {
