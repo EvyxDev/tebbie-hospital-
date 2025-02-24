@@ -48,7 +48,7 @@ const AddsSpecializ = ({
     };
     mutation.mutate(dataToSend);
     setIsModalOpen(false)
-    setSlots("")
+    setSlots([])
 
   };
 
