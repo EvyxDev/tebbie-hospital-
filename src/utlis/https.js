@@ -478,3 +478,23 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
       throw error;
     }
   };
+  export const getDoctorSlots = async ({ token , id }) => {
+    try {
+      const response = await fetch(`${API_URL}/hospital/v1/doctor-slots/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch doctor slots");
+      }
+  
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      throw new Error(error.message || "An unexpected error occurred");
+    }
+  };

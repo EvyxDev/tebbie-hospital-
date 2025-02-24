@@ -1,4 +1,3 @@
-import React from 'react'
 import { BsSearch } from 'react-icons/bs'
 import { FaArrowRightLong } from 'react-icons/fa6'
 import { Link, useNavigate } from 'react-router-dom'
@@ -15,7 +14,7 @@ const SpecializationHeader = () => {
      <button onClick={goBack} className="text-lg flex items-center gap-1">
        <FaArrowRightLong />
      </button>
-     <h1 className="font-bold">اضافة تخصص</h1>
+     <h1 className="font-bold"> بيانات التخصص</h1>
    </div>
    <div className="flex items-center gap-2">
      <Link

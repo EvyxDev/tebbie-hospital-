@@ -3,6 +3,7 @@ import { IoIosAdd } from "react-icons/io";
 import { useQuery } from "@tanstack/react-query";
 import { getSpecializations } from "../utlis/https";
 import LoaderComponent from "../components/LoaderComponent";
+import { MdEdit } from "react-icons/md";
 
 const Dashboard = () => {
   const token = localStorage.getItem("authToken");
@@ -28,8 +29,11 @@ const Dashboard = () => {
   }
 
   return (
-    <section className="h-full flex flex-col justify-between my-8 w-full">
-      <Link to="/home-visit-pricing" className="py-1 my-4 flex  items-center  bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-60">
+    <section className="h-full flex flex-col  my-8 w-full">
+      <Link
+        to="/home-visit-pricing"
+        className="py-1 my-4 flex  items-center  bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-60"
+      >
         <IoIosAdd size={35} />
         تسعير خدمات الزيارة المنزلية
       </Link>
@@ -39,8 +43,8 @@ const Dashboard = () => {
             <Link
               to={`/specialization/${data.id}`}
               key={data.id}
-              state={{ clinicName: data.name }} 
-              className="col-span-1 w-full bg-[#F3F3F3] flex-col flex gap-2 rounded-lg text-center justify-center items-center py-8"
+              state={{ clinicName: data.name }}
+              className="col-span-1 w-full bg-[#F3F3F3] flex-col flex gap-2 rounded-lg text-center justify-center items-center py-8 relative"
             >
               <div className="w-16">
                 <img
@@ -49,6 +53,13 @@ const Dashboard = () => {
                   className="w-16 rounded-full"
                 />
               </div>
+              <Link
+                state={{ clinicName: data.name }}
+                to={`/update-specialization/${data.id}`}
+                className="absolute left-4 top-4 bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md p-1 rounded-bl-none"
+              >
+                <MdEdit size={22} />
+              </Link>
               <h2 className="text-black font-[500]">عيادة {data.name} </h2>
             </Link>
           ))
@@ -57,15 +68,6 @@ const Dashboard = () => {
             عذرًا، لا توجد تخصصات لعرضها
           </div>
         )}
-      </div>
-
-      <div className="h-full w-full mt-auto flex justify-end items-start">
-        <Link
-          to={`/add-specialization`}
-          className="border-[2px] border-dashed border-[#CBCBCB] text-[#CBCBCB] hover:bg-gray-100 w-full h-12 my-8 rounded-md flex justify-center items-center"
-        >
-          <IoIosAdd size={40} />
-        </Link>
       </div>
     </section>
   );

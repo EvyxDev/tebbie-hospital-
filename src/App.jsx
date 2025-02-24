@@ -72,7 +72,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/add-specialization",
+        path: "/update-specialization/:sId",
         element: <AddsSecialization />,
       },
       { path: "doctors",children:[
