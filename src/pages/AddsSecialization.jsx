@@ -7,6 +7,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { useLocation, useParams } from "react-router-dom";
 import AddsSpecializ from "../components/AddsSpecializ";
 import UpdateSpecializ from "../components/UpdateSpecializ";
+import LoaderComponent from "../components/LoaderComponent";
 
 const token = localStorage.getItem("authToken");
 
@@ -46,14 +47,10 @@ const AddsSpecialization = () => {
     setUpdateModalOpen(true);
   };
 
-  if (DoctorsBookingloading) {
-    return (
-      <div>
-        <p>loading...</p>
-      </div>
-    );
-  }
 
+  if (DoctorsBookingloading || doctorsDataLoading) {
+    return <LoaderComponent />;
+  }
   return (
     <>
       <SpecializationHeader />
