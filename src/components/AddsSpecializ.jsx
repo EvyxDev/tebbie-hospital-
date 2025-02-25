@@ -86,26 +86,27 @@ const AddsSpecializ = ({
           className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-end max-w-md mx-auto "
           onClick={() => setIsModalOpen(false)}
         >
-          <motion.div
-  className="bg-white w-full rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto"
+     <motion.div
+  className="bg-white w-full rounded-t-3xl p-6 "
   variants={modalVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
-            dragElastic={0.2}
-            onDragEnd={(event, info) => {
-              if (info?.offset?.y && info.offset.y > 150) {
-                setIsModalOpen(false);
-              }
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
+  initial="hidden"
+  animate="visible"
+  exit="exit"
+  drag="y"
+  dragConstraints={{ top: 0, bottom: 0 }}
+  dragElastic={0.2}
+  onDragEnd={(event, info) => {
+    if (info?.offset?.y && info.offset.y > 150) {
+      setIsModalOpen(false);
+    }
+  }}
+  onClick={(e) => e.stopPropagation()}
+>
             <div className="flex justify-center items-center bg-gray-300 w-28 h-[4px] rounded-full mb-4 mx-auto cursor-grab"></div>
             <h2 className="text-lg font-medium text-center mb-4">
               بيانات الدكتور
             </h2>
+            <div className="overflow-y-auto max-h-[70vh]">
             <Formik
               initialValues={{
                 doctor_id: "",
@@ -343,6 +344,7 @@ const AddsSpecializ = ({
                 </Form>
               )}
             </Formik>
+           </div>
           </motion.div>
         </div>
       )}
