@@ -3,14 +3,12 @@ import { useState } from "react";
 import { getDoctors, getDoctorsBooking } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
 import SpecializationHeader from "../components/SpecializationHeader";
-import { IoMdCloseCircle } from "react-icons/io";
 import { useLocation, useParams } from "react-router-dom";
 import AddsSpecializ from "../components/AddsSpecializ";
 import UpdateSpecializ from "../components/UpdateSpecializ";
 import LoaderComponent from "../components/LoaderComponent";
 
 const token = localStorage.getItem("authToken");
-
 const AddsSpecialization = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
@@ -18,35 +16,19 @@ const AddsSpecialization = () => {
   const [isTimeModalOpen, setTimeIsModalOpen] = useState(false);
   const location = useLocation();
   const { sId } = useParams();
-
   const { data: doctorsData, isLoading: doctorsDataLoading } = useQuery({
     queryKey: ["doctors", token],
     queryFn: () => getDoctors({ token }),
   });
-
   const { data: initialDoctorsBookingData, isLoading: DoctorsBookingloading } =
     useQuery({
       queryKey: ["doctors-booking", token],
       queryFn: () => getDoctorsBooking({ token, id: sId }),
     });
-
-  const [DoctorsBookingData, setDoctorsBookingData] = useState([]);
-
-  useState(() => {
-    if (initialDoctorsBookingData) {
-      setDoctorsBookingData(initialDoctorsBookingData);
-    }
-  }, [initialDoctorsBookingData]);
-
-  const handleRemoveDoctor = (id) => {
-    setDoctorsBookingData((prev) => prev.filter((slot) => slot.id !== id));
-  };
-
   const handleModal = (id) => {
     setSelectedDoctorId(id);
     setUpdateModalOpen(true);
   };
-
 
   if (DoctorsBookingloading || doctorsDataLoading) {
     return <LoaderComponent />;
@@ -62,21 +44,13 @@ const AddsSpecialization = () => {
         <div className="my-6">
           <h2 className="block font-medium">الاطباء</h2>
           <div className="my-3 flex flex-wrap gap-2">
-            {DoctorsBookingData.map((slot, index) => (
+            {initialDoctorsBookingData.map((slot, index) => (
               <div
                 key={index}
                 className="border-gray-300 w-32 border-[2px] py-2 text-sm text-center px-4 h-10 rounded-md flex justify-center items-center relative cursor-pointer"
                 onClick={() => handleModal(slot.id)}
               >
                 {slot.name}
-                <IoMdCloseCircle
-                  size={20}
-                  className="absolute -top-3 -right-3 cursor-pointer text-red-500"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveDoctor(slot.id);
-                  }}
-                />
               </div>
             ))}
             <button
@@ -87,15 +61,6 @@ const AddsSpecialization = () => {
               <IoIosAdd size={30} />
             </button>
           </div>
-        </div>
-
-        <div className="my-4">
-          <button
-            type="submit"
-            className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white py-3 px-4 rounded-bl-lg rounded-tr-lg w-full"
-          >
-            حفظ
-          </button>
         </div>
         <UpdateSpecializ
           {...{

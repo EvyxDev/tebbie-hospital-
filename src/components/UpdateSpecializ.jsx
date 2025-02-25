@@ -177,7 +177,7 @@ const UpdateSpecializ = ({
                       <IoMdAdd />
                     </button>
                   </div>
-                  <div className="my-3 flex flex-wrap  gap-2">
+                  <div className="my-3 flex flex-wrap  gap-2 ">
                     {slots.map((slot, index) => (
                       <span
                         key={index}

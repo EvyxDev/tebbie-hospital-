@@ -100,16 +100,17 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
     token,
     specialization_id,
     price,
-    visit_time,
+    doctor_id,
+    waiting_time,
     slots, 
   }) => {
     const formdata = new FormData();
     formdata.append("specialization_id", specialization_id);
     formdata.append("price", price);
-    formdata.append("visit_time", visit_time);
+    formdata.append("doctor_id", doctor_id);
+    formdata.append("waiting_time", waiting_time);
   
     slots.forEach((slot, index) => {
-      formdata.append(`slots[${index}][doctor_id]`, slot.doctor_id);
       formdata.append(`slots[${index}][day_id]`, slot.day_id);
       formdata.append(`slots[${index}][start_time]`, slot.start_time);
       formdata.append(`slots[${index}][end_time]`, slot.end_time);
