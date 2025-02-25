@@ -87,8 +87,8 @@ const AddsSpecializ = ({
           onClick={() => setIsModalOpen(false)}
         >
           <motion.div
-            className="bg-white w-full rounded-t-3xl p-6 max-h-[70vh] overflow-auto"
-            variants={modalVariants}
+  className="bg-white w-full rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto"
+  variants={modalVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
@@ -290,7 +290,7 @@ const AddsSpecializ = ({
                         onClick={() => setTimeIsModalOpen(false)}
                       >
                         <motion.div
-                          className="bg-white w-full rounded-t-3xl p-6"
+                          className="bg-white w-full rounded-t-3xl p-6 overflow-y-auto"
                           variants={modalVariants}
                           initial="hidden"
                           animate="visible"
