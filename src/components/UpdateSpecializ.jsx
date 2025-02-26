@@ -32,7 +32,7 @@ const UpdateSpecializ = ({
   ]);
   const [doctorData, setDoctorData] = useState({
     specialization_id: "",
-    price: "",
+    price: doctorSlotData?.price || "",  
     name: "",
     doctor_id: "",
     slots: [],
@@ -57,14 +57,13 @@ const UpdateSpecializ = ({
       });
     }
   }, [doctorSlotData]);
-
-  console.log(doctorData);
-  console.log(doctorSlotData);
-
   const mutation = useMutation({
     mutationFn: updateSpecialization,
     onSuccess: () => {
       queryClient.invalidateQueries(["doctors-slot", selectedDoctorId]);
+      setSlots([]);
+      setNewSlots([]);
+      setIsModalOpen(false);
 
       alert("تم حفظ التخصص بنجاح");
     },
@@ -104,6 +103,7 @@ const UpdateSpecializ = ({
 
     mutation.mutate(dataToSend);
   };
+ 
   const convertTo12Hour = (timeString) => {
     const [hours, minutes] = timeString.split(":");
     const date = new Date();
@@ -115,9 +115,16 @@ const UpdateSpecializ = ({
       hour12: true,
     });
   };
+  const handleRemoveNewSlot = (indexToRemove) => {
+    setNewSlots((prevSlots) => {
+      const updatedSlots = prevSlots.filter((_, index) => index !== indexToRemove);
+      console.log("Updated newSlots:", updatedSlots);
+      return updatedSlots;
+    });
+  };
+  
   const handleRemoveSlot = (slotId) => {
     setSlots((prevSlots) => prevSlots.filter((slot) => slot.id !== slotId));
-
     setDoctorData((prevData) => ({
       ...prevData,
       deleted_slots: [...prevData.deleted_slots, slotId],
@@ -236,8 +243,8 @@ const UpdateSpecializ = ({
                                   {`${slot.start_time} - ${slot.end_time}`}
                                   <IoMdCloseCircle
                                     onClick={() =>
-                                      handleRemoveSlot(dayIndex, slotIndex)
-                                    }
+                                      handleRemoveNewSlot( slotIndex)
+                                      }
                                     size={20}
                                     className="absolute -top-3 -right-3 cursor-pointer text-red-500"
                                   />

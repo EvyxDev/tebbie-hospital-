@@ -159,35 +159,27 @@ export const updateSpecialization = async ({
   slots,
   deleted_slots,
 }) => {
-  const formdata = new FormData();
-  formdata.append("specialization_id", specialization_id);
-  if (price) {
-    formdata.append("price", price);
-  }
-  if (waiting_time) {
-    formdata.append("waiting_time", waiting_time);
-  }
-  formdata.append("doctor_id", doctor_id);
-
-  if (slots) {
-    slots.forEach((slot, index) => {
-      formdata.append(`slots[${index}][day_id]`, slot.day_id);
-      formdata.append(`slots[${index}][start_time]`, slot.start_time);
-      formdata.append(`slots[${index}][end_time]`, slot.end_time);
-    });
-  }
-
-  deleted_slots.forEach((slot) => {
-    formdata.append(`deleted_slots[]`, slot);
-  });
+  const payload = {
+    specialization_id: Number(specialization_id), 
+    price: Number(price),
+    waiting_time: Number(waiting_time),
+    doctor_id: Number(doctor_id),
+    slots: slots.map(slot => ({
+      day_id: Number(slot.day_id), 
+      start_time: slot.start_time,
+      end_time: slot.end_time,
+    })),
+    deleted_slots: deleted_slots.map(Number), 
+  };
 
   try {
     const response = await fetch(`${API_URL}/hospital/v1/update-doctor-slots`, {
       method: "POST",
-      body: formdata,
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify(payload),
     });
 
     const result = await response.json();
