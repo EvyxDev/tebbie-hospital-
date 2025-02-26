@@ -3,8 +3,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Field, Form, Formik } from "formik";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { IoMdAdd, IoMdCloseCircle } from "react-icons/io";
+import { IoIosAdd, IoMdAdd, IoMdCloseCircle } from "react-icons/io";
 import { getDoctorSlots, updateSpecialization } from "../utlis/https";
+import { useQueryClient } from "@tanstack/react-query"; 
 
 const UpdateSpecializ = ({
   isUpdateModalOpen,
@@ -13,6 +14,7 @@ const UpdateSpecializ = ({
   setUpdateModalOpen,
   sId,
   selectedDoctorId,
+  setIsModalOpen
 }) => {
   const token = localStorage.getItem("authToken");
   const { data: doctorSlotData, isLoading: doctorSlotLoading } = useQuery({
@@ -20,8 +22,14 @@ const UpdateSpecializ = ({
     queryFn: () => getDoctorSlots({ token, id: selectedDoctorId }),
     enabled: !!selectedDoctorId,
   });
+  const queryClient = useQueryClient();
 
   const [slots, setSlots] = useState(doctorSlotData?.slots || []);
+  const [newSlots, setNewSlots] = useState([]);
+
+  const [daysWithSlots, setDaysWithSlots] = useState([
+    { day_id: "", slots: [] },
+  ]);
   const [doctorData, setDoctorData] = useState({
     specialization_id: "",
     price: "",
@@ -56,6 +64,8 @@ const UpdateSpecializ = ({
   const mutation = useMutation({
     mutationFn: updateSpecialization,
     onSuccess: () => {
+      queryClient.invalidateQueries(["doctors-slot", selectedDoctorId]);
+
       alert("تم حفظ التخصص بنجاح");
     },
     onError: (error) => {
@@ -65,23 +75,33 @@ const UpdateSpecializ = ({
   });
   const handleAddSlot = (values) => {
     const newSlot = {
-      doctor_id: values.doctor_id,
       day_id: values.day_id,
       start_time: values.start_time,
       end_time: values.end_time,
     };
-    setSlots((prev) => [...prev, newSlot]);
+    setNewSlots((prev) => [...prev, newSlot]);
     setTimeIsModalOpen(false);
   };
-
+  const handleAddDay = () => {
+    if (daysWithSlots.length < 7) {
+      setDaysWithSlots([...daysWithSlots, { day_id: "", slots: [] }]);
+    } else {
+      alert("لا يمكن إضافة أكثر من 7 أيام");
+    }
+  };
   const handleSubmit = (values) => {
     const dataToSend = {
       token: token,
       doctor_id: doctorSlotData.id,
       specialization_id: sId,
       price: values.price,
+      waiting_time: values.waiting_time,
       deleted_slots: doctorData.deleted_slots,
+      slots: newSlots,
     };
+    console.log(newSlots);
+    setIsModalOpen(false);
+
     mutation.mutate(dataToSend);
   };
   const convertTo12Hour = (timeString) => {
@@ -159,6 +179,7 @@ const UpdateSpecializ = ({
                   day_id: "",
                   start_time: "",
                   end_time: "",
+                  waiting_time: "",
                   price: doctorData.price || "",
                 }}
                 onSubmit={handleSubmit}
@@ -170,6 +191,69 @@ const UpdateSpecializ = ({
                         <p>{doctorData.name}</p>
                       </div>
                     </>
+                    {daysWithSlots.map((day, dayIndex) => (
+                      <div key={dayIndex}>
+                        <div className="flex justify-center items-center gap-2">
+                          <Field
+                            as="select"
+                            name={`day_id`}
+                            className="border-[1px] bg-[#F4F4F6] rounded-xl py-3 px-5 h-[50px] focus:outline-none focus:border-primary w-full text-[#677294]"
+                            value={day.day_id}
+                            onChange={(e) => {
+                              const updatedDaysWithSlots = [...daysWithSlots];
+                              updatedDaysWithSlots[dayIndex].day_id =
+                                e.target.value;
+                              updatedDaysWithSlots[dayIndex].slots = [];
+                              setDaysWithSlots(updatedDaysWithSlots);
+                              setFieldValue(`day_id`, e.target.value);
+                            }}
+                          >
+                            <option value="">يوم</option>
+                            {days.map((d) => (
+                              <option key={d.id} value={d.id}>
+                                {d.name}
+                              </option>
+                            ))}
+                          </Field>
+
+                          <button
+                            type="button"
+                            className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white py-1 px-1 rounded-full"
+                            onClick={handleAddDay}
+                          >
+                            <IoMdAdd />
+                          </button>
+                        </div>
+                        <div className="my-3 flex flex-wrap gap-2">
+                          {day.day_id &&
+                            newSlots
+                              .filter((slot) => slot.day_id === day.day_id)
+                              .map((slot, slotIndex) => (
+                                <span
+                                  key={slotIndex}
+                                  className="border-gray-300 w-28 border-[2px] py-2 text-sm text-center px-2 h-10 rounded-md flex justify-center items-center relative"
+                                >
+                                  {`${slot.start_time} - ${slot.end_time}`}
+                                  <IoMdCloseCircle
+                                    onClick={() =>
+                                      handleRemoveSlot(dayIndex, slotIndex)
+                                    }
+                                    size={20}
+                                    className="absolute -top-3 -right-3 cursor-pointer text-red-500"
+                                  />
+                                </span>
+                              ))}
+
+                          <button
+                            type="button"
+                            className="border-gray-300 flex justify-center items-center text-gray-300 border-dashed border-[2px] py-2 w-28 h-10 text-center px-4 rounded-md"
+                            onClick={() => setTimeIsModalOpen(true)}
+                          >
+                            <IoIosAdd size={30} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                     <div className="flex flex-col gap-4">
                       {days.map((day) => {
                         const daySlots = slots.filter(
@@ -212,6 +296,17 @@ const UpdateSpecializ = ({
                       className="border-[1px] bg-[#F4F4F6] rounded-xl py-3 px-5 h-[50px] focus:outline-none focus:border-primary w-full text-[#677294] my-3"
                       placeholder=" سعر الكشف"
                     />
+                    {newSlots.length > 0 && (
+                      <Field
+                        type="text"
+                        name="waiting_time"
+                        onChange={(e) =>
+                          setFieldValue("waiting_time", e.target.value)
+                        }
+                        className="border-[1px] bg-[#F4F4F6] rounded-xl py-3 px-5 h-[50px] focus:outline-none focus:border-primary w-full text-[#677294] my-3"
+                        placeholder="مدة الانتظار بين الكشوفات"
+                      />
+                    )}
 
                     <button
                       type="submit"

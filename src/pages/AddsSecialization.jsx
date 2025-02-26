@@ -69,6 +69,7 @@ const AddsSpecialization = () => {
             isTimeModalOpen,
             setTimeIsModalOpen,
             setUpdateModalOpen,
+            setIsModalOpen,
             sId,
             selectedDoctorId,
           }}
