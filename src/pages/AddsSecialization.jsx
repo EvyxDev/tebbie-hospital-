@@ -1,6 +1,6 @@
 import { IoIosAdd } from "react-icons/io";
 import { useState } from "react";
-import { getDoctors, getDoctorsBook} from "../utlis/https";
+import { getDoctors, getDoctorsBook } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
 import SpecializationHeader from "../components/SpecializationHeader";
 import { useLocation, useParams } from "react-router-dom";
@@ -16,23 +16,36 @@ const AddsSpecialization = () => {
   const [isTimeModalOpen, setTimeIsModalOpen] = useState(false);
   const location = useLocation();
   const { sId } = useParams();
-  const { data: doctorsData, isLoading: doctorsDataLoading } = useQuery({
+  const {
+    data: doctorsData,
+    isLoading: doctorsDataLoading,
+    error: doctorsError,
+  } = useQuery({
     queryKey: ["doctors", token],
     queryFn: () => getDoctors({ token }),
   });
-  const { data: initialDoctorsBookingData, isLoading: DoctorsBookingloading } =
-    useQuery({
-      queryKey: ["doctors-booking", token],
-      queryFn: () => getDoctorsBook({ token }),
-    });
+  const {
+    data: initialDoctorsBookingData,
+    isLoading: DoctorsBookingloading,
+    error: doctorsBookingError,
+  } = useQuery({
+    queryKey: ["doctors-booking", token],
+    queryFn: () => getDoctorsBook({ token }),
+  });
   const handleModal = (id) => {
     setSelectedDoctorId(id);
     setUpdateModalOpen(true);
   };
-  console.log(initialDoctorsBookingData)
 
   if (DoctorsBookingloading || doctorsDataLoading) {
     return <LoaderComponent />;
+  }
+  if (doctorsError || doctorsBookingError) {
+    return (
+      <div className="h-[40vh] flex justify-center items-center text-lg">
+        <p className="text-red-400">عزرا حدث خطأ ما</p>
+      </div>
+    );
   }
   return (
     <>

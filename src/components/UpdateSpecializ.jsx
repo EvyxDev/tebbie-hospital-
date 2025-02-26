@@ -98,7 +98,6 @@ const UpdateSpecializ = ({
       deleted_slots: doctorData.deleted_slots,
       slots: newSlots,
     };
-    console.log(newSlots);
     setIsModalOpen(false);
 
     mutation.mutate(dataToSend);
@@ -118,7 +117,6 @@ const UpdateSpecializ = ({
   const handleRemoveNewSlot = (indexToRemove) => {
     setNewSlots((prevSlots) => {
       const updatedSlots = prevSlots.filter((_, index) => index !== indexToRemove);
-      console.log("Updated newSlots:", updatedSlots);
       return updatedSlots;
     });
   };
