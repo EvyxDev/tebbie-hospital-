@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { IoIosAdd, IoMdAdd, IoMdCloseCircle } from "react-icons/io";
 import { getDoctorSlots, updateSpecialization } from "../utlis/https";
-import { useQueryClient } from "@tanstack/react-query"; 
+import { useQueryClient } from "@tanstack/react-query";
 
 const UpdateSpecializ = ({
   isUpdateModalOpen,
@@ -14,7 +14,7 @@ const UpdateSpecializ = ({
   setUpdateModalOpen,
   sId,
   selectedDoctorId,
-  setIsModalOpen
+  setIsModalOpen,
 }) => {
   const token = localStorage.getItem("authToken");
   const { data: doctorSlotData, isLoading: doctorSlotLoading } = useQuery({
@@ -32,7 +32,7 @@ const UpdateSpecializ = ({
   ]);
   const [doctorData, setDoctorData] = useState({
     specialization_id: "",
-    price: doctorSlotData?.price || "",  
+    price: "",
     name: "",
     doctor_id: "",
     slots: [],
@@ -102,7 +102,7 @@ const UpdateSpecializ = ({
 
     mutation.mutate(dataToSend);
   };
- 
+
   const convertTo12Hour = (timeString) => {
     const [hours, minutes] = timeString.split(":");
     const date = new Date();
@@ -116,11 +116,13 @@ const UpdateSpecializ = ({
   };
   const handleRemoveNewSlot = (indexToRemove) => {
     setNewSlots((prevSlots) => {
-      const updatedSlots = prevSlots.filter((_, index) => index !== indexToRemove);
+      const updatedSlots = prevSlots.filter(
+        (_, index) => index !== indexToRemove
+      );
       return updatedSlots;
     });
   };
-  
+
   const handleRemoveSlot = (slotId) => {
     setSlots((prevSlots) => prevSlots.filter((slot) => slot.id !== slotId));
     setDoctorData((prevData) => ({
@@ -144,11 +146,7 @@ const UpdateSpecializ = ({
     exit: { y: "100%", opacity: 0 },
   };
   if (doctorSlotLoading) {
-    return (
-      <div>
-        <p>loading...</p>
-      </div>
-    );
+    return <p>loading...</p>;
   }
   return (
     <AnimatePresence>
@@ -187,6 +185,7 @@ const UpdateSpecializ = ({
                   waiting_time: "",
                   price: doctorData.price || "",
                 }}
+                enableReinitialize={true}
                 onSubmit={handleSubmit}
               >
                 {({ isValid, setFieldValue, values }) => (
@@ -241,8 +240,8 @@ const UpdateSpecializ = ({
                                   {`${slot.start_time} - ${slot.end_time}`}
                                   <IoMdCloseCircle
                                     onClick={() =>
-                                      handleRemoveNewSlot( slotIndex)
-                                      }
+                                      handleRemoveNewSlot(slotIndex)
+                                    }
                                     size={20}
                                     className="absolute -top-3 -right-3 cursor-pointer text-red-500"
                                   />
