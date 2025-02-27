@@ -9,20 +9,21 @@ const Speizlization = () => {
   const { speizId } = useParams();
   const token = localStorage.getItem("authToken");
 
-  const {
+  const { 
     data: specializationData,
     error,
     isLoading,
-  } = useQuery({
-    queryKey: ["Specialization", speizId],
-    queryFn: () => getSpecialization({ id: speizId, token })
-    });
+} = useQuery({
+    queryKey: ["specialization", speizId],
+    queryFn: () => getSpecialization({ id: speizId, token }),
+    enabled: !!speizId,
+});
 
   if (isLoading) return <LoaderComponent />;
   if (error)
     return (
       <div className="h-screen w-full flex justify-center items-center text-md text-red-400">
-        <p>{error.message}</p>
+      <p className="text-red-400">عذرا حدث خطأ ما</p>
       </div>
     );
 

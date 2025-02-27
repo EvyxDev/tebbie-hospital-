@@ -24,7 +24,7 @@ const Refunds = () => {
   if (error) {
     return (
       <div className="h-screen w-full flex justify-center items-center text-md text-red-400">
-        <p>{error.message}</p>
+      <p className="text-red-400">عذرا حدث خطأ ما</p>
       </div>
     );
   }
