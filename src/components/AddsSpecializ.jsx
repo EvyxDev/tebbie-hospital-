@@ -308,7 +308,7 @@ const AddsSpecializ = ({
                           >
                             <div className="flex justify-center items-center bg-gray-300 w-28 h-[4px] rounded-full mb-4 mx-auto cursor-grab"></div>
                             <h2 className="text-lg font-medium text-center mb-4">
-                              مدة الكشف
+                            مواعيد الطبيب
                             </h2>
                             <div className="flex gap-4 my-4">
                               <Field
