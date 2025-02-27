@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowRightLong } from "react-icons/fa6";
@@ -87,7 +87,7 @@ const MainNavigation = () => {
 
       <AnimatePresence>
         {showModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <motion.div
               className="bg-white rounded-lg shadow-lg p-6 w-80"
               initial={{ y: "100%", opacity: 0 }}

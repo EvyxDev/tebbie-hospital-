@@ -1,4 +1,3 @@
-import React from "react";
 import { Outlet } from "react-router";
 import MainNaviagtion from "../components/MainNaviagtion";
 import BottomNavbar from "../components/BottomNavbar";
