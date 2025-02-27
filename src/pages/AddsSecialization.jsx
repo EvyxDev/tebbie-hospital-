@@ -43,7 +43,7 @@ const AddsSpecialization = () => {
   if (doctorsError || doctorsBookingError) {
     return (
       <div className="h-[40vh] flex justify-center items-center text-lg">
-        <p className="text-red-400">عزرا حدث خطأ ما</p>
+        <p className="text-red-400">عذرا حدث خطأ ما</p>
       </div>
     );
   }
