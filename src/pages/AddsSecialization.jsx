@@ -8,7 +8,6 @@ import AddsSpecializ from "../components/AddsSpecializ";
 import UpdateSpecializ from "../components/UpdateSpecializ";
 import LoaderComponent from "../components/LoaderComponent";
 
-const token = localStorage.getItem("authToken");
 const AddsSpecialization = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
@@ -16,21 +15,25 @@ const AddsSpecialization = () => {
   const [isTimeModalOpen, setTimeIsModalOpen] = useState(false);
   const location = useLocation();
   const { sId } = useParams();
+  const token = localStorage.getItem("authToken");
+
   const {
     data: doctorsData,
     isLoading: doctorsDataLoading,
-    error: doctorsError,
+    isError: doctorsError,
   } = useQuery({
     queryKey: ["doctors", token],
     queryFn: () => getDoctors({ token }),
+    enabled: !!token,
   });
   const {
     data: initialDoctorsBookingData,
     isLoading: DoctorsBookingloading,
-    error: doctorsBookingError,
+    isError: doctorsBookingError,
   } = useQuery({
     queryKey: ["doctors-booking", token],
     queryFn: () => getDoctorsBook({ token }),
+    enabled: !!token,
   });
   const handleModal = (id) => {
     setSelectedDoctorId(id);
@@ -52,7 +55,7 @@ const AddsSpecialization = () => {
       <SpecializationHeader />
       <section className="h-screen w-full p-4">
         <div className="my-3 border-[2px] border-gray-200 rounded-xl py-3 px-5 h-[50px] focus:outline-none focus:border-primary w-full text-[#677294] text-xl flex items-center">
-          <p>{location.state.clinicName}</p>
+          <p>{location.state?.clinicName}</p>
         </div>
 
         <div className="my-6">

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
 export const getReviews = async ({ token }) => {
@@ -532,7 +533,7 @@ export const getBookingsAttendance = async ({ token, id, date }) => {
     const queryParams = new URLSearchParams();
     if (date) queryParams.append("date", date);
     const response = await fetch(
-      `${API_URL}/hospital/v1/get-booking-by-doctor-id/${id}?${queryParams.toString()}`,
+      `${API_URL}/hospital/v1/get-booking-by-doctor-id/${id}`,
       {
         method: "GET",
         headers: {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 import PhysiotherapyComponent from "../components/PhysiotherapyComponent";
 import NursingComponent from "../components/NursingComponent";
@@ -10,7 +10,7 @@ import LoaderComponent from "../components/LoaderComponent";
 const HomeVisit = () => {
   const token = localStorage.getItem("authToken");
 
-  const { data: HomeVisitData, isLoading, error } = useQuery({
+  const { data: HomeVisitData, isLoading, error, isError } = useQuery({
     queryKey: ["home-visit"],
     queryFn: () => getHomeVisit({ token }),
   });
@@ -21,17 +21,24 @@ const HomeVisit = () => {
     return <LoaderComponent />;
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="h-screen w-full flex justify-center items-center text-sm text-red-400">
-        <p>{error.message}</p>
+        <p>{error.message || "An unknown error occurred"}</p>
       </div>
     );
   }
 
-  const doctorData = HomeVisitData?.filter((item) => item.type === "1") || [];
-  const nursingData = HomeVisitData?.filter((item) => item.type === "2") || [];
-  const physiotherapyData = HomeVisitData?.filter((item) => item.type === "3") || [];
+  // Check if the response indicates success and contains data
+  let doctorData = [];
+  let nursingData = [];
+  let physiotherapyData = [];
+
+  if (HomeVisitData?.success && Array.isArray(HomeVisitData.data)) {
+    doctorData = HomeVisitData.data.filter((item) => item.type === "1") || [];
+    nursingData = HomeVisitData.data.filter((item) => item.type === "2") || [];
+    physiotherapyData = HomeVisitData.data.filter((item) => item.type === "3") || [];
+  }
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -45,44 +52,48 @@ const HomeVisit = () => {
 
   return (
     <Box className="max-w-md mx-auto mt-6">
-      <Tabs
-        value={selectedTab}
-        variant="fullWidth"
-        centered
-        onChange={handleTabChange}
-        textColor="#677294"
-        sx={{
-          backgroundColor: "#F3F3F3",
-          borderRadius: "8px",
-          "& .MuiTab-root": {
-            fontWeight: 500,
-            borderRadius: "8px",
-            padding: "6px 12px",
-            margin: "6px",
-          },
-          "& .Mui-selected": {
-            backgroundColor: "white",
-            color: "#000",
-          },
-          "& .MuiTabs-indicator": {
-            display: "none",
-          },
-        }}
-      >
-        <Tab label="طبيب" />
-        <Tab label="تمريض" />
-        <Tab label="علاج طبيعي" />
-      </Tabs>
+ {!HomeVisitData?.success && (
+  <div className="text-center h-[50vh] flex justify-center items-center text-xl text-gray-600 my-4">
+    {HomeVisitData?.message || "عذرًا، لا توجد زيارات منزلية متاحه"}
+  </div>
+)}
 
-      <Box
-        sx={{
-          mt: 4,
-          p: 2,
-          textAlign: "center",
-        }}
-      >
-        {tabComponents[selectedTab]}
-      </Box>
+      {HomeVisitData?.success && (
+        <>
+          <Tabs
+            value={selectedTab}
+            variant="fullWidth"
+            centered
+            onChange={handleTabChange}
+            textColor="#677294"
+            sx={{
+              backgroundColor: "#F3F3F3",
+              borderRadius: "8px",
+              "& .MuiTab-root": {
+                fontWeight: 500,
+                borderRadius: "8px",
+                padding: "6px 12px",
+                margin: "6px",
+              },
+              "& .Mui-selected": {
+                backgroundColor: "white",
+                color: "#000",
+              },
+              "& .MuiTabs-indicator": {
+                display: "none",
+              },
+            }}
+          >
+            <Tab label="طبيب" />
+            <Tab label="تمريض" />
+            <Tab label="علاج طبيعي" />
+          </Tabs>
+
+          <Box sx={{ mt: 4, p: 2, textAlign: "center" }}>
+            {tabComponents[selectedTab]}
+          </Box>
+        </>
+      )}
     </Box>
   );
 };

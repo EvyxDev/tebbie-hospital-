@@ -1,17 +1,15 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import SwitchDoctor from "./SwitchDoctor";
 import { attendanceDoctor } from "../utlis/https";
-import { MdBlock } from "react-icons/md";
 
-const BookingDataDoctor = ({ filteredBookings }) => {
+const BookingDataDoctor = ({ filteredBookings, selectedDate }) => {
   const doctorId = filteredBookings[0]?.doctor?.id;
-  const date = filteredBookings[0]?.date;
   const status = filteredBookings[0]?.status;
+  const date = filteredBookings[0]?.date;
 
   const [attendanceStatus, setAttendanceStatus] = useState();
-  console.log(filteredBookings);
-
   const queryClient = useQueryClient();
   const token = localStorage.getItem("authToken");
 
@@ -30,6 +28,7 @@ const BookingDataDoctor = ({ filteredBookings }) => {
     },
   });
 
+
   const handleAttendanceToggle = (checked) => {
     if (status === "pending") {
       setAttendanceStatus(checked);
@@ -43,10 +42,10 @@ const BookingDataDoctor = ({ filteredBookings }) => {
     }
   };
 
-  const isFutureDate = (bookingDate) => {
+  const isFutureDate = (date) => {
     const now = new Date();
-    const bookingDateTime = new Date(bookingDate);
-    return bookingDateTime > now;
+    const selectedDateTime = new Date(date);
+    return selectedDateTime > now;
   };
 
   return (
@@ -54,7 +53,7 @@ const BookingDataDoctor = ({ filteredBookings }) => {
       <div className="flex gap-1 justify-between items-end">
         <h2 className="font-medium">حجوزات اليوم</h2>
         <div className="flex gap-1 justify-end items-end">
-          {isFutureDate(date) ? (
+          {isFutureDate(selectedDate) && filteredBookings.length > 0 ? (
             <>
               <p className="text-[#8F9BB3] text-md">تأكيد حضور</p>
               <SwitchDoctor
@@ -62,36 +61,38 @@ const BookingDataDoctor = ({ filteredBookings }) => {
                 onChange={handleAttendanceToggle}
               />
             </>
+          ) : isFutureDate(selectedDate) ? (
+            <p className="text-gray-500">لا توجد حجوزات لهذا اليوم</p>
           ) : (
             <div className="text-red-500 flex justify-center items-center gap-2">
-              <p>الموعد قد مرّ</p>
-              {/* <MdBlock size={25} /> */}
+              <p>الموعد قد مر</p>
             </div>
           )}
         </div>
       </div>
 
-      {filteredBookings.map((booking) => (
-        <div
-          key={booking.id}
-          className="my-4 shadow-sm bg-white rounded-lg py-2 "
-        >
-          <div className="p-4 rounded-lg">
-            <span className="flex gap-2">
-              <div className="InputPrimary mt-1" />
-              <p className="font-medium">{booking.date}</p>
-            </span>
-            <h3 className="text-xl font-normal my-1">
-              {booking.user?.name || "اسم غير متوفر"}
-            </h3>
-            <div className="flex justify-between">
-              <h3 className="text-[#8F9BB3] text-md">
-                {booking.doctor?.name || "غير متوفر"}
+      {filteredBookings.length > 0 ? (
+        filteredBookings.map((booking) => (
+          <div key={booking.id} className="my-4 shadow-sm bg-white rounded-lg py-2">
+            <div className="p-4 rounded-lg">
+              <span className="flex gap-2">
+                <div className="InputPrimary mt-1" />
+                <p className="font-medium">{booking.date}</p>
+              </span>
+              <h3 className="text-xl font-normal my-1">
+                {booking.user?.name || "اسم غير متوفر"}
               </h3>
+              <div className="flex justify-between">
+                <h3 className="text-[#8F9BB3] text-md">
+                  {booking.doctor?.name || "غير متوفر"}
+                </h3>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))
+      ) : (
+        <p className="text-gray-500 text-center my-4">لا توجد حجوزات متاحة</p>
+      )}
     </>
   );
 };

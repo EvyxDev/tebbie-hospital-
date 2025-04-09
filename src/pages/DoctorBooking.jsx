@@ -25,7 +25,7 @@ const DoctorBooking = () => {
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["doctor-attendance", doctorId], 
+    queryKey: ["doctor-attendance", doctorId],
     queryFn: () =>
       getBookingsAttendance({
         token,
@@ -144,19 +144,22 @@ const DoctorBooking = () => {
               <p>{error.message}</p>
             </div>
           ) : (
-      <>
-           {selectedDate ? (
-  <div className="flex-1 overflow-y-auto my-4">
-    <BookingDataDoctor filteredBookings={filteredBookings} />
-  </div>
-) : (
-  <div className="flex justify-center items-center my-4">
-    <p className="text-xl text-gray-500">الرجاء اختيار تاريخ لعرض البيانات</p>
-  </div>
-)}
-  
-            
-      </>
+            <>
+              {selectedDate ? (
+                <div className="flex-1 overflow-y-auto my-4">
+                  <BookingDataDoctor
+                    filteredBookings={filteredBookings}
+                    selectedDate={selectedDate}
+                  />
+                </div>
+              ) : (
+                <div className="flex justify-center items-center my-4">
+                  <p className="text-xl text-gray-500">
+                    الرجاء اختيار تاريخ لعرض البيانات
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

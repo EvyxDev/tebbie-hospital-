@@ -29,17 +29,18 @@ const Dashboard = () => {
   }
 
   return (
-    <section className="h-full flex flex-col  my-8 w-full">
+    <section className="h-full flex flex-col my-8 w-full">
       <Link
         to="/home-visit-pricing"
-        className="py-1 my-4 flex  items-center  bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-60"
+        className="py-1 my-4 flex items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-60"
       >
         <IoIosAdd size={35} />
         تسعير خدمات الزيارة المنزلية
       </Link>
-      <div className="grid grid-cols-2 gap-4">
-        {specializationData.length > 0 ? (
-          specializationData.map((data) => (
+      
+      {specializationData.length > 0 ? (
+        <div className="grid grid-cols-2 gap-4">
+          {specializationData.map((data) => (
             <Link
               to={`/specialization/${data.id}`}
               key={data.id}
@@ -60,15 +61,15 @@ const Dashboard = () => {
               >
                 <MdEdit size={22} />
               </Link>
-              <h2 className="text-black font-[500]">عيادة {data.name} </h2>
+              <h2 className="text-black font-[500]">عيادة {data.name}</h2>
             </Link>
-          ))
-        ) : (
-          <div className="h-[60vh] w-full flex justify-center items-center text-2xl">
-            عذرًا، لا توجد تخصصات لعرضها
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="h-[60vh] w-full flex justify-center items-center text-2xl">
+          عذرًا، لا توجد تخصصات لعرضها
+        </div>
+      )}
     </section>
   );
 };
