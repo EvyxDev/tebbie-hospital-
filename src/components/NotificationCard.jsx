@@ -1,18 +1,28 @@
+/* eslint-disable react/prop-types */
 import { Link } from "react-router-dom";
 import { NotificationIcon } from "../assets";
 
-const NotificationCard = ({ TransactionDetail, TransactionTitle, type }) => {
-  const typeToPath = {
-    booking: "booking",
-    homeVisit: "home-visit",
-    refund: "refunds",
+const NotificationCard = ({ TransactionDetail, TransactionTitle, type ,relatable_id}) => {
+const getPath = () => {
+    switch (type) {
+      case "booking":
+        return `/specialization/booking/${relatable_id}`;
+      case "homeVisit":
+        return `/home-visit`;
+      case "refund":
+        return `/specialization/refunds`;
+      case "chat":
+        return `/`; 
+      default:
+        return "/"; 
+    }
   };
 
-  const path = typeToPath[type] || "/"; 
+  const path = getPath();
 
   return (
     <Link
-      to={`/${path}`}
+      to={`${path}`}
       className="bg-white border-none rounded-lg shadow-sm p-4 mb-4 flex justify-center items-center"
     >
       <div className="bg-[#D6EEF6] rounded-full w-14 h-14 flex justify-center items-center me-4 shrink-0">

@@ -47,27 +47,28 @@ const Reviews = () => {
       </header>
       <div className="pt-20 ">
         <div className="grid gap-4">
+        {reviewsData && reviewsData.length > 0 ? (
+        <div className="grid gap-4">
           {reviewsData.map((review) => (
             <div
               key={review.id}
               className="flex items-start gap-4 border-[0.5px] shadow-sm rounded-2xl p-4"
             >
-              <div className="w-20 h-20 rounded-3xl  flex-shrink-0">
+              <div className="w-20 h-20 rounded-3xl flex-shrink-0">
                 <img
                   src={review.media_url || mainLogo}
                   alt="User Avatar"
                   className="w-full h-full object-cover rounded-full"
                 />
               </div>
-
               <div className="flex flex-col gap-2 w-full">
                 <div className="flex justify-between w-full">
                   <p className="text-lg font-semibold text-black">
                     {review.user.name}
                   </p>
                   <span className="flex gap-1 text-lg">
-                  <FaStar className="text-yellow-400" />
-                    <p className="text-sm ">{review.rating}</p>
+                    <FaStar className="text-yellow-400" />
+                    <p className="text-sm">{review.rating}</p>
                   </span>
                 </div>
                 <p className="text-sm text-gray-600">
@@ -79,6 +80,12 @@ const Reviews = () => {
               </div>
             </div>
           ))}
+        </div>
+      ) : (
+        <div className="text-center text-gray-600 text-xl mt-8">
+          لا توجد آراء متاحة حالياً
+        </div>
+      )}
         </div>
       </div>
     </div>

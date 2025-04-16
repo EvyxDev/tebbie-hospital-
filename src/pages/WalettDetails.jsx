@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import {
   format,
   startOfMonth,
@@ -17,8 +17,8 @@ import WalletData from "../components/WalletData";
 const token = localStorage.getItem("authToken");
 
 const WalletDetails = () => {
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 0));
-  const [selectedRange, setSelectedRange] = useState({
+  const [currentDate, setCurrentDate] = useState(new Date());
+    const [selectedRange, setSelectedRange] = useState({
     start: null,
     end: null,
   });

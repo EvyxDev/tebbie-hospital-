@@ -41,8 +41,7 @@ const DoctorBooking = () => {
       )
     : bookings;
 
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 0));
-
+    const [currentDate, setCurrentDate] = useState(new Date());
   const startDay = startOfMonth(currentDate);
   const endDay = endOfMonth(currentDate);
   const days = eachDayOfInterval({ start: startDay, end: endDay });

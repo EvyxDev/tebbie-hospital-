@@ -106,7 +106,7 @@ const Speizlization = () => {
               </div>
             ))
           ) : (
-            <div className="text-center text-gray-500 p-4 bg-white rounded-md shadow-sm">
+            <div className="text-center text-gray-500 p-4 bg-white rounded-md shadow-sm h-[30vh] flex justify-center items-center">
               <p>لا توجد حجوزات حالياً</p>
             </div>
           )}

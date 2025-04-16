@@ -20,6 +20,7 @@ import Reviews from "./pages/Reviews";
 import HomeVisitPricing from "./components/HomeVisitPricing";
 import Doctors from "./pages/Doctors";
 import DoctorBooking from "./pages/DoctorBooking";
+import NotFound from "./components/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -92,6 +93,10 @@ const router = createBrowserRouter([
     element: <GuestMiddleware />,
     children: [{ index: true, element: <Login /> }],
   },
+  {
+    path: "*",
+    element: <NotFound />,
+  }
 ]);
 
 function App() {

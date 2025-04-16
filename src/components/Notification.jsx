@@ -1,4 +1,3 @@
-import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import NotificationCard from "./NotificationCard";
 import NotificationsHeader from "./NotificationsHeader";
@@ -12,7 +11,6 @@ const Notifications = () => {
     queryKey: ["notifications"],
     queryFn: () => getNotifications({ token }),
   });
-
   if (isLoading) {
     return <LoaderComponent />;
   }
@@ -56,12 +54,13 @@ const Notifications = () => {
               TransactionTitle={notification.title}
               type={notification.type}
               TransactionDetail={notification.body}
+              relatable_id={notification.relatable_id}
             />
           </div>
         ))}
 
         {!data?.length && (
-          <p className="text-right text-gray-500">لا توجد إشعارات حالياً.</p>
+          <p className="text-right text-gray-500 text-2xl">لا توجد إشعارات حالياً.</p>
         )}
       </div>
     </section>
