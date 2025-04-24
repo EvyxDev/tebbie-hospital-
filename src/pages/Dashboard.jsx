@@ -44,7 +44,7 @@ const Dashboard = () => {
             <Link
               to={`/specialization/${data.id}`}
               key={data.id}
-              state={{ clinicName: data.name }}
+              state={{ clinicName: data.name , clinicId : data.id }}
               className="col-span-1 w-full bg-[#F3F3F3] flex-col flex gap-2 rounded-lg text-center justify-center items-center py-8 relative"
             >
               <div className="w-16">

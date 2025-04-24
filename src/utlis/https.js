@@ -605,10 +605,10 @@ export const getDoctorSlots = async ({ token, id }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
-export const getDoctorsBook = async ({ token }) => {
+export const getDoctorsBook = async ({ token ,id}) => {
   try {
     const response = await fetch(
-      `${API_URL}/hospital/v1/get-doctor-by-hospital`,
+      `${API_URL}/hospital/v1/get-doctor-by-hospital/${id}`,
       {
         method: "GET",
         headers: {

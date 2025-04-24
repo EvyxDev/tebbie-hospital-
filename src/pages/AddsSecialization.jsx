@@ -15,6 +15,7 @@ const AddsSpecialization = () => {
   const [isTimeModalOpen, setTimeIsModalOpen] = useState(false);
   const location = useLocation();
   const { sId } = useParams();
+  console.log(sId)
   const token = localStorage.getItem("authToken");
 
   const {
@@ -32,8 +33,8 @@ const AddsSpecialization = () => {
     isError: doctorsBookingError,
   } = useQuery({
     queryKey: ["doctors-booking", token],
-    queryFn: () => getDoctorsBook({ token }),
-    enabled: !!token,
+    queryFn: () => getDoctorsBook({ token ,id:sId}),
+    enabled: !!token &&!!sId,
   });
   const handleModal = (id) => {
     setSelectedDoctorId(id);
