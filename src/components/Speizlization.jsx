@@ -53,7 +53,7 @@ const Speizlization = () => {
 
         <div className="flex gap-3">
           <Link
-            to="/doctors"
+            to={`/doctors/${specializationData.specialization.id}`}
             className="bg-[#EDF0FA] h-36 rounded-md w-full p-4 flex flex-col justify-between"
           >
             <div className="h-14">

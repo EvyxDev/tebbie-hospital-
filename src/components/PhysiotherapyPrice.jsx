@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useMutation } from "@tanstack/react-query";
 import { Formik, Field, Form, FieldArray } from "formik";
 import { assignAllVisitServices } from "../utlis/https";
@@ -9,11 +10,11 @@ const PhysiotherapyPrice = ({ data }) => {
 
   const mutation = useMutation({
     mutationFn: assignAllVisitServices,
-    onSuccess: (response) => {
+    onSuccess: () => {
       setError(false);
 
-      console.log("Specialization assigned successfully:", response);
-      alert("تم حفظ التخصص بنجاح");
+      alert("تم تسعير الخدمة بنجاح");
+
     },
     onError: (error) => {
       setError(error.message);

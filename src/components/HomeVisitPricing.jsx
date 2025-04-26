@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import { FaArrowRightLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { Box, Tabs, Tab } from "@mui/material";

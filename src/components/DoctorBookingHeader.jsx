@@ -17,7 +17,9 @@ const DoctorBookingHeader = () => {
         <button onClick={goBack} className="text-lg flex items-center gap-1">
           <FaArrowRightLong />
         </button>
-        <h1 className="font-bold">{location.state.doctorName}</h1>
+        {location?.state?.doctorName && (
+          <h1 className="font-bold">{location?.state?.doctorName || ""}</h1>
+        )}
       </div>
       <div className="flex items-center gap-2">
         <Link to="/wallet" className="bg-[#F5F5F5] rounded-full p-2">

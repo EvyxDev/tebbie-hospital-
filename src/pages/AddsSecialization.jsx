@@ -1,6 +1,6 @@
 import { IoIosAdd } from "react-icons/io";
 import { useState } from "react";
-import { getDoctors, getDoctorsBook } from "../utlis/https";
+import {  getDoctorsBook } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
 import SpecializationHeader from "../components/SpecializationHeader";
 import { useLocation, useParams } from "react-router-dom";
@@ -15,18 +15,8 @@ const AddsSpecialization = () => {
   const [isTimeModalOpen, setTimeIsModalOpen] = useState(false);
   const location = useLocation();
   const { sId } = useParams();
-  console.log(sId)
   const token = localStorage.getItem("authToken");
 
-  const {
-    data: doctorsData,
-    isLoading: doctorsDataLoading,
-    isError: doctorsError,
-  } = useQuery({
-    queryKey: ["doctors", token],
-    queryFn: () => getDoctors({ token }),
-    enabled: !!token,
-  });
   const {
     data: initialDoctorsBookingData,
     isLoading: DoctorsBookingloading,
@@ -41,10 +31,10 @@ const AddsSpecialization = () => {
     setUpdateModalOpen(true);
   };
 
-  if (DoctorsBookingloading || doctorsDataLoading) {
+  if (DoctorsBookingloading ) {
     return <LoaderComponent />;
   }
-  if (doctorsError || doctorsBookingError) {
+  if ( doctorsBookingError) {
     return (
       <div className="h-screen w-full flex justify-center items-center text-md text-red-400">
       <p className="text-red-400">عذرا حدث خطأ ما</p>
@@ -93,10 +83,10 @@ const AddsSpecialization = () => {
         />
         <AddsSpecializ
           {...{
-            doctorsData,
+            initialDoctorsBookingData,
             isModalOpen,
             isTimeModalOpen,
-            doctorsDataLoading,
+            DoctorsBookingloading,
             setTimeIsModalOpen,
             setIsModalOpen,
             sId,

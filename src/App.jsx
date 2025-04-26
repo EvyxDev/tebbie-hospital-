@@ -76,7 +76,7 @@ const router = createBrowserRouter([
         path: "/update-specialization/:sId",
         element: <AddsSecialization />,
       },
-      { path: "doctors",children:[
+      { path: "doctors/:Id",children:[
         { index: true, element: <Doctors /> },
         {path:":doctorId", element:<DoctorBooking/>}
       ] },

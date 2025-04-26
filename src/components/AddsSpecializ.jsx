@@ -7,10 +7,10 @@ import { IoIosAdd, IoMdAdd, IoMdCloseCircle } from "react-icons/io";
 import { assignSpecialization } from "../utlis/https";
 
 const AddsSpecializ = ({
-  doctorsDataLoading,
+  DoctorsBookingloading,
   isTimeModalOpen,
   isModalOpen,
-  doctorsData,
+  initialDoctorsBookingData,
   setTimeIsModalOpen,
   setIsModalOpen,
   sId,
@@ -142,7 +142,7 @@ const AddsSpecializ = ({
               >
                 {({ isValid, setFieldValue, values }) => (
                   <Form>
-                    {doctorsDataLoading ? (
+                    {DoctorsBookingloading ? (
                       <p>جارٍ تحميل الدكاتره ...</p>
                     ) : (
                       <>
@@ -155,7 +155,7 @@ const AddsSpecializ = ({
                           }
                         >
                           <option value="">الطبيب</option>
-                          {doctorsData?.map((data) => (
+                          {initialDoctorsBookingData?.map((data) => (
                             <option key={data.id} value={data.id}>
                               {data.name}
                             </option>

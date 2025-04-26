@@ -1,20 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import DoctorsHeader from "../components/DoctorsHeader";
-import { getDoctors } from "../utlis/https";
+import { getDoctorsBooking } from "../utlis/https";
 import LoaderComponent from "../components/LoaderComponent";
 import { mainLogo } from "../assets";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const Doctors = () => {
   const token = localStorage.getItem("authToken");
-
+const {Id} =useParams()
+console.log(Id)
   const {
     data: doctorsData,
     error,
     isLoading,
   } = useQuery({
     queryKey: ["doctors"],
-    queryFn: () => getDoctors({ token }),
+    queryFn: () => getDoctorsBooking({ token ,id:Id}),
   });
   if (isLoading) return <LoaderComponent />;
   if (error)
@@ -30,7 +31,7 @@ const Doctors = () => {
         <div className="grid gap-4">
           {doctorsData.map((doctor) => (
             <Link
-              to={`/doctors/${doctor.id}`}
+              to={`/doctors/${Id}/${doctor.id}`}
               key={doctor.id}
               state={{ doctorName: doctor.name }} 
               className="flex items-start gap-4 border-[0.5px] shadow-sm rounded-2xl p-4 hover:bg-gray-50 cursor-pointer"

@@ -163,7 +163,6 @@ export const updateSpecialization = async ({
   const payload = {
     specialization_id: Number(specialization_id), 
     price: Number(price),
-    waiting_time: Number(waiting_time),
     doctor_id: Number(doctor_id),
     slots: slots.map(slot => ({
       day_id: Number(slot.day_id), 
@@ -172,7 +171,15 @@ export const updateSpecialization = async ({
     })),
     deleted_slots: deleted_slots.map(Number), 
   };
-
+  if (
+    waiting_time !== undefined &&
+    waiting_time !== null &&
+    waiting_time !== "" &&
+    !isNaN(Number(waiting_time)) &&
+    Number(waiting_time) >= 0
+  ) {
+    payload.waiting_time = Number(waiting_time);
+  }
   try {
     const response = await fetch(`${API_URL}/hospital/v1/update-doctor-slots`, {
       method: "POST",
