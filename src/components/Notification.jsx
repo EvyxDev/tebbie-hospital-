@@ -40,12 +40,12 @@ const Notifications = () => {
       return notificationDate.toLocaleDateString("ar-EG");
     }
   };
-
+  const sortedNotifications = data ? [...data].reverse() : [];
   return (
     <section className="p-4">
       <NotificationsHeader />
       <div >
-        {data?.map((notification) => (
+        {sortedNotifications.map((notification) => (
           <div key={notification.id}>
             <h5 className="text-md font-bold text-gray-800 mb-4 text-right">
               {getNotificationDate(notification.created_at)}
@@ -55,6 +55,7 @@ const Notifications = () => {
               type={notification.type}
               TransactionDetail={notification.body}
               relatable_id={notification.relatable_id}
+              specialization_id={notification.specialization_id}
             />
           </div>
         ))}

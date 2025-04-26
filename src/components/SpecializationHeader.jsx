@@ -1,6 +1,5 @@
-import { BsSearch } from 'react-icons/bs'
 import { FaArrowRightLong } from 'react-icons/fa6'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const SpecializationHeader = () => {
     const navigate = useNavigate();
@@ -16,14 +15,14 @@ const SpecializationHeader = () => {
      </button>
      <h1 className="font-bold"> بيانات التخصص</h1>
    </div>
-   <div className="flex items-center gap-2">
+   {/* <div className="flex items-center gap-2">
      <Link
        to="/search"
        className="bg-[#F5F5F5] rounded-full p-3 rotate-90"
      >
        <BsSearch size={22} alt="Notifications" />
      </Link>
-   </div>
+   </div> */}
  </div>
   )
 }
