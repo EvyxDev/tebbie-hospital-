@@ -2,11 +2,11 @@
 import { Link } from "react-router-dom";
 import { NotificationIcon } from "../assets";
 
-const NotificationCard = ({ TransactionDetail, TransactionTitle, type ,relatable_id ,specialization_id}) => {
+const NotificationCard = ({ TransactionDetail, TransactionTitle, type ,specialization_id}) => {
 const getPath = () => {
     switch (type) {
       case "booking":
-        return `/specialization/booking/${specialization_id ||relatable_id }`;
+        return `/specialization/booking/${specialization_id}`;
       case "homeVisit":
         return `/home-visit`;
       case "refund":
