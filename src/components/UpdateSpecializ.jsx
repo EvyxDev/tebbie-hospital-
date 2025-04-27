@@ -130,7 +130,17 @@ const UpdateSpecializ = ({
       deleted_slots: [...prevData.deleted_slots, slotId],
     }));
   };
+  const handleRemoveDay = (dayId) => {
+    setSlots((prevSlots) => prevSlots.filter((slot) => slot.day_id !== dayId));
 
+    setDoctorData((prevData) => ({
+      ...prevData,
+      deleted_slots: [
+        ...prevData.deleted_slots,
+        ...slots.filter((slot) => slot.day_id === dayId).map((slot) => slot.id),
+      ],
+    }));
+  };
   const days = [
     { id: 1, name: "السبت" },
     { id: 2, name: "الأحد" },
@@ -267,9 +277,19 @@ const UpdateSpecializ = ({
 
                         return (
                           <div key={day.id} className="border-b pb-2 w-full">
+                            <div className="justify-between flex my-2">
                             <h3 className="text-lg font-semibold text-gray-700">
                               {day.name}
                             </h3>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveDay(day.id)}
+                              className="bg-red-500 hover:bg-red-700 font-medium rounded-full text-white py-1 px-2"
+                            >
+                              إزالة اليوم
+                            </button>
+                            </div>
+                        
                             <div className="flex flex-wrap gap-2 mt-2">
                               {daySlots.map((slot, index) => (
                                 <span

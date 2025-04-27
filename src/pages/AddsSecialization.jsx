@@ -1,6 +1,6 @@
-import { IoIosAdd } from "react-icons/io";
+// import { IoIosAdd } from "react-icons/io";
 import { useState } from "react";
-import {  getDoctorsBook } from "../utlis/https";
+import { getDoctorsBook } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
 import SpecializationHeader from "../components/SpecializationHeader";
 import { useLocation, useParams } from "react-router-dom";
@@ -23,21 +23,21 @@ const AddsSpecialization = () => {
     isError: doctorsBookingError,
   } = useQuery({
     queryKey: ["doctors-booking", token],
-    queryFn: () => getDoctorsBook({ token ,id:sId}),
-    enabled: !!token &&!!sId,
+    queryFn: () => getDoctorsBook({ token, id: sId }),
+    enabled: !!token && !!sId,
   });
   const handleModal = (id) => {
     setSelectedDoctorId(id);
     setUpdateModalOpen(true);
   };
 
-  if (DoctorsBookingloading ) {
+  if (DoctorsBookingloading) {
     return <LoaderComponent />;
   }
-  if ( doctorsBookingError) {
+  if (doctorsBookingError) {
     return (
       <div className="h-screen w-full flex justify-center items-center text-md text-red-400">
-      <p className="text-red-400">عذرا حدث خطأ ما</p>
+        <p className="text-red-400">عذرا حدث خطأ ما</p>
       </div>
     );
   }
@@ -61,13 +61,13 @@ const AddsSpecialization = () => {
                 {slot.name}
               </div>
             ))}
-            <button
+            {/* d beta3et edafet el mwa3eed  <button
               type="button"
               className="border-gray-300 flex justify-center items-center text-gray-300 border-dashed border-[2px] py-2 w-28 h-10 text-center px-4 rounded-md "
               onClick={() => setIsModalOpen(true)}
             >
               <IoIosAdd size={30} />
-            </button>
+            </button> */}
           </div>
         </div>
         <UpdateSpecializ
