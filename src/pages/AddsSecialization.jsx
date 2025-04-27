@@ -61,7 +61,7 @@ const AddsSpecialization = () => {
                 {slot.name}
               </div>
             ))}
-            {/* d beta3et edafet el mwa3eed  <button
+            {/* d beta3et edafet el mwa3eed new <button
               type="button"
               className="border-gray-300 flex justify-center items-center text-gray-300 border-dashed border-[2px] py-2 w-28 h-10 text-center px-4 rounded-md "
               onClick={() => setIsModalOpen(true)}
