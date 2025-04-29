@@ -52,7 +52,6 @@ const Booking = () => {
           : null,
         end: selectedRange.end ? format(selectedRange.end, "yyyy-MM-dd") : null,
       }),
-    
   });
 
   const navigate = useNavigate();
@@ -85,14 +84,15 @@ const Booking = () => {
 
   const bookings = DataBooking?.bookings || [];
   const filteredBookings =
-    selectedRange.start && selectedRange.end
-      ? bookings.filter(
-          (booking) =>
-            new Date(booking.date) >= selectedRange.start &&
-            new Date(booking.date) <= selectedRange.end
-        )
-      : bookings; // بدون فلترة، يتم عرض كل الحجوزات
-  
+  selectedRange.start && selectedRange.end
+    ? bookings.filter((booking) => {
+        const bookingDate = booking.date; 
+        const startDate = format(selectedRange.start, "yyyy-MM-dd");
+        const endDate = format(selectedRange.end, "yyyy-MM-dd");
+        return bookingDate >= startDate && bookingDate <= endDate;
+      })
+    : bookings;
+
   const handleBookingClick = (booking) => {
     localStorage.setItem("selectedDate", JSON.stringify(booking));
     navigate(`/specialization/booking/details/${BookId}`);
@@ -161,9 +161,12 @@ const Booking = () => {
                     ${isStartDay ? "bg-blue-200 border-2 border-blue-300" : ""}
                     ${isEndDay ? "bg-blue-200 border-2 border-blue-300" : ""}
                     ${isInRange ? "bg-blue-100" : ""}
-                    ${bookingsForDay.length > 0 && (isStartDay || isEndDay) ? "border-green-500" : ""}
+                    ${
+                      bookingsForDay.length > 0 && (isStartDay || isEndDay)
+                        ? "border-green-500"
+                        : ""
+                    }
                   `}
-                  
                   onClick={() => handleDayClick(day)}
                 >
                   <span className="font-bold text-gray-800">

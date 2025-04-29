@@ -229,8 +229,8 @@ export const getSpecialization = async ({ token, id }) => {
 export const getBooking = async ({ token, id, start, end }) => {
   try {
     const queryParams = new URLSearchParams();
-    if (start) queryParams.append("start", start);
-    if (end) queryParams.append("end", end);
+    if (start) queryParams.append("from_date", start);
+    if (end) queryParams.append("to_date", end);
     const response = await fetch(
       `${API_URL}/hospital/v1/get-booking/${id}?${queryParams.toString()}`,
       {
