@@ -50,7 +50,6 @@ const BookingDetails = () => {
     </div>
     );
   }
-
   return (
     <div className="flex-1 overflow-y-auto my-4">
       <h2 className="text-xl font-normal">حجوزات اليوم</h2>
@@ -73,9 +72,9 @@ const BookingDetails = () => {
             <div className="flex justify-between">
               <h3 className="text-[#8F9BB3] text-md">{booking.doctor.name}</h3>
               <div className="flex gap-1 justify-center items-center">
-                <p className="text-[#8F9BB3] text-md">تأكيد حضور</p>
-                <Switch />
-              </div>
+                  <p className="text-[#8F9BB3] text-md">تأكيد حضور</p>
+                  <Switch checked={booking.status === "finished"} />
+                </div>
             </div>
           </div>
         ))

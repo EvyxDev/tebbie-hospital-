@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import Switch from "./Switch";
 
 const BookingData = ({ filteredBookings, handleBookingClick }) => {
   return (
@@ -25,10 +24,7 @@ const BookingData = ({ filteredBookings, handleBookingClick }) => {
                 <h3 className="text-[#8F9BB3] text-md">
                   {booking.doctor?.name || "غير متوفر"}
                 </h3>
-                <div className="flex gap-1 justify-center items-center">
-                  <p className="text-[#8F9BB3] text-md">تأكيد حضور</p>
-                  <Switch checked={booking.status === "finished"} />
-                </div>
+          
               </div>
             </div>
           </div>

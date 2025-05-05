@@ -368,16 +368,24 @@ const UpdateSpecializ = ({
                               مواعيد الطبيب
                             </h2>
                             <div className="flex gap-4 my-4">
+                             <div className="w-full">
+                             <label className="block my-2  font-semibold"> بداية من</label>
                               <Field
                                 type="time"
                                 name="start_time"
                                 className="border-[1px] bg-[#F4F4F6] rounded-xl py-3 px-5 h-[50px] focus:outline-none focus:border-primary w-full text-[#677294]"
                               />
-                              <Field
+                             </div>
+                             <div className="w-full">
+                             <label className="block my-2  font-semibold ">  ينتهى فى </label>
+
+                             <Field
                                 type="time"
                                 name="end_time"
                                 className="border-[1px] bg-[#F4F4F6] rounded-xl py-3 px-5 h-[50px] focus:outline-none focus:border-primary w-full text-[#677294]"
                               />
+                             </div>
+                             
                             </div>
                             <button
                               type="button"

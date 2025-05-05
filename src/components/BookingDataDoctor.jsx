@@ -8,7 +8,7 @@ const BookingDataDoctor = ({ filteredBookings, selectedDate }) => {
   const doctorId = filteredBookings[0]?.doctor?.id;
   const status = filteredBookings[0]?.status;
   const date = filteredBookings[0]?.date;
-
+console.log(filteredBookings)
   const [attendanceStatus, setAttendanceStatus] = useState();
   const queryClient = useQueryClient();
   const token = localStorage.getItem("authToken");
@@ -55,7 +55,7 @@ const BookingDataDoctor = ({ filteredBookings, selectedDate }) => {
         <div className="flex gap-1 justify-end items-end">
           {isFutureDate(selectedDate) && filteredBookings.length > 0 ? (
             <>
-              <p className="text-[#8F9BB3] text-md">تأكيد حضور</p>
+              <p className="text-[#8F9BB3] text-md">تأكيد غياب الدكتور</p>
               <SwitchDoctor
                 checked={attendanceStatus}
                 onChange={handleAttendanceToggle}
