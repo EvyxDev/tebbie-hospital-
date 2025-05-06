@@ -293,7 +293,7 @@ export const getHomeVisit = async ({ token }) => {
     }
 
     const data = await response.json();
-    return data.data;
+    return data;
   } catch (error) {
     throw new Error(error.message || "An unexpected error occurred");
   }

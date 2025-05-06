@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import { useState } from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 import PhysiotherapyComponent from "../components/PhysiotherapyComponent";
