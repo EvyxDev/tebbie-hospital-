@@ -16,7 +16,10 @@ import physicaltherapy from "./physicaltherapy.svg"
 import doctorImg from "./doctorImg.svg"
 import nurseImg from "./nurseImg.svg"
 import doctorIcon from "./doctorIcon.svg"
+import paidIcon from "./paidIcon.svg"
+import intheWay from "./intheway.svg"
+import doneIcon from "./done.svg"
 
 
 
-export {mainLogo ,NotificationIcon ,logOutIcon ,beauty ,statics ,dollarIcon ,profile ,xrays ,tests ,wallet ,doctor ,bookingIcon ,exportIcon ,loader ,physicaltherapy ,doctorImg ,nurseImg ,doctorIcon}
+export {doneIcon, intheWay, paidIcon, mainLogo ,NotificationIcon ,logOutIcon ,beauty ,statics ,dollarIcon ,profile ,xrays ,tests ,wallet ,doctor ,bookingIcon ,exportIcon ,loader ,physicaltherapy ,doctorImg ,nurseImg ,doctorIcon}

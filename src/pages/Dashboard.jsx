@@ -32,7 +32,7 @@ const Dashboard = () => {
     <section className="h-full flex flex-col my-8 w-full">
       <Link
         to="/home-visit-pricing"
-        className="py-1 my-4 flex items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-60"
+        className="py-1 my-4 flex items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-64"
       >
         <IoIosAdd size={35} />
         تسعير خدمات الزيارة المنزلية

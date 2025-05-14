@@ -7,7 +7,7 @@ import { MdReviews } from "react-icons/md";
 const links = [
   { label: "الرئيسية", href: "/", icon: <FaHome size={25} /> },
   {
-    label: "زيارة منزلية",
+    label: "الزيارات منزلية",
     href: "/home-visit",
     icon: <LuNotepadText size={25} />,
   },

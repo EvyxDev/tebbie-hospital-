@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+/* eslint-disable react/prop-types */
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Field, Form, Formik } from "formik";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateHomeVisit } from "../utlis/https";
-import { mainLogo, xrays } from "../assets";
+import { updateHomeVisit, updateHomeStatus } from "../utlis/https";
+import { doneIcon, intheWay, mainLogo, paidIcon, xrays } from "../assets";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoCall } from "react-icons/io5";
 
@@ -13,6 +14,7 @@ const NursingComponent = ({ data }) => {
   const [currentDoctorId, setCurrentDoctorId] = useState(null);
   const token = localStorage.getItem("authToken");
   const queryClient = useQueryClient();
+  const [statuses, setStatuses] = useState({});
 
   const updateVisitMutation = useMutation({
     mutationFn: updateHomeVisit,
@@ -25,7 +27,25 @@ const NursingComponent = ({ data }) => {
       alert("حدث خطأ أثناء تحديث الزيارة");
     },
   });
-
+  const updateVisitStatusMutation = useMutation({
+    mutationFn: updateHomeStatus,
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries(["home-visit"]);
+      alert("تم تحديث الزيارة بنجاح");
+      // Reset status for the specific doctor
+      setStatuses((prev) => ({ ...prev, [variables.home_visit_id]: null }));
+    },
+    onError: (error) => {
+      console.error("Error updating visit:", error);
+      alert("حدث خطأ أثناء تحديث الزيارة");
+    },
+  });
+  const handleCheckboxChange = (home_visit_id, newStatus) => {
+    setStatuses((prev) => ({
+      ...prev,
+      [home_visit_id]: prev[home_visit_id] === newStatus ? null : newStatus,
+    }));
+  };
   const handlePriceSave = (values) => {
     const dataToSubmit = {
       token,
@@ -51,6 +71,19 @@ const NursingComponent = ({ data }) => {
       status: "rejected",
     };
     updateVisitMutation.mutate(dataToSubmit);
+  };
+  const handleStatusChange = (home_visit_id) => {
+    const status = statuses[home_visit_id];
+    if (!status) {
+      alert("يرجى اختيار حالة");
+      return;
+    }
+
+    updateVisitStatusMutation.mutate({
+      token,
+      home_visit_id,
+      status,
+    });
   };
 
   const toggleDetails = (id) => {
@@ -98,7 +131,7 @@ const NursingComponent = ({ data }) => {
                 </div>
 
                 <div className="w-full">
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between flex-wrap gap-2 items-center">
                     <p className="lg:text-lg text-md truncate font-medium">
                       {doctor.user_name}
                     </p>
@@ -170,43 +203,128 @@ const NursingComponent = ({ data }) => {
                   {doctor.notes}
                 </p>
               </div>
-              {doctor.status !== "accepted" && (
-  doctor?.price === "0.00" ? (
-    <div className="flex justify-between my-4 text-sm">
-      <button
-        onClick={() => {
-          setCurrentDoctorId(doctor.id);
-          setTimeIsModalOpen(true);
-        }}
-        className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
-      >
-        قبول
-      </button>
-      <button
-        onClick={() => handleReject(doctor.id)}
-        className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
-      >
-        رفض
-      </button>
-    </div>
-  ) : (
-    <div className="flex justify-between my-4 text-sm">
-      <button
-        onClick={() => handleAccept(doctor.id)}
-        className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
-      >
-        قبول
-      </button>
-      <button
-        onClick={() => handleReject(doctor.id)}
-        className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
-      >
-        رفض
-      </button>
-    </div>
-  )
-)}
 
+              <div className="flex gap-4 flex-wrap">
+                {(doctor.payment_status == "paid" ||
+                  doctor.status == "completed") && (
+                  <div className="flex flex-col items-center gap-2 my-4 text-sm">
+                    <div className="size-9 rounded-full bg-[#F4F4F4] flex justify-center items-center">
+                      <img
+                        alt="paid Icon"
+                        width={20}
+                        height={20}
+                        src={paidIcon}
+                      />
+                    </div>
+                    <p>تم الدفع</p>
+                  </div>
+                )}
+                {doctor.status == "in_the_way" && (
+                  <div className="flex flex-col items-center gap-2 my-4 text-sm">
+                    <div className="size-9 rounded-full bg-[#F4F4F4] flex justify-center items-center">
+                      <img
+                        alt="paid Icon"
+                        width={20}
+                        height={20}
+                        src={intheWay}
+                      />
+                    </div>
+                    <p>في الطريق</p>
+                  </div>
+                )}
+                {doctor.status == "completed" && (
+                  <div className="flex flex-col items-center gap-2 my-4 text-sm">
+                    <div className="size-9 rounded-full bg-[#F4F4F4] flex justify-center items-center">
+                      <img
+                        alt="paid Icon"
+                        width={20}
+                        height={20}
+                        src={doneIcon}
+                      />
+                    </div>
+                    <p>الزيارة تمت</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Status Update Form */}
+              {(doctor.status === "accepted" ||
+                doctor.status === "in_the_way") && (
+                <div className="flex flex-col gap-4 p-4">
+                  <div className="flex gap-4">
+                    {doctor.status !== "in_the_way" && (
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={statuses[doctor.id] === "in_the_way"}
+                          onChange={() =>
+                            handleCheckboxChange(doctor.id, "in_the_way")
+                          }
+                          className="h-5 w-5 InputPrimaryChecked"
+                        />
+                        في الطريق
+                      </label>
+                    )}
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={statuses[doctor.id] === "completed"}
+                        onChange={() =>
+                          handleCheckboxChange(doctor.id, "completed")
+                        }
+                        className="h-5 w-5 InputPrimaryChecked"
+                      />
+                      الزيارة تمت
+                    </label>
+                  </div>
+                  <button
+                    onClick={() => handleStatusChange(doctor.id)}
+                    disabled={updateVisitStatusMutation.isLoading}
+                    className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg px-4 py-3 w-full"
+                  >
+                    {updateVisitStatusMutation.isLoading
+                      ? "جاري التحديث..."
+                      : "تحديث الحالة"}
+                  </button>
+                </div>
+              )}
+
+
+              {doctor.status == "pending" &&
+                (doctor?.price === "0.00" ? (
+                  <div className="flex justify-between my-4 text-sm">
+                    <button
+                      onClick={() => {
+                        setCurrentDoctorId(doctor.id);
+                        setTimeIsModalOpen(true);
+                      }}
+                      className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
+                    >
+                      قبول
+                    </button>
+                    <button
+                      onClick={() => handleReject(doctor.id)}
+                      className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
+                    >
+                      رفض
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex justify-between my-4 text-sm">
+                    <button
+                      onClick={() => handleAccept(doctor.id)}
+                      className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
+                    >
+                      قبول
+                    </button>
+                    <button
+                      onClick={() => handleReject(doctor.id)}
+                      className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
+                    >
+                      رفض
+                    </button>
+                  </div>
+                ))}
             </div>
           ))
         ) : (

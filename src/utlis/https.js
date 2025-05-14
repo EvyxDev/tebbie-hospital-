@@ -336,6 +336,40 @@ export const updateHomeVisit = async ({
     throw error;
   }
 };
+export const updateHomeStatus = async ({
+  token,
+  home_visit_id,
+  status,
+}) => {
+  const payload = {
+    home_visit_id,
+    status,
+  };
+
+  try {
+    const response = await fetch(`${API_URL}/hospital/v1/update-home-visit-status`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.msg || "An error occurred while updating the Hospital"
+      );
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
 export const getRefunds = async ({ token }) => {
   try {
     const response = await fetch(`${API_URL}/hospital/v1/get-refund`, {

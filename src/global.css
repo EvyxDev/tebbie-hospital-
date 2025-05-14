@@ -42,6 +42,38 @@
   transition: background-color 0.3s ease;
 }
 
+
+.InputPrimaryChecked {
+  appearance: none;
+  border: 2px solid #02A09B;
+  border-radius: 20%;
+  width: 18px;
+  height: 18px;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.InputPrimaryChecked:checked {
+  border-color: #02A09B;
+}
+.InputPrimaryChecked:hover{
+  background-color: #D9D9D9;
+}
+
+.InputPrimaryChecked:checked::before {
+  content: '\2714';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 800;
+  font-size: 14px;
+  color: #02A09B
+}
+
 ::-webkit-scrollbar {
   display: none;
 }
@@ -49,4 +81,5 @@
 * {
   scrollbar-width: none;
   -ms-overflow-style: none;
+  font-family: "Alexandria", "Tajawal", sans-serif !important;
 }

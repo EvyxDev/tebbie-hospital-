@@ -9,7 +9,7 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
 
 const links = [
   { label: "الرئيسية", href: "/" },
-  { label: "زيارة منزلية", href: "/home-visit" },
+  { label: "الزيارات منزلية", href: "/home-visit" },
   { label: "المحفظة", href: "/wallet" },
   { label: "المحفظة", href: "/wallet/" },
 ];
