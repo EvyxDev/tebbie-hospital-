@@ -247,8 +247,9 @@ const PhysiotherapyComponent = ({ data }) => {
               </div>
 
               {/* Status Update Form */}
-              {(doctor.status === "accepted" ||
-                doctor.status === "in_the_way") && (
+                          {doctor.payment_status == "paid" && (
+  doctor.status === "accepted" ||
+                doctor.status === "in_the_way"  ) && (
                 <div className="flex flex-col gap-4 p-4">
                   <div className="flex gap-4">
                     {doctor.status !== "in_the_way" && (
@@ -286,7 +287,9 @@ const PhysiotherapyComponent = ({ data }) => {
                       : "تحديث الحالة"}
                   </button>
                 </div>
-              )}
+              
+
+)}
 
               {doctor.status == "pending" && (
   doctor?.price === "0.00" ? (

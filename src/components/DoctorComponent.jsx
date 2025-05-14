@@ -249,10 +249,9 @@ const DoctorComponent = ({ data }) => {
                   </div>
                 )}
               </div>
-
-              {/* Status Update Form */}
-              {(doctor.status === "accepted" ||
-                doctor.status === "in_the_way") && (
+{doctor.payment_status == "paid" && (
+  doctor.status === "accepted" ||
+                doctor.status === "in_the_way"  ) && (
                 <div className="flex flex-col gap-4 p-4">
                   <div className="flex gap-4">
                     {doctor.status !== "in_the_way" && (
@@ -290,7 +289,11 @@ const DoctorComponent = ({ data }) => {
                       : "تحديث الحالة"}
                   </button>
                 </div>
-              )}
+              
+
+)}
+              {/* Status Update Form */}
+            
               {doctor.status == "pending" &&
                 (doctor?.price === "0.00" ? (
                   <div className="flex justify-between my-4 text-sm">
