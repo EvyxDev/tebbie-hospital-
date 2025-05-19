@@ -154,6 +154,9 @@ const NursingComponent = ({ data }) => {
                       {doctor.date}
                     </span>
                   </div>
+                   {doctor.service_type && (
+                    <p className="text-sm font-medium text-start"> نوع الخدمة : {doctor.service_type}</p>
+                  )}
                   <div className="flex gap-2 text-[#33A9C5] text-lg underline w-full my-4 flex-wrap">
                     {doctor.files.map((file, index) => (
                       <a

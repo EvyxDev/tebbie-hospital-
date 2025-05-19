@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import {
   format,
   startOfMonth,
@@ -18,7 +18,7 @@ const token = localStorage.getItem("authToken");
 
 const WalletDetails = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-    const [selectedRange, setSelectedRange] = useState({
+  const [selectedRange, setSelectedRange] = useState({
     start: null,
     end: null,
   });
@@ -64,7 +64,6 @@ const WalletDetails = () => {
           : null,
         end: selectedRange.end ? format(selectedRange.end, "yyyy-MM-dd") : null,
       }),
-    enabled: !!selectedRange.start && !!selectedRange.end,
   });
 
   const totalAmount = walletData
@@ -72,7 +71,7 @@ const WalletDetails = () => {
         minimumFractionDigits: 0,
       }).format(
         walletData.reduce(
-          (acc, booking) => acc + parseFloat(booking.price || 0),
+          (acc, transaction) => acc + parseFloat(transaction.price || 0),
           0
         )
       )
@@ -89,6 +88,18 @@ const WalletDetails = () => {
       </div>
     );
   }
+
+  const transactions = walletData || [];
+  const filteredTransactions =
+    selectedRange.start && selectedRange.end
+      ? transactions.filter((transaction) => {
+          const transactionDate = transaction.created_at;
+          const startDate = format(selectedRange.start, "yyyy-MM-dd");
+          const endDate = format(selectedRange.end, "yyyy-MM-dd");
+          return transactionDate >= startDate && transactionDate <= endDate;
+        })
+      : transactions;
+
   return (
     <div className="flex flex-col overflow-scroll">
       <div className="flex flex-col h-screen">
@@ -111,8 +122,8 @@ const WalletDetails = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-7 gap-2 text-center font-bold text-gray-600">
-            {["أحد", "اثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"].map(
+          <div className="grid grid-cols-7 gap-2 text-center font-bold text-gray-600 text-xs">
+            {["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"].map(
               (day) => (
                 <div key={day}>{day}</div>
               )
@@ -127,6 +138,11 @@ const WalletDetails = () => {
             ))}
 
             {days.map((day) => {
+              const dayKey = format(day, "yyyy-MM-dd");
+              const transactionsForDay = transactions.filter(
+                (transaction) => transaction.created_at === dayKey
+              );
+
               const isStartDay =
                 selectedRange.start &&
                 day.getTime() === selectedRange.start.getTime();
@@ -141,21 +157,33 @@ const WalletDetails = () => {
 
               return (
                 <div
-                  key={format(day, "yyyy-MM-dd")}
-                  className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer ${
-                    isStartDay
-                      ? "bg-blue-200 border-2 border-blue-300"
-                      : isEndDay
-                      ? "bg-blue-200 border-2 border-blue-300"
-                      : isInRange
-                      ? "bg-blue-100"
-                      : "bg-white"
-                  }`}
+                  key={dayKey}
+                  className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer
+                    ${transactionsForDay.length > 0 ? "bg-green-100" : ""}
+                    ${isStartDay ? "bg-blue-200 border-2 border-blue-300" : ""}
+                    ${isEndDay ? "bg-blue-200 border-2 border-blue-300" : ""}
+                    ${isInRange ? "bg-blue-100" : ""}
+                    ${
+                      transactionsForDay.length > 0 && (isStartDay || isEndDay)
+                        ? "border-green-500"
+                        : ""
+                    }
+                  `}
                   onClick={() => handleDayClick(day)}
                 >
                   <span className="font-bold text-gray-800">
                     {format(day, "d")}
                   </span>
+                  {transactionsForDay.length > 0 && (
+                    <div className="absolute bottom-1 flex gap-1">
+                      {transactionsForDay.slice(0, 3).map((_, i) => (
+                        <span
+                          key={i}
+                          className="w-1.5 h-1.5 bg-green-500 rounded-full"
+                        ></span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -169,7 +197,7 @@ const WalletDetails = () => {
               الاجمالى {totalAmount} د.ل
             </div>
           </div>
-          <WalletData walletData={walletData} />
+          <WalletData walletData={filteredTransactions} />
         </div>
       </div>
     </div>

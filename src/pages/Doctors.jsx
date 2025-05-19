@@ -8,7 +8,6 @@ import { Link, useParams } from "react-router-dom";
 const Doctors = () => {
   const token = localStorage.getItem("authToken");
 const {Id} =useParams()
-console.log(Id)
   const {
     data: doctorsData,
     error,

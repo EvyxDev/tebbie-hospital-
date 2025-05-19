@@ -1,15 +1,15 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns"; // Add this import
 import SwitchDoctor from "./SwitchDoctor";
 import { attendanceDoctor } from "../utlis/https";
 
-const BookingDataDoctor = ({ filteredBookings, selectedDate }) => {
-  const doctorId = filteredBookings[0]?.doctor?.id;
-  const status = filteredBookings[0]?.status;
-  const date = filteredBookings[0]?.date;
-console.log(filteredBookings)
-  const [attendanceStatus, setAttendanceStatus] = useState();
+const BookingDataDoctor = ({ filteredBookings, selectedDate, doctorId }) => {
+
+
+  const date = filteredBookings[0]?.date || format(selectedDate, "yyyy-MM-dd");
+  const [attendanceStatus, setAttendanceStatus] = useState(false);
   const queryClient = useQueryClient();
   const token = localStorage.getItem("authToken");
 
@@ -18,28 +18,23 @@ console.log(filteredBookings)
     onSuccess: () => {
       queryClient.invalidateQueries("doctor-attendance");
       alert("تم تأكيد غياب الدكتور بنجاح");
-      setAttendanceStatus("");
+      setAttendanceStatus(false);
     },
     onError: (error) => {
       console.error("Error assigning specialization:", error);
-      setAttendanceStatus("");
-
+      setAttendanceStatus(false);
       alert("حدث خطأ أثناء تأكيد غياب الدكتور");
     },
   });
 
-
   const handleAttendanceToggle = (checked) => {
-    if (status === "pending") {
-      setAttendanceStatus(checked);
-      mutation.mutate({
-        token: token,
-        doctor_id: doctorId,
-        date: date,
-      });
-    } else {
-      alert("لا يمكن تغيير حالة الحضور لأن الحالة تم إلغاؤها");
-    }
+    setAttendanceStatus(checked);
+    mutation.mutate({
+      token: token,
+      doctor_id: doctorId,
+      date: date,
+      status: checked ? "absent" : "present",
+    });
   };
 
   const isFutureDate = (date) => {
@@ -48,12 +43,19 @@ console.log(filteredBookings)
     return selectedDateTime > now;
   };
 
+  const isDoctorAbsent = filteredBookings.some(
+    (booking) =>
+      booking.status === "cancelled" && booking.reason === "doctor_absent"
+  );
+  const hasCancelledBooking = filteredBookings.some(
+    (booking) => booking.status === "cancelled"
+  );
   return (
     <>
       <div className="flex gap-1 justify-between items-end">
         <h2 className="font-medium">حجوزات اليوم</h2>
         <div className="flex gap-1 justify-end items-end">
-          {isFutureDate(selectedDate) && filteredBookings.length > 0 ? (
+          {isFutureDate(selectedDate) && !hasCancelledBooking ? (
             <>
               <p className="text-[#8F9BB3] text-md">تأكيد غياب الدكتور</p>
               <SwitchDoctor
@@ -61,19 +63,22 @@ console.log(filteredBookings)
                 onChange={handleAttendanceToggle}
               />
             </>
-          ) : isFutureDate(selectedDate) ? (
-            <p className="text-gray-500">لا توجد حجوزات لهذا اليوم</p>
           ) : (
-            <div className="text-red-500 flex justify-center items-center gap-2">
-              <p>الموعد قد مر</p>
-            </div>
+            isFutureDate(selectedDate) && hasCancelledBooking
           )}
         </div>
       </div>
 
-      {filteredBookings.length > 0 ? (
+      {isDoctorAbsent ? (
+        <p className="text-red-500 text-center my-4">
+          الدكتور معتذر عن الحضور لهذا اليوم
+        </p>
+      ) : filteredBookings.length > 0 && !isDoctorAbsent ? (
         filteredBookings.map((booking) => (
-          <div key={booking.id} className="my-4 shadow-sm bg-white rounded-lg py-2">
+          <div
+            key={booking.id}
+            className="my-4 shadow-sm bg-white rounded-lg py-2"
+          >
             <div className="p-4 rounded-lg">
               <span className="flex gap-2">
                 <div className="InputPrimary mt-1" />
@@ -86,6 +91,9 @@ console.log(filteredBookings)
                 <h3 className="text-[#8F9BB3] text-md">
                   {booking.doctor?.name || "غير متوفر"}
                 </h3>
+                {booking.status === "cancelled" && (
+                  <p className="text-red-500">تم إلغاء الحجز</p>
+                )}
               </div>
             </div>
           </div>

@@ -156,7 +156,9 @@ const DoctorComponent = ({ data }) => {
                       {doctor.date}
                     </span>
                   </div>
-
+                  {doctor.service_type && (
+                    <p className="text-sm font-medium text-start"> نوع الخدمة : {doctor.service_type}</p>
+                  )}
                   <div className="flex gap-2 text-[#33A9C5] text-lg underline w-full my-4 flex-wrap">
                     {doctor.files.map((file, index) => (
                       <a
@@ -249,51 +251,49 @@ const DoctorComponent = ({ data }) => {
                   </div>
                 )}
               </div>
-{doctor.payment_status == "paid" && (
-  doctor.status === "accepted" ||
-                doctor.status === "in_the_way"  ) && (
-                <div className="flex flex-col gap-4 p-4">
-                  <div className="flex gap-4">
-                    {doctor.status !== "in_the_way" && (
+              {doctor.payment_status == "paid" &&
+                (doctor.status === "accepted" ||
+                  doctor.status === "in_the_way") && (
+                  <div className="flex flex-col gap-4 p-4">
+                    <div className="flex gap-4">
+                      {doctor.status !== "in_the_way" && (
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={statuses[doctor.id] === "in_the_way"}
+                            onChange={() =>
+                              handleCheckboxChange(doctor.id, "in_the_way")
+                            }
+                            className="h-5 w-5 InputPrimaryChecked"
+                          />
+                          في الطريق
+                        </label>
+                      )}
                       <label className="flex items-center gap-2">
                         <input
                           type="checkbox"
-                          checked={statuses[doctor.id] === "in_the_way"}
+                          checked={statuses[doctor.id] === "completed"}
                           onChange={() =>
-                            handleCheckboxChange(doctor.id, "in_the_way")
+                            handleCheckboxChange(doctor.id, "completed")
                           }
                           className="h-5 w-5 InputPrimaryChecked"
                         />
-                        في الطريق
+                        الزيارة تمت
                       </label>
-                    )}
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={statuses[doctor.id] === "completed"}
-                        onChange={() =>
-                          handleCheckboxChange(doctor.id, "completed")
-                        }
-                        className="h-5 w-5 InputPrimaryChecked"
-                      />
-                      الزيارة تمت
-                    </label>
+                    </div>
+                    <button
+                      onClick={() => handleStatusChange(doctor.id)}
+                      disabled={updateVisitStatusMutation.isLoading}
+                      className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg px-4 py-3 w-full"
+                    >
+                      {updateVisitStatusMutation.isLoading
+                        ? "جاري التحديث..."
+                        : "تحديث الحالة"}
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleStatusChange(doctor.id)}
-                    disabled={updateVisitStatusMutation.isLoading}
-                    className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg px-4 py-3 w-full"
-                  >
-                    {updateVisitStatusMutation.isLoading
-                      ? "جاري التحديث..."
-                      : "تحديث الحالة"}
-                  </button>
-                </div>
-              
-
-)}
+                )}
               {/* Status Update Form */}
-            
+
               {doctor.status == "pending" &&
                 (doctor?.price === "0.00" ? (
                   <div className="flex justify-between my-4 text-sm">

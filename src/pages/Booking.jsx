@@ -120,8 +120,8 @@ const Booking = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-7 gap-2 text-center font-bold text-gray-600">
-            {["أحد", "اثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"].map(
+         <div className="grid grid-cols-7 gap-2 text-center font-bold text-gray-600 text-xs">
+            {["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"].map(
               (day) => (
                 <div key={day}>{day}</div>
               )

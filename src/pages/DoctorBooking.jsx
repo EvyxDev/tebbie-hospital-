@@ -15,6 +15,7 @@ import {
 } from "date-fns";
 import { IoChevronForward, IoChevronBack } from "react-icons/io5";
 import BookingDataDoctor from "../components/BookingDataDoctor";
+
 const DoctorBooking = () => {
   const token = localStorage.getItem("authToken");
   const { doctorId } = useParams();
@@ -32,7 +33,6 @@ const DoctorBooking = () => {
         id: doctorId,
       }),
   });
-
   const bookings = doctorsDetails?.bookings || [];
 
   const filteredBookings = selectedDate
@@ -41,7 +41,7 @@ const DoctorBooking = () => {
       )
     : bookings;
 
-    const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
   const startDay = startOfMonth(currentDate);
   const endDay = endOfMonth(currentDate);
   const days = eachDayOfInterval({ start: startDay, end: endDay });
@@ -84,12 +84,18 @@ const DoctorBooking = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-7 gap-2 text-center font-bold text-gray-600">
-              {["أحد", "اثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"].map(
-                (day) => (
-                  <div key={day}>{day}</div>
-                )
-              )}
+            <div className="grid grid-cols-7 gap-2 text-center font-bold text-gray-600 text-xs">
+              {[
+                "الأحد",
+                "الاثنين",
+                "الثلاثاء",
+                "الأربعاء",
+                "الخميس",
+                "الجمعة",
+                "السبت",
+              ].map((day) => (
+                <div key={day}>{day}</div>
+              ))}
             </div>
 
             <div className="grid grid-cols-7 gap-2 mt-4">
@@ -149,6 +155,7 @@ const DoctorBooking = () => {
                   <BookingDataDoctor
                     filteredBookings={filteredBookings}
                     selectedDate={selectedDate}
+                    doctorId={doctorId}
                   />
                 </div>
               ) : (
