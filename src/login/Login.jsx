@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { IoMdCheckmark } from "react-icons/io";
 import { useFormik } from "formik";
@@ -63,7 +63,6 @@ const Login = () => {
         } else {
           formik.setFieldError("email", "خطأ في تسجيل الدخول. حاول مرة أخرى.");
         }
-        console.error("Error:", error.message);
         
       }
       finally {
