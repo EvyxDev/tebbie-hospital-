@@ -14,7 +14,6 @@ import { getWallet } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
 import WalletData from "../components/WalletData";
 
-const token = localStorage.getItem("authToken");
 
 const WalletDetails = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -49,7 +48,7 @@ const WalletDetails = () => {
       setIsSelecting(false);
     }
   };
-
+const token = localStorage.getItem("authToken");
   const {
     data: walletData,
     isLoading,
