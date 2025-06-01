@@ -5,9 +5,12 @@ import { format } from "date-fns"; // Add this import
 import SwitchDoctor from "./SwitchDoctor";
 import { attendanceDoctor } from "../utlis/https";
 
-const BookingDataDoctor = ({ filteredBookings, selectedDate, doctorId }) => {
-
-
+const BookingDataDoctor = ({
+  filteredBookings,
+  selectedDate,
+  doctorId,
+  doctorsDetails,
+}) => {
   const date = filteredBookings[0]?.date || format(selectedDate, "yyyy-MM-dd");
   const [attendanceStatus, setAttendanceStatus] = useState(false);
   const queryClient = useQueryClient();
@@ -50,12 +53,15 @@ const BookingDataDoctor = ({ filteredBookings, selectedDate, doctorId }) => {
   const hasCancelledBooking = filteredBookings.some(
     (booking) => booking.status === "cancelled"
   );
+  const isCanceledDay = doctorsDetails?.canceled_days?.includes(date);
   return (
     <>
       <div className="flex gap-1 justify-between items-end">
         <h2 className="font-medium">حجوزات اليوم</h2>
         <div className="flex gap-1 justify-end items-end">
-          {isFutureDate(selectedDate) && !hasCancelledBooking ? (
+          {isFutureDate(selectedDate) &&
+          !hasCancelledBooking &&
+          !isCanceledDay ? (
             <>
               <p className="text-[#8F9BB3] text-md">تأكيد غياب الدكتور</p>
               <SwitchDoctor

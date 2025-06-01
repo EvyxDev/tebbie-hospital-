@@ -34,7 +34,6 @@ const DoctorBooking = () => {
       }),
   });
   const bookings = doctorsDetails?.bookings || [];
-
   const filteredBookings = selectedDate
     ? bookings.filter(
         (booking) => booking.date === format(selectedDate, "yyyy-MM-dd")
@@ -111,7 +110,7 @@ const DoctorBooking = () => {
                   (booking) => booking.date === dayKey
                 );
                 const isCanceled =
-                  doctorsDetails?.canceled_days?.includes(dayKey); // التحقق مما إذا كان اليوم في canceled_days
+                  doctorsDetails?.canceled_days?.includes(dayKey);
                 const isSelected =
                   selectedDate && day.getTime() === selectedDate.getTime();
 
@@ -121,7 +120,7 @@ const DoctorBooking = () => {
                     className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer
       ${bookingsForDay.length > 0 ? "bg-green-100" : ""}
       ${isSelected ? "bg-blue-200 border-2 border-blue-300" : ""}
-      ${isCanceled ? "bg-red-100" : ""}`} // إضافة خلفية حمراء للأيام المعتذر عنها
+      ${isCanceled ? "bg-red-100" : ""}`}
                     onClick={() => handleDayClick(day)}
                   >
                     <span className="font-bold text-gray-800">
@@ -160,6 +159,7 @@ const DoctorBooking = () => {
                     filteredBookings={filteredBookings}
                     selectedDate={selectedDate}
                     doctorId={doctorId}
+                    doctorsDetails={doctorsDetails}
                   />
                 </div>
               ) : (
