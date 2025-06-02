@@ -20,7 +20,7 @@ const BookingDataDoctor = ({
     mutationFn: attendanceDoctor,
     onSuccess: () => {
       queryClient.invalidateQueries("doctor-attendance");
-      alert("تم تأكيد غياب الدكتور بنجاح");
+      alert("تم تأكيد العملية  بنجاح");
       setAttendanceStatus(false);
     },
     onError: (error) => {
@@ -70,7 +70,13 @@ const BookingDataDoctor = ({
               />
             </>
           ) : (
-            isFutureDate(selectedDate) && hasCancelledBooking
+              <>
+              <p className="text-[#8F9BB3] text-md">تأكيد حضور الدكتور</p>
+              <SwitchDoctor
+                checked={attendanceStatus}
+                onChange={handleAttendanceToggle}
+              />
+            </>
           )}
         </div>
       </div>

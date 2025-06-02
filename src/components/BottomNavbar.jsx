@@ -5,14 +5,14 @@ import { IoWalletOutline } from "react-icons/io5";
 import { MdReviews } from "react-icons/md";
 
 const links = [
-  { label: "الرئيسية", href: "/", icon: <FaHome size={25} /> },
+  { label: "الرئيسية", href: "/", icon: <FaHome size={22} /> },
   {
     label: "الزيارات منزلية",
     href: "/home-visit",
-    icon: <LuNotepadText size={25} />,
+    icon: <LuNotepadText size={22} />,
   },
-  { label: "المحفظة", href: "/wallet", icon: <IoWalletOutline size={25} /> },
-  { label: "التقييمات", href: "/reviews", icon: <MdReviews size={25} /> },
+  { label: "المحفظة", href: "/wallet", icon: <IoWalletOutline size={22} /> },
+  { label: "التقييمات", href: "/reviews", icon: <MdReviews size={22} /> },
 
 ];
 
@@ -37,7 +37,7 @@ const BottomNavbar = () => {
                 <span>{link.icon}</span>
                 <span
                   className={`text-sm transition-opacity duration-300 whitespace-nowrap ${
-                    isActive ? "opacity-100" : "opacity-0"
+                    isActive ? "block" : "opacity-0 hidden"
                   }`}
                 >
                   {link.label}

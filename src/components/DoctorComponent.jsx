@@ -40,7 +40,10 @@ const DoctorComponent = ({ data }) => {
       alert("حدث خطأ أثناء تحديث الزيارة");
     },
   });
-
+const formatPhoneNumber = (phone) => {
+    if (!phone) return phone;
+    return phone.startsWith("0") ? phone : `0${phone}`;
+  };
   const handleCheckboxChange = (home_visit_id, newStatus) => {
     setStatuses((prev) => ({
       ...prev,
@@ -121,13 +124,13 @@ const DoctorComponent = ({ data }) => {
               >
                 <div className="my-4 flex flex-col gap-2 w-auto shrink-0  ">
                   <img
-                    className="object-cover w-24 h-24 rounded-full shrink-0 text-md"
+                    className="object-cover size-20 rounded-full shrink-0 text-md"
                     alt={doctor.user_name}
                     src={doctor.user_image || mainLogo}
                     onError={(e) => (e.target.src = mainLogo)}
                   />
                   <p className="text-sm font-medium">
-                    الدكتور المطلوب :
+                    الدكتور :
                     {doctor.human_type === "0" ? "ذكر" : "أنثى"}
                   </p>
                 </div>
@@ -141,9 +144,9 @@ const DoctorComponent = ({ data }) => {
                       {doctor.price} دينار
                     </p>
                   </div>
-                  <div className="my-4 md:text-md text-sm font-semibold  flex flex-col gap-2 text-center items-start">
-                    <div className="flex gap-2 justify-center items-center">
-                      <div className="relative bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] w-3 h-3 rounded-full">
+                  <div className="my-4 md:text-sm text-xs font-semibold  flex flex-col gap-2 text-center items-start">
+                    <div className="flex gap-1 justify-center items-center">
+                      <div className="relative bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] w-3 h-3 rounded-full shrink-0">
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                         </div>
@@ -188,8 +191,8 @@ const DoctorComponent = ({ data }) => {
                       </a>
                     </div>
 
-                    <a
-                      href={`tel:${doctor.user_phone}`}
+                 <a
+                      href={`tel:${formatPhoneNumber(doctor.user_phone)}`}
                       className="cursor-pointer flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2 w-auto"
                     >
                       <IoCall size={18} />

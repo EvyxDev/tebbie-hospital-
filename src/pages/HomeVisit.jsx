@@ -11,7 +11,12 @@ import LoaderComponent from "../components/LoaderComponent";
 const HomeVisit = () => {
   const token = localStorage.getItem("authToken");
 
-  const { data: HomeVisitData, isLoading, error, isError } = useQuery({
+  const {
+    data: HomeVisitData,
+    isLoading,
+    error,
+    isError,
+  } = useQuery({
     queryKey: ["home-visit"],
     queryFn: () => getHomeVisit({ token }),
   });
@@ -38,7 +43,8 @@ const HomeVisit = () => {
   if (HomeVisitData?.success && Array.isArray(HomeVisitData.data)) {
     doctorData = HomeVisitData.data.filter((item) => item.type === "1") || [];
     nursingData = HomeVisitData.data.filter((item) => item.type === "2") || [];
-    physiotherapyData = HomeVisitData.data.filter((item) => item.type === "3") || [];
+    physiotherapyData =
+      HomeVisitData.data.filter((item) => item.type === "3") || [];
   }
 
   const handleTabChange = (event, newValue) => {
@@ -50,14 +56,13 @@ const HomeVisit = () => {
     <NursingComponent data={nursingData} />,
     <PhysiotherapyComponent data={physiotherapyData} />,
   ];
-
   return (
     <Box className="max-w-md mx-auto mt-6">
- {!HomeVisitData?.success && (
-  <div className="text-center h-[50vh] flex justify-center items-center text-xl text-gray-600 my-4">
-    {HomeVisitData?.message || "عذرًا، لا توجد زيارات منزلية متاحه"}
-  </div>
-)}
+      {!HomeVisitData?.success && (
+        <div className="text-center h-[50vh] flex justify-center items-center text-xl text-gray-600 my-4">
+          {HomeVisitData?.message || "عذرًا، لا توجد زيارات منزلية متاحه"}
+        </div>
+      )}
 
       {HomeVisitData?.success && (
         <>

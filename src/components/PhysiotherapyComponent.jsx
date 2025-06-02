@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import  { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Field, Form, Formik } from "formik";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -88,7 +88,10 @@ const PhysiotherapyComponent = ({ data }) => {
   const toggleDetails = (id) => {
     setVisibleDoctorId((prevId) => (prevId === id ? null : id));
   };
-
+  const formatPhoneNumber = (phone) => {
+    if (!phone) return phone;
+    return phone.startsWith("0") ? phone : `0${phone}`;
+  };
   const modalVariants = {
     hidden: { y: "100%", opacity: 0 },
     visible: { y: 0, opacity: 1 },
@@ -96,7 +99,7 @@ const PhysiotherapyComponent = ({ data }) => {
   };
 
   const formatTime = (time) => {
-    if (!time) return ""; 
+    if (!time) return "";
     const [hours, minutes] = time.split(":").slice(0, 2);
     const hour = parseInt(hours, 10);
     const period = hour < 12 ? "ص" : "م";
@@ -119,13 +122,13 @@ const PhysiotherapyComponent = ({ data }) => {
               >
                 <div className="my-4 flex flex-col gap-2 w-auto shrink-0  ">
                   <img
-                    className="object-cover w-24 h-24 rounded-full shrink-0 text-md"
+                    className="object-cover size-20 rounded-full shrink-0 text-md"
                     alt={doctor.user_name}
                     src={doctor.user_image || mainLogo}
                     onError={(e) => (e.target.src = mainLogo)}
                   />
                   <p className="text-sm font-medium">
-                    الدكتور المطلوب :
+                    الدكتور:
                     {doctor.human_type === "0" ? "ذكر" : "أنثى"}
                   </p>
                 </div>
@@ -139,9 +142,9 @@ const PhysiotherapyComponent = ({ data }) => {
                       {doctor.price} دينار
                     </p>
                   </div>
-                  <div className="my-4 md:text-md text-sm font-semibold  flex flex-col gap-2 text-center items-start">
-                    <div className="flex gap-2 justify-center items-center">
-                      <div className="relative bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] w-3 h-3 rounded-full">
+                  <div className="my-4 md:text-sm text-xs font-semibold  flex flex-col gap-2 text-center items-start">
+                    <div className="flex gap-1 justify-center items-center">
+                      <div className="relative bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] w-3 h-3 rounded-full shrink-0">
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
                         </div>
@@ -154,8 +157,11 @@ const PhysiotherapyComponent = ({ data }) => {
                       {doctor.date}
                     </span>
                   </div>
-                   {doctor.service_type && (
-                    <p className="text-sm font-medium text-start"> نوع الخدمة : {doctor.service_type}</p>
+                  {doctor.service_type && (
+                    <p className="text-sm font-medium text-start">
+                      {" "}
+                      نوع الخدمة : {doctor.service_type}
+                    </p>
                   )}
                   <div className="flex gap-2 text-[#33A9C5] text-lg underline w-full my-4 flex-wrap">
                     {doctor.files.map((file, index) => (
@@ -186,7 +192,7 @@ const PhysiotherapyComponent = ({ data }) => {
                     </div>
 
                     <a
-                      href={`tel:${doctor.user_phone}`}
+                      href={`tel:${formatPhoneNumber(doctor.user_phone)}`}
                       className="cursor-pointer flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2 w-auto"
                     >
                       <IoCall size={18} />
@@ -206,7 +212,7 @@ const PhysiotherapyComponent = ({ data }) => {
                   {doctor.notes}
                 </p>
               </div>
- <div className="flex gap-4 flex-wrap">
+              <div className="flex gap-4 flex-wrap">
                 {(doctor.payment_status == "paid" ||
                   doctor.status == "completed") && (
                   <div className="flex flex-col items-center gap-2 my-4 text-sm">
@@ -250,86 +256,83 @@ const PhysiotherapyComponent = ({ data }) => {
               </div>
 
               {/* Status Update Form */}
-                          {doctor.payment_status == "paid" && (
-  doctor.status === "accepted" ||
-                doctor.status === "in_the_way"  ) && (
-                <div className="flex flex-col gap-4 p-4">
-                  <div className="flex gap-4">
-                    {doctor.status !== "in_the_way" && (
+              {doctor.payment_status == "paid" &&
+                (doctor.status === "accepted" ||
+                  doctor.status === "in_the_way") && (
+                  <div className="flex flex-col gap-4 p-4">
+                    <div className="flex gap-4">
+                      {doctor.status !== "in_the_way" && (
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={statuses[doctor.id] === "in_the_way"}
+                            onChange={() =>
+                              handleCheckboxChange(doctor.id, "in_the_way")
+                            }
+                            className="h-5 w-5 InputPrimaryChecked"
+                          />
+                          في الطريق
+                        </label>
+                      )}
                       <label className="flex items-center gap-2">
                         <input
                           type="checkbox"
-                          checked={statuses[doctor.id] === "in_the_way"}
+                          checked={statuses[doctor.id] === "completed"}
                           onChange={() =>
-                            handleCheckboxChange(doctor.id, "in_the_way")
+                            handleCheckboxChange(doctor.id, "completed")
                           }
                           className="h-5 w-5 InputPrimaryChecked"
                         />
-                        في الطريق
+                        الزيارة تمت
                       </label>
-                    )}
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={statuses[doctor.id] === "completed"}
-                        onChange={() =>
-                          handleCheckboxChange(doctor.id, "completed")
-                        }
-                        className="h-5 w-5 InputPrimaryChecked"
-                      />
-                      الزيارة تمت
-                    </label>
+                    </div>
+                    <button
+                      onClick={() => handleStatusChange(doctor.id)}
+                      disabled={updateVisitStatusMutation.isLoading}
+                      className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg px-4 py-3 w-full"
+                    >
+                      {updateVisitStatusMutation.isLoading
+                        ? "جاري التحديث..."
+                        : "تحديث الحالة"}
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleStatusChange(doctor.id)}
-                    disabled={updateVisitStatusMutation.isLoading}
-                    className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg px-4 py-3 w-full"
-                  >
-                    {updateVisitStatusMutation.isLoading
-                      ? "جاري التحديث..."
-                      : "تحديث الحالة"}
-                  </button>
-                </div>
-              
+                )}
 
-)}
-
-              {doctor.status == "pending" && (
-  doctor?.price === "0.00" ? (
-    <div className="flex justify-between my-4 text-sm">
-      <button
-        onClick={() => {
-          setCurrentDoctorId(doctor.id);
-          setTimeIsModalOpen(true);
-        }}
-        className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
-      >
-        قبول
-      </button>
-      <button
-        onClick={() => handleReject(doctor.id)}
-        className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
-      >
-        رفض
-      </button>
-    </div>
-  ) : (
-    <div className="flex justify-between my-4 text-sm">
-      <button
-        onClick={() => handleAccept(doctor.id)}
-        className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
-      >
-        قبول
-      </button>
-      <button
-        onClick={() => handleReject(doctor.id)}
-        className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
-      >
-        رفض
-      </button>
-    </div>
-  )
-)}
+              {doctor.status == "pending" &&
+                (doctor?.price === "0.00" ? (
+                  <div className="flex justify-between my-4 text-sm">
+                    <button
+                      onClick={() => {
+                        setCurrentDoctorId(doctor.id);
+                        setTimeIsModalOpen(true);
+                      }}
+                      className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
+                    >
+                      قبول
+                    </button>
+                    <button
+                      onClick={() => handleReject(doctor.id)}
+                      className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
+                    >
+                      رفض
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex justify-between my-4 text-sm">
+                    <button
+                      onClick={() => handleAccept(doctor.id)}
+                      className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-xl px-4 py-3 w-28"
+                    >
+                      قبول
+                    </button>
+                    <button
+                      onClick={() => handleReject(doctor.id)}
+                      className="text-[#EB5757] px-4 py-3 shadow-sm rounded-xl w-28"
+                    >
+                      رفض
+                    </button>
+                  </div>
+                ))}
             </div>
           ))
         ) : (
