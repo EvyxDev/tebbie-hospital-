@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getSpecializations } from "../utlis/https";
 import LoaderComponent from "../components/LoaderComponent";
 import { MdEdit } from "react-icons/md";
+import { CiEdit } from "react-icons/ci";
 
 const Dashboard = () => {
   const token = localStorage.getItem("authToken");
@@ -30,21 +31,27 @@ const Dashboard = () => {
 
   return (
     <section className="h-full flex flex-col my-8 w-full">
-      <Link
-        to="/home-visit-pricing"
-        className="py-1 my-4 flex items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-64"
-      >
-        <IoIosAdd size={35} />
-        تسعير خدمات الزيارة المنزلية
-      </Link>
-      
+      <div className="w-full flex gap-2">
+        <Link
+          to="/home-visit-pricing"
+          className="py-1 my-4 flex items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-64"
+        >
+          <IoIosAdd size={30} />
+          تسعير خدمات الزيارة المنزلية
+        </Link>
+        <Link to="/edit-service" className="py-1 my-4 flex gap-2 items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-auto shrink-0">
+         <CiEdit size={26} />
+          تعديل الخدمات 
+        </Link>
+      </div>
+
       {specializationData.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
           {specializationData.map((data) => (
             <Link
               to={`/specialization/${data.id}`}
               key={data.id}
-              state={{ clinicName: data.name , clinicId : data.id }}
+              state={{ clinicName: data.name, clinicId: data.id }}
               className="col-span-1 w-full bg-[#F3F3F3] flex-col flex gap-2 rounded-lg text-center justify-center items-center py-8 relative"
             >
               <div className="w-16">

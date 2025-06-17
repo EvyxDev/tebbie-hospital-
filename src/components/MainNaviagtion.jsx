@@ -49,6 +49,7 @@ const MainNavigation = () => {
 
       if (response.ok) {
         localStorage.removeItem("authToken");
+        localStorage.removeItem("hospital_id");
         navigate("/login");
       } else {
         console.error("Failed to log out:", response.statusText);

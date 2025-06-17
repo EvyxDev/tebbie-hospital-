@@ -21,6 +21,7 @@ import HomeVisitPricing from "./components/HomeVisitPricing";
 import Doctors from "./pages/Doctors";
 import DoctorBooking from "./pages/DoctorBooking";
 import NotFound from "./components/NotFound";
+import EditService from "./pages/EditService";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <Dashboard /> },
           { path: "home-visit", element: <HomeVisit /> },
+          { path: "edit-service", element: <EditService /> },
 
           {
             path: "wallet",

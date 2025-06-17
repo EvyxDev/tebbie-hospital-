@@ -668,3 +668,54 @@ export const getDoctorsBook = async ({ token ,id}) => {
     throw error;
   }
 };
+//home visist service
+export const getHomeVisitServices = async ({ token, id }) => {
+  try {
+    const response = await fetch(`${API_URL}/hospital/home-visit-services/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return data
+    } else {
+      throw new Error(data.message || "Failed to fetch home visit services");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+export const UpdateHomeVisitServices = async ({ token, hospital_id,service_id,price }) => {
+  const formdata = new FormData();
+  formdata.append("price", price);
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/edit/${hospital_id}/home-visit-services/${service_id}`,
+      {
+        method: "POST",
+        body: formdata,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.msg || "An error occurred while updating the home visit service"
+      );
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};

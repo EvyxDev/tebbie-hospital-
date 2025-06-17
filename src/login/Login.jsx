@@ -51,6 +51,8 @@ const Login = () => {
   
         if (data.success) {
           localStorage.setItem("authToken", data.data.token);
+          localStorage.setItem("hospital_id", data.data.hospital_id);
+
           navigate("/");
         } else {
           throw new Error(data.message || "خطأ في تسجيل الدخول");
