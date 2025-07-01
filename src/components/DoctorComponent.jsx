@@ -40,7 +40,7 @@ const DoctorComponent = ({ data }) => {
       alert("حدث خطأ أثناء تحديث الزيارة");
     },
   });
-const formatPhoneNumber = (phone) => {
+  const formatPhoneNumber = (phone) => {
     if (!phone) return phone;
     return phone.startsWith("0") ? phone : `0${phone}`;
   };
@@ -130,8 +130,7 @@ const formatPhoneNumber = (phone) => {
                     onError={(e) => (e.target.src = mainLogo)}
                   />
                   <p className="text-sm font-medium">
-                    الدكتور :
-                    {doctor.human_type === "0" ? "ذكر" : "أنثى"}
+                    الدكتور :{doctor.human_type === "0" ? "ذكر" : "أنثى"}
                   </p>
                 </div>
 
@@ -160,7 +159,10 @@ const formatPhoneNumber = (phone) => {
                     </span>
                   </div>
                   {doctor.service_type && (
-                    <p className="text-sm font-medium text-start"> نوع الخدمة : {doctor.service_type}</p>
+                    <p className="text-sm font-medium text-start">
+                      {" "}
+                      نوع الخدمة : {doctor.service_type}
+                    </p>
                   )}
                   <div className="flex gap-2 text-[#33A9C5] text-lg underline w-full my-4 flex-wrap">
                     {doctor.files.map((file, index) => (
@@ -191,7 +193,7 @@ const formatPhoneNumber = (phone) => {
                       </a>
                     </div>
 
-                 <a
+                    <a
                       href={`tel:${formatPhoneNumber(doctor.user_phone)}`}
                       className="cursor-pointer flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2 w-auto"
                     >
@@ -200,6 +202,11 @@ const formatPhoneNumber = (phone) => {
                   </div>
                 </div>
               </div>
+              {doctor?.is_rejected_by_user === 1 && (
+                <p className="text-red-500 text-sm my-2 text-start">
+                  تم الالغاء عن طريق المستخدم
+                </p>
+              )}
               <div
                 className={`transition-all overflow-hidden ${
                   visibleDoctorId === doctor.id
@@ -297,7 +304,7 @@ const formatPhoneNumber = (phone) => {
                 )}
               {/* Status Update Form */}
 
-              {doctor.status == "pending" &&
+              {doctor.status == "pending" || doctor?.is_rejected_by_user === 0 &&
                 (doctor?.price === "0.00" ? (
                   <div className="flex justify-between my-4 text-sm">
                     <button

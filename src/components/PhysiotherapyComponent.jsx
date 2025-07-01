@@ -200,6 +200,11 @@ const PhysiotherapyComponent = ({ data }) => {
                   </div>
                 </div>
               </div>
+              {doctor?.is_rejected_by_user === 1 && (
+                <p className="text-red-500 text-sm my-2 text-start">
+                  تم الالغاء عن طريق المستخدم
+                </p>
+              )}
               <div
                 className={`transition-all overflow-hidden ${
                   visibleDoctorId === doctor.id
@@ -298,7 +303,7 @@ const PhysiotherapyComponent = ({ data }) => {
                   </div>
                 )}
 
-              {doctor.status == "pending" &&
+              {doctor.status == "pending" || doctor?.is_rejected_by_user === 0 &&
                 (doctor?.price === "0.00" ? (
                   <div className="flex justify-between my-4 text-sm">
                     <button

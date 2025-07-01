@@ -55,7 +55,6 @@ const AddsSpecializ = ({
       waiting_time: values.waiting_time,
       slots: slots,
     };
-    console.log(slots);
     mutation.mutate(dataToSend);
     setIsModalOpen(false);
     setSlots([]);

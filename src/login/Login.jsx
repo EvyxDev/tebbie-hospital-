@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { IoMdCheckmark } from "react-icons/io";
 import { useFormik } from "formik";
@@ -6,6 +6,8 @@ import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { mainLogo } from "../assets";
 import { AiOutlineLoading } from "react-icons/ai";
+import { getToken } from "firebase/messaging";
+import { messaging } from "../firebase/config";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +15,29 @@ const Login = () => {
 
   const API_URL = import.meta.env.VITE_APP_API_URL;
   const navigate = useNavigate();
+  const getFCMToken = async () => {
+    try {
+      // Request notification permission
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        // Retrieve FCM token
+        const token = await getToken(messaging, {
+          vapidKey: import.meta.env.VITE_VAPID_KEY,
+        });
+
+        if (token) {
+          return token;
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } catch (err) {
+      console.error("Error retrieving FCM token:", err);
+      return null;
+    }
+  };
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
@@ -32,23 +57,27 @@ const Login = () => {
         .required("كلمة المرور مطلوبة"),
     }),
     onSubmit: async (values) => {
-      setLoading(true); 
+      setLoading(true);
 
       try {
+        const fcmToken = await getFCMToken();
         const response = await fetch(`${API_URL}/hospital/login-hospital`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(values),
+          body: JSON.stringify({
+            ...values,
+            fcm_token: fcmToken,
+          }),
         });
-  
+
         const data = await response.json();
-  
+
         if (!response.ok) {
           throw new Error(data.message || "خطأ في تسجيل الدخول");
         }
-  
+
         if (data.success) {
           localStorage.setItem("authToken", data.data.token);
           localStorage.setItem("hospital_id", data.data.hospital_id);
@@ -65,14 +94,11 @@ const Login = () => {
         } else {
           formik.setFieldError("email", "خطأ في تسجيل الدخول. حاول مرة أخرى.");
         }
-        
-      }
-      finally {
-        setLoading(false); 
+      } finally {
+        setLoading(false);
       }
     },
   });
-  
 
   return (
     <section className="h-screen flex flex-col justify-center items-center custom-radial-gradient p-4">
@@ -145,7 +171,6 @@ const Login = () => {
         >
           {loading ? (
             <AiOutlineLoading className="h-5 w-5 text-white animate-spin duration-75" />
-
           ) : (
             "تسجيل دخول"
           )}

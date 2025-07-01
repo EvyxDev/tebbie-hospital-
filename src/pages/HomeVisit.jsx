@@ -22,7 +22,7 @@ const HomeVisit = () => {
   });
 
   const [selectedTab, setSelectedTab] = useState(0);
-
+console.log(HomeVisitData)
   if (isLoading) {
     return <LoaderComponent />;
   }
@@ -50,7 +50,6 @@ const HomeVisit = () => {
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-
   const tabComponents = [
     <DoctorComponent data={doctorData} />,
     <NursingComponent data={nursingData} />,

@@ -15,7 +15,6 @@ const Refunds = () => {
     queryFn: () => getRefunds({ token }),
   });
 
-  console.log(refundsData);
 
   if (isLoading) {
     return <LoaderComponent />;

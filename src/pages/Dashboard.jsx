@@ -31,15 +31,15 @@ const Dashboard = () => {
 
   return (
     <section className="h-full flex flex-col my-8 w-full">
-      <div className="w-full flex gap-2">
+      <div className="w-full flex gap-2 flex-wrap my-4">
         <Link
           to="/home-visit-pricing"
-          className="py-1 my-4 flex items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-64"
+          className="py-1  flex items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-64"
         >
           <IoIosAdd size={30} />
           تسعير خدمات الزيارة المنزلية
         </Link>
-        <Link to="/edit-service" className="py-1 my-4 flex gap-2 items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-auto shrink-0">
+        <Link to="/edit-service" className="py-1  flex gap-2 items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-auto shrink-0">
          <CiEdit size={26} />
           تعديل الخدمات 
         </Link>

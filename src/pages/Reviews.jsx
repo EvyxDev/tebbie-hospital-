@@ -22,7 +22,6 @@ const Reviews = () => {
     queryKey: ["reviews"],
     queryFn: () => getreviews({ token }),
   });
-
   if (isLoading) {
     return <LoaderComponent />;
   }
@@ -30,7 +29,9 @@ const Reviews = () => {
   if (error) {
     return (
       <div className="h-screen w-full flex justify-center items-center text-2xl">
-        <p>Error: {error.message}</p>
+        <p className="text-red-500">
+          عزرا حدث خطأ ما !
+        </p>
       </div>
     );
   }
@@ -47,9 +48,9 @@ const Reviews = () => {
       </header>
       <div className="pt-20 ">
         <div className="grid gap-4">
-        {reviewsData && reviewsData.length > 0 ? (
+        {reviewsData && reviewsData?.length > 0 ? (
         <div className="grid gap-4">
-          {reviewsData.map((review) => (
+          {reviewsData?.map((review) => (
             <div
               key={review.id}
               className="flex items-start gap-4 border-[0.5px] shadow-sm rounded-2xl p-4"

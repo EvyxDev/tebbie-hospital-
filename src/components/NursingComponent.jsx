@@ -128,8 +128,7 @@ const NursingComponent = ({ data }) => {
                     onError={(e) => (e.target.src = mainLogo)}
                   />
                   <p className="text-sm font-medium">
-                  الدكتور :
-                    {doctor.human_type === "0" ? "ذكر" : "أنثى"}
+                    الدكتور :{doctor.human_type === "0" ? "ذكر" : "أنثى"}
                   </p>
                 </div>
 
@@ -200,6 +199,11 @@ const NursingComponent = ({ data }) => {
                   </div>
                 </div>
               </div>
+              {doctor?.is_rejected_by_user === 1 && (
+                <p className="text-red-500 text-sm my-2 text-start">
+                  تم الالغاء عن طريق المستخدم
+                </p>
+              )}
               <div
                 className={`transition-all overflow-hidden ${
                   visibleDoctorId === doctor.id
@@ -300,7 +304,7 @@ const NursingComponent = ({ data }) => {
                   </div>
                 )}
 
-              {doctor.status == "pending" &&
+              {doctor.status == "pending" || doctor?.is_rejected_by_user === 0 &&
                 (doctor?.price === "0.00" ? (
                   <div className="flex justify-between my-4 text-sm">
                     <button
