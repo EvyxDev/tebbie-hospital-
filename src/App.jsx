@@ -22,6 +22,8 @@ import Doctors from "./pages/Doctors";
 import DoctorBooking from "./pages/DoctorBooking";
 import NotFound from "./components/NotFound";
 import EditService from "./pages/EditService";
+import { useEffect } from "react";
+import { setupForegroundNotifications } from "./firebase/fcm";
 
 const queryClient = new QueryClient();
 
@@ -102,6 +104,9 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+    useEffect(() => {
+    setupForegroundNotifications();
+  }, []);
   return (
     <main
       className="max-w-md container mx-auto relative min-h-screen overflow-hidden "

@@ -6,8 +6,8 @@ import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { mainLogo } from "../assets";
 import { AiOutlineLoading } from "react-icons/ai";
-import { getToken } from "firebase/messaging";
 import { messaging } from "../firebase/config";
+import { getFCMToken } from "../firebase/fcm";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,29 +15,8 @@ const Login = () => {
 
   const API_URL = import.meta.env.VITE_APP_API_URL;
   const navigate = useNavigate();
-  const getFCMToken = async () => {
-    try {
-      // Request notification permission
-      const permission = await Notification.requestPermission();
-      if (permission === "granted") {
-        // Retrieve FCM token
-        const token = await getToken(messaging, {
-          vapidKey: import.meta.env.VITE_VAPID_KEY,
-        });
 
-        if (token) {
-          return token;
-        } else {
-          return null;
-        }
-      } else {
-        return null;
-      }
-    } catch (err) {
-      console.error("Error retrieving FCM token:", err);
-      return null;
-    }
-  };
+
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
@@ -60,7 +39,10 @@ const Login = () => {
       setLoading(true);
 
       try {
-        const fcmToken = await getFCMToken();
+       const fcmToken = await getFCMToken(messaging, {
+  vapidKey: import.meta.env.VITE_VAPID_KEY,
+});
+
         const response = await fetch(`${API_URL}/hospital/login-hospital`, {
           method: "POST",
           headers: {

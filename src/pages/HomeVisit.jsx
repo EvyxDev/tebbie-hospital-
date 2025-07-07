@@ -22,7 +22,6 @@ const HomeVisit = () => {
   });
 
   const [selectedTab, setSelectedTab] = useState(0);
-console.log(HomeVisitData)
   if (isLoading) {
     return <LoaderComponent />;
   }

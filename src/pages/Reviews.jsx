@@ -30,7 +30,7 @@ const Reviews = () => {
     return (
       <div className="h-screen w-full flex justify-center items-center text-2xl">
         <p className="text-red-500">
-          عزرا حدث خطأ ما !
+          عذرا حدث خطأ ما !
         </p>
       </div>
     );

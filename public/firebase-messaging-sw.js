@@ -1,7 +1,11 @@
 /* eslint-disable no-undef */
 //firebase-messaging-sw.js
-importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"
+);
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"
+);
 
 const firebaseConfig = {
   apiKey: "AIzaSyANpB3y5Oj7zHMfzQvMPtIH5JCsOp7eH64",
@@ -11,7 +15,7 @@ const firebaseConfig = {
   storageBucket: "tabi-4ebab.firebasestorage.app",
   messagingSenderId: "15841420156",
   appId: "1:15841420156:web:15322e26632bbf5b993af9",
-  measurementId: "G-39N8YZZRNX"
+  measurementId: "G-39N8YZZRNX",
 };
 
 try {
@@ -26,7 +30,9 @@ try {
 
 try {
   const messaging = self.firebase.messaging();
+  console.log("messaging", messaging);
   messaging.onBackgroundMessage((payload) => {
+    console.log("Background message received:", payload);
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
       body: payload.notification.body,

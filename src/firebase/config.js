@@ -1,25 +1,25 @@
 //firebase/config.js
 import { getAuth } from "firebase/auth";
-import { initializeApp   } from "firebase/app";
+import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
-import { getFirestore } from "firebase/firestore"
+import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
-import { getMessaging, getToken } from 'firebase/messaging';
+import { getMessaging, getToken } from "firebase/messaging";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCsDflLnpLi_KEWs9zfVSugG9ehdPTy-Y4",
-  authDomain: "tebbi-1fda2.firebaseapp.com",
+  apiKey: "AIzaSyANpB3y5Oj7zHMfzQvMPtIH5JCsOp7eH64",
+  authDomain: "tabi-4ebab.firebaseapp.com",
   databaseURL: "https://tebbi-1fda2-default-rtdb.firebaseio.com",
-  projectId: "tebbi-1fda2",
-  storageBucket: "tebbi-1fda2.firebasestorage.app",
-  messagingSenderId: "922205311973",
-  appId: "1:922205311973:web:586443ca008a4c579a950c",
-  measurementId: "G-BVPP75RRCK"
+  projectId: "tabi-4ebab",
+  storageBucket: "tabi-4ebab.firebasestorage.app",
+  messagingSenderId: "15841420156",
+  appId: "1:15841420156:web:15322e26632bbf5b993af9",
+  measurementId: "G-39N8YZZRNX",
 };
 
 export const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
-export const Auth =getAuth(app);
+export const Auth = getAuth(app);
 export const storage = getStorage(app);
 export const firestore = getFirestore(app);
 export const rtdb = getDatabase(app);

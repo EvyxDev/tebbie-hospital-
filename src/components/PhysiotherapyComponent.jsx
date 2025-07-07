@@ -303,7 +303,7 @@ const PhysiotherapyComponent = ({ data }) => {
                   </div>
                 )}
 
-              {doctor.status == "pending" || doctor?.is_rejected_by_user === 0 &&
+              {doctor.status == "pending" && doctor?.is_rejected_by_user === 0 &&
                 (doctor?.price === "0.00" ? (
                   <div className="flex justify-between my-4 text-sm">
                     <button
