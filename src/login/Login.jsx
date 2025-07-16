@@ -6,8 +6,9 @@ import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { mainLogo } from "../assets";
 import { AiOutlineLoading } from "react-icons/ai";
-import { messaging } from "../firebase/config";
-import { getFCMToken } from "../firebase/fcm";
+// import { messaging } from "../firebase/config";
+// import { getFCMToken } from "../firebase/fcm";
+import Cookies from "js-cookie";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,8 +16,6 @@ const Login = () => {
 
   const API_URL = import.meta.env.VITE_APP_API_URL;
   const navigate = useNavigate();
-
-
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevState) => !prevState);
@@ -39,10 +38,11 @@ const Login = () => {
       setLoading(true);
 
       try {
-       const fcmToken = await getFCMToken(messaging, {
-  vapidKey: import.meta.env.VITE_VAPID_KEY,
-});
-
+        // const fcmToken = await getFCMToken(messaging, {
+        //   vapidKey: import.meta.env.VITE_VAPID_KEY,
+        // });
+        const webViewFcmToken = Cookies.get("fcm-token");
+        console.log(webViewFcmToken);
         const response = await fetch(`${API_URL}/hospital/login-hospital`, {
           method: "POST",
           headers: {
@@ -50,7 +50,7 @@ const Login = () => {
           },
           body: JSON.stringify({
             ...values,
-            fcm_token: fcmToken,
+            fcm_token: webViewFcmToken,
           }),
         });
 

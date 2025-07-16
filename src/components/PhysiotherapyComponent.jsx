@@ -7,8 +7,11 @@ import { updateHomeVisit, updateHomeStatus } from "../utlis/https";
 import { doneIcon, intheWay, mainLogo, paidIcon, xrays } from "../assets";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoCall } from "react-icons/io5";
+import FilterBar from "./FilterBar";
 
 const PhysiotherapyComponent = ({ data }) => {
+  const [filteredData, setFilteredData] = useState([]);
+
   const [visibleDoctorId, setVisibleDoctorId] = useState(null);
   const [isTimeModalOpen, setTimeIsModalOpen] = useState(false);
   const [currentDoctorId, setCurrentDoctorId] = useState(null);
@@ -109,9 +112,11 @@ const PhysiotherapyComponent = ({ data }) => {
 
   return (
     <>
+      <FilterBar data={data} setFilteredData={setFilteredData} />
+
       <div className="w-full">
-        {data.length > 0 ? (
-          data.map((doctor) => (
+        {filteredData.length > 0 ? (
+          filteredData.map((doctor) => (
             <div
               key={doctor.id}
               className="shadow-sm border-[1px] rounded-3xl p-4 my-4"
@@ -303,7 +308,8 @@ const PhysiotherapyComponent = ({ data }) => {
                   </div>
                 )}
 
-              {doctor.status == "pending" && doctor?.is_rejected_by_user === 0 &&
+              {doctor.status == "pending" &&
+                doctor?.is_rejected_by_user === 0 &&
                 (doctor?.price === "0.00" ? (
                   <div className="flex justify-between my-4 text-sm">
                     <button

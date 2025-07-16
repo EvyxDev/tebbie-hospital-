@@ -33,7 +33,6 @@ const HomeVisit = () => {
       </div>
     );
   }
-
   // Check if the response indicates success and contains data
   let doctorData = [];
   let nursingData = [];
@@ -54,6 +53,7 @@ const HomeVisit = () => {
     <NursingComponent data={nursingData} />,
     <PhysiotherapyComponent data={physiotherapyData} />,
   ];
+
   return (
     <Box className="max-w-md mx-auto mt-6">
       {!HomeVisitData?.success && (
