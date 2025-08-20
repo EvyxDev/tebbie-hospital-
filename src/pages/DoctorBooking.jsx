@@ -114,19 +114,21 @@ const DoctorBooking = () => {
                 const isSelected =
                   selectedDate && day.getTime() === selectedDate.getTime();
 
+                const isPastDay = day < new Date().setHours(0, 0, 0, 0);
+
                 return (
-                  <div
+                  <button
                     key={dayKey}
                     className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer
-      ${bookingsForDay.length > 0 ? "bg-green-100" : ""}
-      ${isSelected ? "bg-blue-200 border-2 border-blue-300" : ""}
-      ${isCanceled ? "bg-red-100" : ""}`}
-                    onClick={() => handleDayClick(day)}
+                    ${bookingsForDay.length > 0 ? "bg-green-100" : ""}
+                    ${isSelected ? "bg-blue-200 border-2 border-blue-300" : ""}
+                    ${isCanceled ? "bg-red-100" : ""}
+                    ${isPastDay ? "bg-gray-200 text-gray-400 cursor-not-allowed" : ""}`}
+                    onClick={() => !isPastDay && handleDayClick(day)}
+                    disabled={isPastDay}
                   >
-                    <span className="font-bold text-gray-800">
-                      {format(day, "d")}
-                    </span>
-                    {bookingsForDay.length > 0 && (
+                    <span className="font-bold">{format(day, "d")}</span>
+                    {bookingsForDay.length > 0 && !isPastDay && (
                       <div className="absolute bottom-1 flex gap-1">
                         {bookingsForDay.slice(0, 3).map((_, i) => (
                           <span
@@ -136,10 +138,10 @@ const DoctorBooking = () => {
                         ))}
                       </div>
                     )}
-                    {isCanceled && (
+                    {isCanceled && !isPastDay && (
                       <span className="absolute bottom-1 text-xs text-red-600"></span>
                     )}
-                  </div>
+                  </button>
                 );
               })}
             </div>

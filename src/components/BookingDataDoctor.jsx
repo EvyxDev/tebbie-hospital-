@@ -40,11 +40,11 @@ const BookingDataDoctor = ({
     });
   };
 
-  const isFutureDate = (date) => {
-    const now = new Date();
-    const selectedDateTime = new Date(date);
-    return selectedDateTime > now;
-  };
+  // const isFutureDate = (date) => {
+  //   const now = new Date();
+  //   const selectedDateTime = new Date(date);
+  //   return selectedDateTime > now;
+  // };
 
   const isDoctorAbsent = filteredBookings.some(
     (booking) =>
@@ -59,9 +59,7 @@ const BookingDataDoctor = ({
       <div className="flex gap-1 justify-between items-end">
         <h2 className="font-medium">حجوزات اليوم</h2>
         <div className="flex gap-1 justify-end items-end">
-          {isFutureDate(selectedDate) &&
-          !hasCancelledBooking &&
-          !isCanceledDay ? (
+          {!hasCancelledBooking && !isCanceledDay ? (
             <>
               <p className="text-[#8F9BB3] text-md">تأكيد غياب الدكتور</p>
               <SwitchDoctor
@@ -70,7 +68,7 @@ const BookingDataDoctor = ({
               />
             </>
           ) : (
-              <>
+            <>
               <p className="text-[#8F9BB3] text-md">تأكيد حضور الدكتور</p>
               <SwitchDoctor
                 checked={attendanceStatus}
