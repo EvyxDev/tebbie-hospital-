@@ -161,15 +161,15 @@ export const updateSpecialization = async ({
   deleted_slots,
 }) => {
   const payload = {
-    specialization_id: Number(specialization_id), 
+    specialization_id: Number(specialization_id),
     price: Number(price),
     doctor_id: Number(doctor_id),
-    slots: slots.map(slot => ({
-      day_id: Number(slot.day_id), 
+    slots: slots.map((slot) => ({
+      day_id: Number(slot.day_id),
       start_time: slot.start_time,
       end_time: slot.end_time,
     })),
-    deleted_slots: deleted_slots.map(Number), 
+    deleted_slots: deleted_slots.map(Number),
   };
   if (
     waiting_time !== undefined &&
@@ -255,6 +255,35 @@ export const getBooking = async ({ token, id, start, end }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+export const getAllBooking = async ({ token, start, end }) => {
+  try {
+    const queryParams = new URLSearchParams();
+    if (start) queryParams.append("from_date", start);
+    if (end) queryParams.append("to_date", end);
+    const response = await fetch(
+      `${API_URL}/hospital/v1/get-booking-for-all?${queryParams.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message ||
+          "Failed to fetch booking for that specialization data"
+      );
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
 export const getBookingDetails = async ({ token, id }) => {
   try {
     const response = await fetch(
@@ -298,6 +327,35 @@ export const getHomeVisit = async ({ token }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+export const getAllHomeVists = async ({ token, start, end }) => {
+  try {
+    const queryParams = new URLSearchParams();
+    if (start) queryParams.append("from_date", start);
+    if (end) queryParams.append("to_date", end);
+    const response = await fetch(
+      `${API_URL}/hospital/v1/get-home-visit-for-all?${queryParams.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message ||
+          "Failed to fetch HomeVists for that specialization data"
+      );
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
 export const updateHomeVisit = async ({
   token,
   home_visit_id,
@@ -336,25 +394,24 @@ export const updateHomeVisit = async ({
     throw error;
   }
 };
-export const updateHomeStatus = async ({
-  token,
-  home_visit_id,
-  status,
-}) => {
+export const updateHomeStatus = async ({ token, home_visit_id, status }) => {
   const payload = {
     home_visit_id,
     status,
   };
 
   try {
-    const response = await fetch(`${API_URL}/hospital/v1/update-home-visit-status`, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${API_URL}/hospital/v1/update-home-visit-status`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const result = await response.json();
 
@@ -646,7 +703,7 @@ export const getDoctorSlots = async ({ token, id }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
-export const getDoctorsBook = async ({ token ,id}) => {
+export const getDoctorsBook = async ({ token, id }) => {
   try {
     const response = await fetch(
       `${API_URL}/hospital/v1/get-doctor-by-hospital/${id}`,
@@ -671,18 +728,21 @@ export const getDoctorsBook = async ({ token ,id}) => {
 //home visist service
 export const getHomeVisitServices = async ({ token, id }) => {
   try {
-    const response = await fetch(`${API_URL}/hospital/home-visit-services/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${API_URL}/hospital/home-visit-services/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     const data = await response.json();
 
     if (response.ok) {
-      return data
+      return data;
     } else {
       throw new Error(data.message || "Failed to fetch home visit services");
     }
@@ -690,7 +750,12 @@ export const getHomeVisitServices = async ({ token, id }) => {
     throw error;
   }
 };
-export const UpdateHomeVisitServices = async ({ token, hospital_id,service_id,price }) => {
+export const UpdateHomeVisitServices = async ({
+  token,
+  hospital_id,
+  service_id,
+  price,
+}) => {
   const formdata = new FormData();
   formdata.append("price", price);
   try {

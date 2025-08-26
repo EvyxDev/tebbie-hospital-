@@ -24,6 +24,7 @@ import NotFound from "./components/NotFound";
 import EditService from "./pages/EditService";
 import { useEffect } from "react";
 import { setupForegroundNotifications } from "./firebase/fcm";
+import BookingsPage from "./pages/bookings-page";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
           { index: true, element: <Dashboard /> },
           { path: "home-visit", element: <HomeVisit /> },
           { path: "edit-service", element: <EditService /> },
+          { path: "bookings", element: <BookingsPage /> },
 
           {
             path: "wallet",
@@ -80,10 +82,13 @@ const router = createBrowserRouter([
         path: "/update-specialization/:sId",
         element: <AddsSecialization />,
       },
-      { path: "doctors/:Id",children:[
-        { index: true, element: <Doctors /> },
-        {path:":doctorId", element:<DoctorBooking/>}
-      ] },
+      {
+        path: "doctors/:Id",
+        children: [
+          { index: true, element: <Doctors /> },
+          { path: ":doctorId", element: <DoctorBooking /> },
+        ],
+      },
 
       {
         path: "/notification",
@@ -100,11 +105,11 @@ const router = createBrowserRouter([
   {
     path: "*",
     element: <NotFound />,
-  }
+  },
 ]);
 
 function App() {
-    useEffect(() => {
+  useEffect(() => {
     setupForegroundNotifications();
   }, []);
   return (
