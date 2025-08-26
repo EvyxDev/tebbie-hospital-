@@ -50,7 +50,6 @@ const AllHomeVisits = () => {
         end: selectedRange.end ? format(selectedRange.end, "yyyy-MM-dd") : null,
       }),
   });
-
   // click day
   const handleDayClick = (day) => {
     if (!isSelecting) {

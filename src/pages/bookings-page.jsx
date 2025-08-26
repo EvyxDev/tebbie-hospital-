@@ -10,15 +10,14 @@ import {
 } from "date-fns";
 import { IoChevronForward, IoChevronBack } from "react-icons/io5";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getAllBooking, getSpecializations } from "../utlis/https";
 import LoaderComponent from "../components/LoaderComponent";
-import BookingData from "../components/BookingData";
 import CustomSelect from "../components/CustomSelect";
+import BookingData from "../components/BookingDatav2";
 
 const BookingsPage = () => {
-  const { BookId } = useParams();
   const token = localStorage.getItem("authToken");
   const [selectedRange, setSelectedRange] = useState({
     start: null,
@@ -49,7 +48,6 @@ const BookingsPage = () => {
     queryFn: () =>
       getAllBooking({
         token,
-        id: BookId,
         start: selectedRange.start
           ? format(selectedRange.start, "yyyy-MM-dd")
           : null,
@@ -108,7 +106,9 @@ const BookingsPage = () => {
 
   const handleBookingClick = (booking) => {
     localStorage.setItem("selectedDate", JSON.stringify(booking));
-    navigate(`/specialization/booking/details/${BookId}`);
+    navigate(
+      `/specialization/booking/details/${booking.doctor.specialization_id}`
+    );
   };
 
   return (

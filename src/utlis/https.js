@@ -330,8 +330,16 @@ export const getHomeVisit = async ({ token }) => {
 export const getAllHomeVists = async ({ token, start, end }) => {
   try {
     const queryParams = new URLSearchParams();
-    if (start) queryParams.append("from_date", start);
-    if (end) queryParams.append("to_date", end);
+
+    if (start && end) {
+      // range mode
+      queryParams.append("from_date", start);
+      queryParams.append("to_date", end);
+    } else if (start) {
+      // single date mode
+      queryParams.append("date", start);
+    }
+
     const response = await fetch(
       `${API_URL}/hospital/v1/get-home-visit-for-all?${queryParams.toString()}`,
       {
@@ -342,6 +350,7 @@ export const getAllHomeVists = async ({ token, start, end }) => {
         },
       }
     );
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
@@ -356,6 +365,7 @@ export const getAllHomeVists = async ({ token, start, end }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const updateHomeVisit = async ({
   token,
   home_visit_id,

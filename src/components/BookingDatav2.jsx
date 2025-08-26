@@ -7,6 +7,7 @@ const BookingData = ({
   handleBookingClick,
   SpecializationsData,
 }) => {
+  console.log(filteredBookings);
   return (
     <>
       {filteredBookings.length > 0 ? (
