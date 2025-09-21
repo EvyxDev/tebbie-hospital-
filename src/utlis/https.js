@@ -19,6 +19,27 @@ export const getReviews = async ({ token }) => {
     throw error;
   }
 };
+export const getAllServices = async ({ token }) => {
+  try {
+    const response = await fetch(`${API_URL}/hospital/v1/get-all-services`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch services data");
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
 export const getSpecializations = async ({ token }) => {
   try {
     const response = await fetch(`${API_URL}/hospital/v1/get-specializations`, {
@@ -161,15 +182,15 @@ export const updateSpecialization = async ({
   deleted_slots,
 }) => {
   const payload = {
-    specialization_id: Number(specialization_id), 
+    specialization_id: Number(specialization_id),
     price: Number(price),
     doctor_id: Number(doctor_id),
-    slots: slots.map(slot => ({
-      day_id: Number(slot.day_id), 
+    slots: slots.map((slot) => ({
+      day_id: Number(slot.day_id),
       start_time: slot.start_time,
       end_time: slot.end_time,
     })),
-    deleted_slots: deleted_slots.map(Number), 
+    deleted_slots: deleted_slots.map(Number),
   };
   if (
     waiting_time !== undefined &&
@@ -198,6 +219,92 @@ export const updateSpecialization = async ({
       );
     }
 
+    return result.data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+export const updateDoctorIntervals = async ({
+  token,
+  price,
+  doctor_id,
+  intervals,
+  deleted_intervals,
+}) => {
+  try {
+    for (const interval of intervals) {
+      const payload = {
+        price: price ? Number(price) : 0,
+        relatable_id: Number(doctor_id),
+        date: interval.date,
+        name_slot: interval.name_slot,
+        from: interval.from,
+        to: interval.to,
+        max_capacity: Number(interval.max_capacity),
+        deleted_slots: deleted_intervals ? deleted_intervals.map(Number) : [],
+        slot_type: "intervals",
+      };
+
+      console.log("API Payload being sent:", JSON.stringify(payload, null, 2));
+
+      const response = await fetch(`${API_URL}/hospital/v1/store-doctors`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      console.log("API Response:", result);
+
+      if (!response.ok) {
+        throw new Error(
+          result.msg || "An error occurred while updating the doctor intervals"
+        );
+      }
+    }
+
+    return true; // success
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+export const DeleteDocktorSlots = async ({
+  token,
+  doctor_id,
+  specialization_id,
+  deleted_slots,
+  price,
+}) => {
+  const payload = {
+    specialization_id: Number(specialization_id),
+    price: Number(price),
+    doctor_id: Number(doctor_id),
+    deleted_slots: deleted_slots.map(Number),
+  };
+
+  try {
+    const response = await fetch(`${API_URL}/hospital/v1/update-doctor-slots`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.msg || "An error occurred while updating the doctor slot"
+      );
+    }
+    console.log(result);
     return result.data;
   } catch (error) {
     console.error("Error:", error);
@@ -233,6 +340,35 @@ export const getBooking = async ({ token, id, start, end }) => {
     if (end) queryParams.append("to_date", end);
     const response = await fetch(
       `${API_URL}/hospital/v1/get-booking/${id}?${queryParams.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message ||
+          "Failed to fetch booking for that specialization data"
+      );
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+export const getAllBooking = async ({ token, start, end }) => {
+  try {
+    const queryParams = new URLSearchParams();
+    if (start) queryParams.append("from_date", start);
+    if (end) queryParams.append("to_date", end);
+    const response = await fetch(
+      `${API_URL}/hospital/v1/get-booking-for-all?${queryParams.toString()}`,
       {
         method: "GET",
         headers: {
@@ -298,6 +434,35 @@ export const getHomeVisit = async ({ token }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+export const getAllHomeVists = async ({ token, start, end }) => {
+  try {
+    const queryParams = new URLSearchParams();
+    if (start) queryParams.append("from_date", start);
+    if (end) queryParams.append("to_date", end);
+    const response = await fetch(
+      `${API_URL}/hospital/v1/get-home-visit-for-all?${queryParams.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message ||
+          "Failed to fetch HomeVists for that specialization data"
+      );
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
 export const updateHomeVisit = async ({
   token,
   home_visit_id,
@@ -336,25 +501,24 @@ export const updateHomeVisit = async ({
     throw error;
   }
 };
-export const updateHomeStatus = async ({
-  token,
-  home_visit_id,
-  status,
-}) => {
+export const updateHomeStatus = async ({ token, home_visit_id, status }) => {
   const payload = {
     home_visit_id,
     status,
   };
 
   try {
-    const response = await fetch(`${API_URL}/hospital/v1/update-home-visit-status`, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${API_URL}/hospital/v1/update-home-visit-status`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const result = await response.json();
 
@@ -646,7 +810,7 @@ export const getDoctorSlots = async ({ token, id }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
-export const getDoctorsBook = async ({ token ,id}) => {
+export const getDoctorsBook = async ({ token, id }) => {
   try {
     const response = await fetch(
       `${API_URL}/hospital/v1/get-doctor-by-hospital/${id}`,
@@ -671,18 +835,21 @@ export const getDoctorsBook = async ({ token ,id}) => {
 //home visist service
 export const getHomeVisitServices = async ({ token, id }) => {
   try {
-    const response = await fetch(`${API_URL}/hospital/home-visit-services/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await fetch(
+      `${API_URL}/hospital/home-visit-services/${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     const data = await response.json();
 
     if (response.ok) {
-      return data
+      return data;
     } else {
       throw new Error(data.message || "Failed to fetch home visit services");
     }
@@ -690,7 +857,12 @@ export const getHomeVisitServices = async ({ token, id }) => {
     throw error;
   }
 };
-export const UpdateHomeVisitServices = async ({ token, hospital_id,service_id,price }) => {
+export const UpdateHomeVisitServices = async ({
+  token,
+  hospital_id,
+  service_id,
+  price,
+}) => {
   const formdata = new FormData();
   formdata.append("price", price);
   try {
@@ -714,6 +886,303 @@ export const UpdateHomeVisitServices = async ({ token, hospital_id,service_id,pr
     }
 
     return result.data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+export const rescheduleBooking = async ({
+  token,
+  booking_id,
+  new_slot_id,
+  new_date,
+}) => {
+  const payload = {
+    booking_id: Number(booking_id),
+    new_slot_id: Number(new_slot_id),
+    new_date: new_date,
+  };
+
+  try {
+    const response = await fetch(`${API_URL}/hospital/v1/reschedule-booking`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.msg || "An error occurred while rescheduling the booking"
+      );
+    }
+
+    console.log(result);
+    return result.data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+export const getEmployees = async ({ token, hospital_id }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/employees?hospital_id=${hospital_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.data;
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+export const createEmployee = async ({
+  token,
+  name,
+  phone,
+  role,
+  hospital_id,
+}) => {
+  try {
+    const response = await fetch(`${API_URL}/hospital/v1/employees`, {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        phone,
+        role,
+        hospital_id,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.msg || "An error occurred while creating the employee"
+      );
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+export const updateEmployee = async ({
+  token,
+  id,
+  name,
+  phone,
+  role,
+  hospital_id,
+}) => {
+  try {
+    const response = await fetch(`${API_URL}/hospital/v1/employees/${id}`, {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        phone,
+        role,
+        hospital_id,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.msg || "An error occurred while updating the employee"
+      );
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+export const deleteEmployee = async ({ token, id, hospital_id }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/employees/delete/${id}`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          hospital_id,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.msg || "An error occurred while deleting the employee"
+      );
+    }
+
+    return result.data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+// Service interval slots
+
+export const getServiceSlots = async ({ token, id }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/service-slots/get-all-by-service?hospital_service_id=${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch service slots");
+    }
+
+    const data = await response.json();
+    return data.data || data; // backend shape may be {data: ...}
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const createServiceIntervals = async ({
+  token,
+  service_id,
+  intervals,
+}) => {
+  try {
+    for (const interval of intervals) {
+      const payload = {
+        hospital_service_id: Number(service_id),
+        date: interval.date,
+        name_slot: interval.name_slot,
+        from: interval.from,
+        to: interval.to,
+      };
+
+      const response = await fetch(`${API_URL}/hospital/v1/service-slots`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          result.msg || result.message || "Failed to create service interval"
+        );
+      }
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+export const updateServiceIntervals = async ({
+  token,
+  service_id,
+  intervals,
+}) => {
+  try {
+    for (const interval of intervals) {
+      if (!interval.id) continue;
+      const payload = {
+        hospital_service_id: Number(service_id),
+        date: interval.date,
+        name_slot: interval.name_slot,
+        from: interval.from,
+        to: interval.to,
+      };
+
+      const response = await fetch(
+        `${API_URL}/hospital/v1/service-slots/update/${interval.id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          result.msg || result.message || "Failed to update service interval"
+        );
+      }
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+export const updateServiceStatus = async ({ token, service_id }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/services/${service_id}/status`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(
+        result.msg || result.message || "Failed to update service status"
+      );
+    }
+    return result.data || true;
   } catch (error) {
     console.error("Error:", error);
     throw error;

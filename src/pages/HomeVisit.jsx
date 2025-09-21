@@ -7,6 +7,7 @@ import DoctorComponent from "../components/DoctorComponent";
 import { getHomeVisit } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
 import LoaderComponent from "../components/LoaderComponent";
+import AllHomeVisits from "../components/AllHomeViste";
 
 const HomeVisit = () => {
   const token = localStorage.getItem("authToken");
@@ -52,6 +53,7 @@ const HomeVisit = () => {
     <DoctorComponent data={doctorData} />,
     <NursingComponent data={nursingData} />,
     <PhysiotherapyComponent data={physiotherapyData} />,
+    <AllHomeVisits />,
   ];
 
   return (
@@ -91,6 +93,7 @@ const HomeVisit = () => {
             <Tab label="طبيب" />
             <Tab label="تمريض" />
             <Tab label="علاج طبيعي" />
+            <Tab label="كل الزيارات" />
           </Tabs>
 
           <Box sx={{ mt: 4, p: 2, textAlign: "center" }}>

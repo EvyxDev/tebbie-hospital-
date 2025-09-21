@@ -9,13 +9,15 @@ import {
   getDate,
 } from "date-fns";
 import { IoChevronForward, IoChevronBack } from "react-icons/io5";
+
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getBooking } from "../utlis/https";
+import { getAllBooking, getSpecializations } from "../utlis/https";
 import LoaderComponent from "../components/LoaderComponent";
 import BookingData from "../components/BookingData";
+import CustomSelect from "../components/CustomSelect";
 
-const Booking = () => {
+const BookingsPage = () => {
   const { BookId } = useParams();
   const token = localStorage.getItem("authToken");
   const [selectedRange, setSelectedRange] = useState({
@@ -23,15 +25,16 @@ const Booking = () => {
     end: null,
   });
   const [isSelecting, setIsSelecting] = useState(false);
+
+  // ✅ New state for specialization filter
+  const [activeSpecialization, setActiveSpecialization] = useState(null);
+
   const handleDayClick = (day) => {
     if (!isSelecting) {
       setSelectedRange({ start: day, end: null });
       setIsSelecting(true);
     } else {
-      setSelectedRange((prev) => ({
-        ...prev,
-        end: day,
-      }));
+      setSelectedRange((prev) => ({ ...prev, end: day }));
       setIsSelecting(false);
     }
   };
@@ -44,7 +47,7 @@ const Booking = () => {
     queryKey: ["bookings", selectedRange.start, selectedRange.end],
     enabled: true,
     queryFn: () =>
-      getBooking({
+      getAllBooking({
         token,
         id: BookId,
         start: selectedRange.start
@@ -52,6 +55,12 @@ const Booking = () => {
           : null,
         end: selectedRange.end ? format(selectedRange.end, "yyyy-MM-dd") : null,
       }),
+  });
+
+  const { data: SpecializationsData } = useQuery({
+    queryKey: ["AllSpecializations"],
+    enabled: true,
+    queryFn: () => getSpecializations({ token }),
   });
 
   const navigate = useNavigate();
@@ -70,10 +79,7 @@ const Booking = () => {
   const handleNextMonth = () =>
     setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)));
 
-  if (isLoading) {
-    return <LoaderComponent />;
-  }
-
+  if (isLoading) return <LoaderComponent />;
   if (error) {
     return (
       <div className="h-screen w-full flex justify-center items-center text-md text-red-400">
@@ -83,7 +89,7 @@ const Booking = () => {
   }
 
   const bookings = DataBooking?.bookings || [];
-  const filteredBookings =
+  let filteredBookings =
     selectedRange.start && selectedRange.end
       ? bookings.filter((booking) => {
           const bookingDate = booking.date;
@@ -93,15 +99,36 @@ const Booking = () => {
         })
       : bookings;
 
+  // ✅ Apply specialization filter if active
+  if (activeSpecialization) {
+    filteredBookings = filteredBookings.filter(
+      (b) => b.doctor?.specialization_id === activeSpecialization
+    );
+  }
+
   const handleBookingClick = (booking) => {
     localStorage.setItem("selectedDate", JSON.stringify(booking));
-    navigate(`/specialization/booking/details/${BookId}`);
+    navigate(
+      `/specialization/booking/details/${booking.doctor.specialization_id}`
+    );
+    console.log(booking);
   };
 
   return (
     <div className="flex flex-col overflow-scroll">
       <div className="flex flex-col h-screen">
         <div className="w-full bg-white z-10 my-4">
+          <div className="mb-4">
+            <CustomSelect
+              options={SpecializationsData || []}
+              value={activeSpecialization}
+              onChange={setActiveSpecialization}
+              placeholder="كل التخصصات"
+              searchable={true}
+            />
+          </div>
+
+          {/* Calendar Header */}
           <div className="flex justify-between items-center mb-4">
             <button
               className="w-10 h-10 flex items-center justify-center border rounded-lg text-gray-600 hover:bg-gray-200"
@@ -120,6 +147,7 @@ const Booking = () => {
             </button>
           </div>
 
+          {/* Days of week */}
           <div className="grid grid-cols-7 gap-2 text-center font-bold text-gray-600 text-xs">
             {[
               "الأحد",
@@ -134,6 +162,7 @@ const Booking = () => {
             ))}
           </div>
 
+          {/* Days grid */}
           <div className="grid grid-cols-7 gap-2 mt-4">
             {emptyDays.map((day, i) => (
               <div key={`prev-${i}`} className="text-gray-400">
@@ -193,10 +222,13 @@ const Booking = () => {
             })}
           </div>
         </div>
+
+        {/* Bookings list */}
         <div className="flex-1 overflow-y-auto my-4">
           <BookingData
             handleBookingClick={handleBookingClick}
             filteredBookings={filteredBookings}
+            SpecializationsData={SpecializationsData}
           />
         </div>
       </div>
@@ -204,4 +236,4 @@ const Booking = () => {
   );
 };
 
-export default Booking;
+export default BookingsPage;

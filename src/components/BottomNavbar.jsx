@@ -3,17 +3,25 @@ import { LuNotepadText } from "react-icons/lu";
 import { FaHome } from "react-icons/fa";
 import { IoWalletOutline } from "react-icons/io5";
 import { MdReviews } from "react-icons/md";
+import { FaCalendarCheck } from "react-icons/fa";
+import { IoPeopleSharp } from "react-icons/io5";
 
 const links = [
   { label: "الرئيسية", href: "/", icon: <FaHome size={22} /> },
+  { label: "الحجوزات", href: "/bookings", icon: <FaCalendarCheck size={22} /> },
   {
     label: "الزيارات منزلية",
     href: "/home-visit",
     icon: <LuNotepadText size={22} />,
   },
   { label: "المحفظة", href: "/wallet", icon: <IoWalletOutline size={22} /> },
+  { label: "الموظفين", href: "/employees", icon: <IoPeopleSharp size={22} /> },
+  {
+    label: "فترات الخدمة",
+    href: "/services",
+    icon: <FaCalendarCheck size={22} />,
+  },
   { label: "التقييمات", href: "/reviews", icon: <MdReviews size={22} /> },
-
 ];
 
 const isActiveClass =
@@ -33,7 +41,7 @@ const BottomNavbar = () => {
             }
           >
             {({ isActive }) => (
-                <div className="flex gap-1 items-center">
+              <div className="flex gap-1 items-center">
                 <span>{link.icon}</span>
                 <span
                   className={`text-sm transition-opacity duration-300 whitespace-nowrap ${

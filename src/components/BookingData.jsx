@@ -1,6 +1,13 @@
 /* eslint-disable react/prop-types */
 
-const BookingData = ({ filteredBookings, handleBookingClick }) => {
+import { getSpecializationById } from "../utlis/get-specialization-by-id";
+
+const BookingData = ({
+  filteredBookings,
+  handleBookingClick,
+  SpecializationsData,
+}) => {
+  console.log(SpecializationsData);
   return (
     <>
       {filteredBookings.length > 0 ? (
@@ -20,11 +27,18 @@ const BookingData = ({ filteredBookings, handleBookingClick }) => {
               <h3 className="text-xl font-normal my-1">
                 {booking.user?.name || "اسم غير متوفر"}
               </h3>
+
               <div className="flex justify-between">
                 <h3 className="text-[#8F9BB3] text-md">
                   {booking.doctor?.name || "غير متوفر"}
                 </h3>
-          
+                <p className="text-sm text-gray-500">
+                  {SpecializationsData &&
+                    getSpecializationById(
+                      SpecializationsData,
+                      booking.doctor?.specialization_id
+                    )?.name}
+                </p>
               </div>
             </div>
           </div>

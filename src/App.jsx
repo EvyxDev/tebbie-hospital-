@@ -24,6 +24,11 @@ import NotFound from "./components/NotFound";
 import EditService from "./pages/EditService";
 import { useEffect } from "react";
 import { setupForegroundNotifications } from "./firebase/fcm";
+import BookingsPage from "./pages/bookings-page";
+import SettingsPage from "./pages/Settings";
+import EmployeesPage from "./pages/employees-page";
+import ServiceSlots from "./pages/ServiceSlots";
+import Services from "./pages/Services";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +44,11 @@ const router = createBrowserRouter([
           { index: true, element: <Dashboard /> },
           { path: "home-visit", element: <HomeVisit /> },
           { path: "edit-service", element: <EditService /> },
+          { path: "services", element: <Services /> },
+          { path: "service-slots/:serviceId", element: <ServiceSlots /> },
+          { path: "bookings", element: <BookingsPage /> },
+          { path: "employees", element: <EmployeesPage /> },
+          { path: "settings", element: <SettingsPage /> },
 
           {
             path: "wallet",
@@ -80,10 +90,13 @@ const router = createBrowserRouter([
         path: "/update-specialization/:sId",
         element: <AddsSecialization />,
       },
-      { path: "doctors/:Id",children:[
-        { index: true, element: <Doctors /> },
-        {path:":doctorId", element:<DoctorBooking/>}
-      ] },
+      {
+        path: "doctors/:Id",
+        children: [
+          { index: true, element: <Doctors /> },
+          { path: ":doctorId", element: <DoctorBooking /> },
+        ],
+      },
 
       {
         path: "/notification",
@@ -100,11 +113,11 @@ const router = createBrowserRouter([
   {
     path: "*",
     element: <NotFound />,
-  }
+  },
 ]);
 
 function App() {
-    useEffect(() => {
+  useEffect(() => {
     setupForegroundNotifications();
   }, []);
   return (

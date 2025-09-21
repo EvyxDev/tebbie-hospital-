@@ -8,6 +8,7 @@ import { doneIcon, intheWay, mainLogo, paidIcon, xrays } from "../assets";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoCall } from "react-icons/io5";
 import FilterBar from "./FilterBar";
+import WhatsAppChatComponent from "./WhatsAppChatComponent";
 
 const NursingComponent = ({ data }) => {
   const [filteredData, setFilteredData] = useState([]);
@@ -182,7 +183,7 @@ const NursingComponent = ({ data }) => {
                       </a>
                     ))}
                   </div>
-                  <div className="flex justify-around">
+                  <div className="flex justify-around items-center">
                     <div className="flex gap-2 items-center underline text-[#3AAB95]">
                       <a
                         href={`https://www.google.com/maps?q=${doctor.lat},${doctor.long}`}
@@ -195,12 +196,16 @@ const NursingComponent = ({ data }) => {
                       </a>
                     </div>
 
-                    <a
-                      href={`tel:${formatPhoneNumber(doctor.user_phone)}`}
-                      className="cursor-pointer flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2 w-auto"
-                    >
-                      <IoCall size={18} />
-                    </a>
+                    <div className="flex gap-2 items-center">
+                      <a
+                        href={`tel:${formatPhoneNumber(doctor.user_phone)}`}
+                        className="cursor-pointer flex gap-2 justify-center items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-lg p-2 w-auto"
+                      >
+                        <IoCall size={18} />
+                      </a>
+
+                      <WhatsAppChatComponent visitData={doctor} />
+                    </div>
                   </div>
                 </div>
               </div>

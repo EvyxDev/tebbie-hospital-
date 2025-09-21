@@ -8,6 +8,7 @@ import { doneIcon, intheWay, mainLogo, paidIcon, xrays } from "../assets";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoCall } from "react-icons/io5";
 import FilterBar from "./FilterBar";
+import WhatsAppChatComponent from "./WhatsAppChatComponent";
 
 const DoctorComponent = ({ data }) => {
   const [filteredData, setFilteredData] = useState([]);
@@ -202,6 +203,7 @@ const DoctorComponent = ({ data }) => {
                     >
                       <IoCall size={18} />
                     </a>
+                    <WhatsAppChatComponent visitData={doctor} />
                   </div>
                 </div>
               </div>
