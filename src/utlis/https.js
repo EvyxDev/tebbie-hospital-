@@ -585,6 +585,31 @@ export const getWallet = async ({ token, start, end }) => {
     throw error;
   }
 };
+
+export const getWalletTotal = async ({ token }) => {
+  try {
+    const response = await fetch(`${API_URL}/hospital/v1/get-wallet-total`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || "An error occurred while fetching wallet total"
+      );
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
 export const getDoctorBooking = async ({ token, id }) => {
   try {
     const response = await fetch(
@@ -1186,5 +1211,89 @@ export const updateServiceStatus = async ({ token, service_id }) => {
   } catch (error) {
     console.error("Error:", error);
     throw error;
+  }
+};
+
+export const getServiceBookings = async ({ token, serviceId }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/bookings/service/${serviceId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch service bookings");
+    }
+
+    const data = await response.json();
+
+    // Handle response structure - backend now returns array
+    if (data.data && Array.isArray(data.data)) {
+      return data.data;
+    } else if (Array.isArray(data)) {
+      return data;
+    } else {
+      console.warn("Unexpected response structure:", data);
+      return [];
+    }
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const completeServiceBooking = async ({ token, bookingId }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/services-bookings/${bookingId}/complete`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to complete booking");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const cancelServiceBooking = async ({ token, bookingId }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/services-bookings/${bookingId}/cancel`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to cancel booking");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
   }
 };

@@ -29,6 +29,9 @@ import SettingsPage from "./pages/Settings";
 import EmployeesPage from "./pages/employees-page";
 import ServiceSlots from "./pages/ServiceSlots";
 import Services from "./pages/Services";
+import ServiceBookings from "./pages/ServiceBookings";
+import OldWallet from "./components/OldWallet";
+import NewWallet from "./components/NewWallet";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +49,7 @@ const router = createBrowserRouter([
           { path: "edit-service", element: <EditService /> },
           { path: "services", element: <Services /> },
           { path: "service-slots/:serviceId", element: <ServiceSlots /> },
+          { path: "service-bookings/:serviceId", element: <ServiceBookings /> },
           { path: "bookings", element: <BookingsPage /> },
           { path: "employees", element: <EmployeesPage /> },
           { path: "settings", element: <SettingsPage /> },
@@ -55,8 +59,18 @@ const router = createBrowserRouter([
             children: [
               { index: true, element: <Walett /> },
               {
-                path: ":doctorId",
-                element: <WalettDetails />,
+                path: "old",
+                children: [
+                  { index: true, element: <OldWallet /> },
+                  { path: "details", element: <WalettDetails /> },
+                ],
+              },
+              {
+                path: "new",
+                children: [
+                  { index: true, element: <NewWallet /> },
+                  { path: "details", element: <WalettDetails /> },
+                ],
               },
             ],
           },

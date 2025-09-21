@@ -10,12 +10,14 @@ import {
 } from "date-fns";
 import { IoChevronForward, IoChevronBack } from "react-icons/io5";
 import LoaderComponent from "../components/LoaderComponent";
-import { getWallet } from "../utlis/https";
+import { getWallet, getWalletTotal } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
 import WalletData from "../components/WalletData";
-
+import { useLocation } from "react-router-dom";
 
 const WalletDetails = () => {
+  const location = useLocation();
+  const isNewWallet = location.pathname.includes("/new/");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedRange, setSelectedRange] = useState({
     start: null,
@@ -48,31 +50,44 @@ const WalletDetails = () => {
       setIsSelecting(false);
     }
   };
-const token = localStorage.getItem("authToken");
+  const token = localStorage.getItem("authToken");
   const {
     data: walletData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["wallet", selectedRange.start, selectedRange.end],
-    queryFn: () =>
-      getWallet({
-        token,
-        start: selectedRange.start
-          ? format(selectedRange.start, "yyyy-MM-dd")
-          : null,
-        end: selectedRange.end ? format(selectedRange.end, "yyyy-MM-dd") : null,
-      }),
+    queryKey: [
+      isNewWallet ? "new-wallet-details" : "old-wallet-details",
+      selectedRange.start,
+      selectedRange.end,
+    ],
+    queryFn: () => {
+      if (isNewWallet) {
+        return getWalletTotal({ token });
+      } else {
+        return getWallet({
+          token,
+          start: selectedRange.start
+            ? format(selectedRange.start, "yyyy-MM-dd")
+            : null,
+          end: selectedRange.end
+            ? format(selectedRange.end, "yyyy-MM-dd")
+            : null,
+        });
+      }
+    },
   });
 
   const totalAmount = walletData
     ? new Intl.NumberFormat("ar-EG", {
         minimumFractionDigits: 0,
       }).format(
-        walletData.reduce(
-          (acc, transaction) => acc + parseFloat(transaction.price || 0),
-          0
-        )
+        isNewWallet
+          ? walletData.total || 0
+          : walletData.reduce(
+              (acc, transaction) => acc + parseFloat(transaction.price || 0),
+              0
+            )
       )
     : 0;
 
@@ -88,11 +103,13 @@ const token = localStorage.getItem("authToken");
     );
   }
 
-  const transactions = walletData || [];
+  const transactions = isNewWallet ? walletData?.data || [] : walletData || [];
   const filteredTransactions =
     selectedRange.start && selectedRange.end
       ? transactions.filter((transaction) => {
-          const transactionDate = transaction.created_at;
+          const transactionDate = isNewWallet
+            ? transaction.date
+            : transaction.created_at;
           const startDate = format(selectedRange.start, "yyyy-MM-dd");
           const endDate = format(selectedRange.end, "yyyy-MM-dd");
           return transactionDate >= startDate && transactionDate <= endDate;
@@ -122,11 +139,17 @@ const token = localStorage.getItem("authToken");
           </div>
 
           <div className="grid grid-cols-7 gap-2 text-center font-bold text-gray-600 text-xs">
-            {["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"].map(
-              (day) => (
-                <div key={day}>{day}</div>
-              )
-            )}
+            {[
+              "الأحد",
+              "الاثنين",
+              "الثلاثاء",
+              "الأربعاء",
+              "الخميس",
+              "الجمعة",
+              "السبت",
+            ].map((day) => (
+              <div key={day}>{day}</div>
+            ))}
           </div>
 
           <div className="grid grid-cols-7 gap-2 mt-4">
@@ -138,9 +161,12 @@ const token = localStorage.getItem("authToken");
 
             {days.map((day) => {
               const dayKey = format(day, "yyyy-MM-dd");
-              const transactionsForDay = transactions.filter(
-                (transaction) => transaction.created_at === dayKey
-              );
+              const transactionsForDay = transactions.filter((transaction) => {
+                const transactionDate = isNewWallet
+                  ? transaction.date
+                  : transaction.created_at;
+                return transactionDate === dayKey;
+              });
 
               const isStartDay =
                 selectedRange.start &&
@@ -196,7 +222,10 @@ const token = localStorage.getItem("authToken");
               الاجمالى {totalAmount} د.ل
             </div>
           </div>
-          <WalletData walletData={filteredTransactions} />
+          <WalletData
+            walletData={filteredTransactions}
+            isNewWallet={isNewWallet}
+          />
         </div>
       </div>
     </div>
