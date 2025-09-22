@@ -858,23 +858,20 @@ export const getDoctorsBook = async ({ token, id }) => {
   }
 };
 //home visist service
-export const getHomeVisitServices = async ({ token, id }) => {
+export const getHomeVisitServices = async ({ token }) => {
   try {
-    const response = await fetch(
-      `${API_URL}/hospital/home-visit-services/${id}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`${API_URL}/hospital/v1/home-visit-services`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     const data = await response.json();
 
     if (response.ok) {
-      return data;
+      return data.data;
     } else {
       throw new Error(data.message || "Failed to fetch home visit services");
     }
@@ -887,9 +884,13 @@ export const UpdateHomeVisitServices = async ({
   hospital_id,
   service_id,
   price,
+  name,
+  type,
 }) => {
   const formdata = new FormData();
   formdata.append("price", price);
+  if (name) formdata.append("name", name);
+  if (type) formdata.append("type", type);
   try {
     const response = await fetch(
       `${API_URL}/hospital/edit/${hospital_id}/home-visit-services/${service_id}`,
@@ -916,6 +917,38 @@ export const UpdateHomeVisitServices = async ({
     throw error;
   }
 };
+
+export const UpdateHomeVisitServiceStatus = async ({
+  token,
+  service_id,
+  status,
+}) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/home-visit-services/${service_id}/status/${status}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.msg || "An error occurred while updating the service status"
+      );
+    }
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const rescheduleBooking = async ({
   token,
   booking_id,
