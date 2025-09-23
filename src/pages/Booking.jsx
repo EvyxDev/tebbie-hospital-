@@ -19,7 +19,7 @@ const Booking = () => {
   const { BookId } = useParams();
   const token = localStorage.getItem("authToken");
   const [selectedRange, setSelectedRange] = useState({
-    start: null,
+    start: new Date(),
     end: null,
   });
   const [isSelecting, setIsSelecting] = useState(false);
@@ -149,15 +149,19 @@ const Booking = () => {
 
               const isStartDay =
                 selectedRange.start &&
-                day.getTime() === selectedRange.start.getTime();
+                format(day, "yyyy-MM-dd") ===
+                  format(selectedRange.start, "yyyy-MM-dd");
               const isEndDay =
                 selectedRange.end &&
-                day.getTime() === selectedRange.end.getTime();
+                format(day, "yyyy-MM-dd") ===
+                  format(selectedRange.end, "yyyy-MM-dd");
               const isInRange =
                 selectedRange.start &&
                 selectedRange.end &&
-                day.getTime() > selectedRange.start.getTime() &&
-                day.getTime() < selectedRange.end.getTime();
+                format(day, "yyyy-MM-dd") >
+                  format(selectedRange.start, "yyyy-MM-dd") &&
+                format(day, "yyyy-MM-dd") <
+                  format(selectedRange.end, "yyyy-MM-dd");
 
               return (
                 <div

@@ -19,7 +19,7 @@ import BookingDataDoctor from "../components/BookingDataDoctor";
 const DoctorBooking = () => {
   const token = localStorage.getItem("authToken");
   const { doctorId } = useParams();
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const {
     data: doctorsDetails,
@@ -112,7 +112,9 @@ const DoctorBooking = () => {
                 const isCanceled =
                   doctorsDetails?.canceled_days?.includes(dayKey);
                 const isSelected =
-                  selectedDate && day.getTime() === selectedDate.getTime();
+                  selectedDate &&
+                  format(day, "yyyy-MM-dd") ===
+                    format(selectedDate, "yyyy-MM-dd");
 
                 const isPastDay = day < new Date().setHours(0, 0, 0, 0);
 
@@ -123,7 +125,11 @@ const DoctorBooking = () => {
                     ${bookingsForDay.length > 0 ? "bg-green-100" : ""}
                     ${isSelected ? "bg-blue-200 border-2 border-blue-300" : ""}
                     ${isCanceled ? "bg-red-100" : ""}
-                    ${isPastDay ? "bg-gray-200 text-gray-400 cursor-not-allowed" : ""}`}
+                    ${
+                      isPastDay
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : ""
+                    }`}
                     onClick={() => !isPastDay && handleDayClick(day)}
                     disabled={isPastDay}
                   >
@@ -155,22 +161,14 @@ const DoctorBooking = () => {
             </div>
           ) : (
             <>
-              {selectedDate ? (
-                <div className="flex-1 overflow-y-auto my-4">
-                  <BookingDataDoctor
-                    filteredBookings={filteredBookings}
-                    selectedDate={selectedDate}
-                    doctorId={doctorId}
-                    doctorsDetails={doctorsDetails}
-                  />
-                </div>
-              ) : (
-                <div className="flex justify-center items-center my-4">
-                  <p className="text-xl text-gray-500">
-                    الرجاء اختيار تاريخ لعرض البيانات
-                  </p>
-                </div>
-              )}
+              <div className="flex-1 overflow-y-auto my-4">
+                <BookingDataDoctor
+                  filteredBookings={filteredBookings}
+                  selectedDate={selectedDate}
+                  doctorId={doctorId}
+                  doctorsDetails={doctorsDetails}
+                />
+              </div>
             </>
           )}
         </div>

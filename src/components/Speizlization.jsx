@@ -1,15 +1,24 @@
-import Switch from "./Switch";
 import { Link, useParams } from "react-router-dom";
 import { getSpecialization } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
 import LoaderComponent from "./LoaderComponent";
+import BookingCard from "./BookingCard";
 import { bookingIcon, doctorIcon, exportIcon } from "../assets";
 
 const Speizlization = () => {
   const { speizId } = useParams();
   const token = localStorage.getItem("authToken");
 
-  const { 
+  // Handle booking status change
+  const handleBookingStatusChange = (bookingId, isCompleted) => {
+    // You can implement the logic to update booking status here
+    console.log(
+      `Booking ${bookingId} status changed to:`,
+      isCompleted ? "completed" : "pending"
+    );
+  };
+
+  const {
     data: specializationData,
     error,
     isLoading,
@@ -27,10 +36,10 @@ const Speizlization = () => {
       </div>
     );
 
-  if (!specializationData ) {
+  if (!specializationData) {
     return (
       <div className="h-screen w-full flex justify-center items-center text-lg ">
-        <p >  لا توجد حجوزات لهذا الطبيب في هذا التاريخ  </p>
+        <p> لا توجد حجوزات لهذا الطبيب في هذا التاريخ </p>
       </div>
     );
   }
@@ -82,29 +91,19 @@ const Speizlization = () => {
         </div>
 
         <div className="w-full h-full">
-          <h2 className="font-[500] text-lg mb-8">الحجز القادم</h2>
-          {specializationData.bookings && specializationData.bookings.length > 0 ? (
-            specializationData.bookings.map((booking) => (
-              <div
-                key={booking.id}
-                className="my-4 shadow-sm bg-white rounded-lg py-2 p-4"
-              >
-                <span className="flex gap-2">
-                  <div className="InputPrimary mt-1" />
-                  <p className="font-medium">{booking.time}</p>
-                </span>
-                <h3 className="text-xl font-medium my-1">{booking.user.name}</h3>
-                <div className="flex justify-between">
-                  <h3 className="text-[#8F9BB3] text-md">
-                    {booking.doctor.name}
-                  </h3>
-                  <div className="flex gap-1 justify-center items-center">
-                    <p className="text-[#8F9BB3] text-md">تأكيد حضور</p>
-                    <Switch checked={booking.status === "finished"} />
-                  </div>
-                </div>
-              </div>
-            ))
+          <h2 className="font-[500] text-lg mb-8">الحجوزات القادمة</h2>
+          {specializationData.bookings &&
+          specializationData.bookings.length > 0 ? (
+            <div className="space-y-4">
+              {specializationData.bookings.map((booking) => (
+                <BookingCard
+                  key={booking.id}
+                  booking={booking}
+                  showSwitch={true}
+                  onStatusChange={handleBookingStatusChange}
+                />
+              ))}
+            </div>
           ) : (
             <div className="text-center text-gray-500 p-4 bg-white rounded-md shadow-sm h-[30vh] flex justify-center items-center">
               <p>لا توجد حجوزات حالياً</p>

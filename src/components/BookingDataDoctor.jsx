@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns"; // Add this import
 import SwitchDoctor from "./SwitchDoctor";
+import BookingCard from "./BookingCard";
 import { attendanceDoctor } from "../utlis/https";
 
 const BookingDataDoctor = ({
@@ -40,6 +41,15 @@ const BookingDataDoctor = ({
     });
   };
 
+  // Handle booking status change
+  const handleBookingStatusChange = (bookingId, isCompleted) => {
+    // You can implement the logic to update booking status here
+    console.log(
+      `Booking ${bookingId} status changed to:`,
+      isCompleted ? "completed" : "pending"
+    );
+  };
+
   // const isFutureDate = (date) => {
   //   const now = new Date();
   //   const selectedDateTime = new Date(date);
@@ -56,7 +66,7 @@ const BookingDataDoctor = ({
   const isCanceledDay = doctorsDetails?.canceled_days?.includes(date);
   return (
     <>
-      <div className="flex gap-1 justify-between items-end">
+      <div className="flex gap-1 justify-between items-end mb-10">
         <h2 className="font-medium">حجوزات اليوم</h2>
         <div className="flex gap-1 justify-end items-end">
           {!hasCancelledBooking && !isCanceledDay ? (
@@ -84,30 +94,16 @@ const BookingDataDoctor = ({
           الدكتور معتذر عن الحضور لهذا اليوم
         </p>
       ) : filteredBookings.length > 0 && !isDoctorAbsent ? (
-        filteredBookings.map((booking) => (
-          <div
-            key={booking.id}
-            className="my-4 shadow-sm bg-white rounded-lg py-2"
-          >
-            <div className="p-4 rounded-lg">
-              <span className="flex gap-2">
-                <div className="InputPrimary mt-1" />
-                <p className="font-medium">{booking.date}</p>
-              </span>
-              <h3 className="text-xl font-normal my-1">
-                {booking.user?.name || "اسم غير متوفر"}
-              </h3>
-              <div className="flex justify-between">
-                <h3 className="text-[#8F9BB3] text-md">
-                  {booking.doctor?.name || "غير متوفر"}
-                </h3>
-                {booking.status === "cancelled" && (
-                  <p className="text-red-500">تم إلغاء الحجز</p>
-                )}
-              </div>
-            </div>
-          </div>
-        ))
+        <div className="space-y-4">
+          {filteredBookings.map((booking) => (
+            <BookingCard
+              key={booking.id}
+              booking={booking}
+              showSwitch={true}
+              onStatusChange={handleBookingStatusChange}
+            />
+          ))}
+        </div>
       ) : (
         <p className="text-gray-500 text-center my-4">لا توجد حجوزات متاحة</p>
       )}
