@@ -33,7 +33,7 @@ const DoctorBooking = () => {
         id: doctorId,
       }),
   });
-  const bookings = doctorsDetails?.bookings || [];
+  const bookings = doctorsDetails?.data?.bookings || [];
   const filteredBookings = selectedDate
     ? bookings.filter(
         (booking) => booking.date === format(selectedDate, "yyyy-MM-dd")
@@ -110,7 +110,7 @@ const DoctorBooking = () => {
                   (booking) => booking.date === dayKey
                 );
                 const isCanceled =
-                  doctorsDetails?.canceled_days?.includes(dayKey);
+                  doctorsDetails?.data?.canceled_days?.includes(dayKey);
                 const isSelected =
                   selectedDate &&
                   format(day, "yyyy-MM-dd") ===

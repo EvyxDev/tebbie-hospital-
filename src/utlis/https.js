@@ -40,6 +40,7 @@ export const getAllServices = async ({ token }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const getSpecializations = async ({ token }) => {
   try {
     const response = await fetch(`${API_URL}/hospital/v1/get-specializations`, {
@@ -63,6 +64,7 @@ export const getSpecializations = async ({ token }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const getDoctors = async ({ token }) => {
   try {
     const response = await fetch(`${API_URL}/hospital/v1/get-doctors`, {
@@ -333,6 +335,7 @@ export const getSpecialization = async ({ token, id }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const getBooking = async ({ token, id, start, end }) => {
   try {
     const queryParams = new URLSearchParams();
@@ -362,6 +365,7 @@ export const getBooking = async ({ token, id, start, end }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const getAllBooking = async ({ token, start, end }) => {
   try {
     const queryParams = new URLSearchParams();
@@ -391,6 +395,7 @@ export const getAllBooking = async ({ token, start, end }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const getBookingDetails = async ({ token, id }) => {
   try {
     const response = await fetch(
@@ -434,6 +439,7 @@ export const getHomeVisit = async ({ token }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const getAllHomeVists = async ({ token, start, end }) => {
   try {
     const queryParams = new URLSearchParams();
@@ -463,6 +469,7 @@ export const getAllHomeVists = async ({ token, start, end }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const updateHomeVisit = async ({
   token,
   home_visit_id,
@@ -554,6 +561,7 @@ export const getRefunds = async ({ token }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const getWallet = async ({ token, start, end }) => {
   try {
     const queryParams = new URLSearchParams();
@@ -656,6 +664,7 @@ export const getBookingDoctor = async ({ token, id, date }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const getreviews = async ({ token }) => {
   try {
     const response = await fetch(`${API_URL}/hospital/v1/get-reviews`, {
@@ -676,6 +685,7 @@ export const getreviews = async ({ token }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const getHomeVisitService = async ({ token }) => {
   try {
     const response = await fetch(`${API_URL}/hospital/v1/HomeVisitService`, {
@@ -696,6 +706,7 @@ export const getHomeVisitService = async ({ token }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const assignAllVisitServices = async ({ token, services }) => {
   try {
     const formdata = new FormData();
@@ -780,11 +791,12 @@ export const getBookingsAttendance = async ({ token, id, date }) => {
     }
 
     const data = await response.json();
-    return data.data;
+    return data;
   } catch (error) {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const attendanceDoctor = async ({ token, doctor_id, date }) => {
   const formdata = new FormData();
   formdata.append("doctor_id", doctor_id);
@@ -835,6 +847,7 @@ export const getDoctorSlots = async ({ token, id }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
 export const getDoctorsBook = async ({ token, id }) => {
   try {
     const response = await fetch(
@@ -1322,6 +1335,68 @@ export const cancelServiceBooking = async ({ token, bookingId }) => {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to cancel booking");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Confirm doctor attendance
+export const confirmDoctorAttendance = async ({ token, bookingId }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/confirm-doctor-attendance`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          booking_id: bookingId,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Failed to confirm doctor attendance"
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Cancel doctor attendance
+export const cancelDoctorAttendance = async ({ token, bookingId }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/cancel-doctor-attendance`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          booking_id: bookingId,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Failed to cancel doctor attendance"
+      );
     }
 
     const data = await response.json();

@@ -65,7 +65,7 @@ export default function ServiceBookings() {
 
   // Count bookings by status
   const statusCounts = {
-    completed: bookingsArray.filter((b) => b.status === "completed").length,
+    finished: bookingsArray.filter((b) => b.status === "finished").length,
     pending: bookingsArray.filter((b) => b.status === "pending").length,
     cancelled: bookingsArray.filter((b) => b.status === "cancelled").length,
   };
@@ -99,7 +99,7 @@ export default function ServiceBookings() {
         return "bg-red-100 text-red-800";
       case "pending":
         return "bg-yellow-100 text-yellow-800";
-      case "completed":
+      case "finished":
         return "bg-blue-100 text-blue-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -114,7 +114,7 @@ export default function ServiceBookings() {
         return "ملغي";
       case "pending":
         return "في الانتظار";
-      case "completed":
+      case "finished":
         return "مكتمل";
       default:
         return status;
@@ -165,8 +165,8 @@ export default function ServiceBookings() {
   // Filter bookings based on active tab
   const filteredBookings = bookingsArray.filter((booking) => {
     switch (activeTab) {
-      case "completed":
-        return booking.status === "completed";
+      case "finished":
+        return booking.status === "finished";
       case "pending":
         return booking.status === "pending";
       case "cancelled":
@@ -202,14 +202,14 @@ export default function ServiceBookings() {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
         <div className="flex">
           <button
-            onClick={() => setActiveTab("completed")}
+            onClick={() => setActiveTab("finished")}
             className={`flex-1 py-3 px-4 text-sm font-medium rounded-r-lg transition-colors ${
-              activeTab === "completed"
+              activeTab === "finished"
                 ? "bg-green-600 text-white"
                 : "text-gray-600 hover:text-green-600 hover:bg-gray-50"
             }`}
           >
-            مكتملة ({statusCounts.completed})
+            مكتملة ({statusCounts.finished})
           </button>
           <button
             onClick={() => setActiveTab("pending")}
@@ -408,7 +408,7 @@ export default function ServiceBookings() {
                   )}
 
                   {booking.status !== "cancelled" &&
-                    booking.status !== "completed" && (
+                    booking.status !== "finished" && (
                       <button
                         onClick={() =>
                           cancelMutation.mutate({ bookingId: booking.id })

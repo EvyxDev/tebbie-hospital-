@@ -51,7 +51,7 @@ const AddsSpecialization = () => {
 
         <div className="my-6">
           <h2 className="block font-medium">الاطباء</h2>
-          <div className="my-3 flex flex-wrap gap-2">
+          <div className="my-3 flex flex-wrap gap-2 max-h-92 overflow-y-auto">
             {initialDoctorsBookingData.map((slot, index) => (
               <div
                 key={index}

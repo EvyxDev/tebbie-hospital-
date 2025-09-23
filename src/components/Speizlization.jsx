@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { getSpecialization } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import LoaderComponent from "./LoaderComponent";
 import BookingCard from "./BookingCard";
 import { bookingIcon, doctorIcon, exportIcon } from "../assets";
@@ -8,13 +9,14 @@ import { bookingIcon, doctorIcon, exportIcon } from "../assets";
 const Speizlization = () => {
   const { speizId } = useParams();
   const token = localStorage.getItem("authToken");
+  const [activeTab, setActiveTab] = useState("pending");
 
   // Handle booking status change
   const handleBookingStatusChange = (bookingId, isCompleted) => {
     // You can implement the logic to update booking status here
     console.log(
       `Booking ${bookingId} status changed to:`,
-      isCompleted ? "completed" : "pending"
+      isCompleted ? "finished" : "pending"
     );
   };
 
@@ -43,6 +45,32 @@ const Speizlization = () => {
       </div>
     );
   }
+
+  // Ensure bookings is an array
+  const bookingsArray = Array.isArray(specializationData.bookings)
+    ? specializationData.bookings
+    : [];
+
+  // Count bookings by status
+  const statusCounts = {
+    finished: bookingsArray.filter((b) => b.status === "finished").length,
+    pending: bookingsArray.filter((b) => b.status === "pending").length,
+    cancelled: bookingsArray.filter((b) => b.status === "cancelled").length,
+  };
+
+  // Filter bookings based on active tab
+  const filteredBookings = bookingsArray.filter((booking) => {
+    switch (activeTab) {
+      case "finished":
+        return booking.status === "finished";
+      case "pending":
+        return booking.status === "pending";
+      case "cancelled":
+        return booking.status === "cancelled";
+      default:
+        return true; // Show all
+    }
+  });
 
   return (
     <section className="w-full h-full">
@@ -91,11 +119,48 @@ const Speizlization = () => {
         </div>
 
         <div className="w-full h-full">
-          <h2 className="font-[500] text-lg mb-8">الحجوزات القادمة</h2>
-          {specializationData.bookings &&
-          specializationData.bookings.length > 0 ? (
+          <h2 className="font-[500] text-lg mb-4">الحجوزات</h2>
+
+          {/* Tabs */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div className="flex">
+              <button
+                onClick={() => setActiveTab("finished")}
+                className={`flex-1 py-3 px-4 text-sm font-medium rounded-r-lg transition-colors ${
+                  activeTab === "finished"
+                    ? "bg-green-600 text-white"
+                    : "text-gray-600 hover:text-green-600 hover:bg-gray-50"
+                }`}
+              >
+                مكتملة ({statusCounts.finished})
+              </button>
+              <button
+                onClick={() => setActiveTab("pending")}
+                className={`flex-1 py-3 px-4 text-sm font-medium border-x border-gray-200 transition-colors ${
+                  activeTab === "pending"
+                    ? "bg-yellow-600 text-white"
+                    : "text-gray-600 hover:text-yellow-600 hover:bg-gray-50"
+                }`}
+              >
+                في الانتظار ({statusCounts.pending})
+              </button>
+              <button
+                onClick={() => setActiveTab("cancelled")}
+                className={`flex-1 py-3 px-4 text-sm font-medium rounded-l-lg transition-colors ${
+                  activeTab === "cancelled"
+                    ? "bg-red-600 text-white"
+                    : "text-gray-600 hover:text-red-600 hover:bg-gray-50"
+                }`}
+              >
+                ملغية ({statusCounts.cancelled})
+              </button>
+            </div>
+          </div>
+
+          {/* Bookings List */}
+          {filteredBookings.length > 0 ? (
             <div className="space-y-4">
-              {specializationData.bookings.map((booking) => (
+              {filteredBookings.map((booking) => (
                 <BookingCard
                   key={booking.id}
                   booking={booking}
@@ -106,7 +171,7 @@ const Speizlization = () => {
             </div>
           ) : (
             <div className="text-center text-gray-500 p-4 bg-white rounded-md shadow-sm h-[30vh] flex justify-center items-center">
-              <p>لا توجد حجوزات حالياً</p>
+              <p>لا توجد حجوزات في هذه الفئة</p>
             </div>
           )}
         </div>

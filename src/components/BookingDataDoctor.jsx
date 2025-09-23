@@ -14,6 +14,7 @@ const BookingDataDoctor = ({
 }) => {
   const date = filteredBookings[0]?.date || format(selectedDate, "yyyy-MM-dd");
   const [attendanceStatus, setAttendanceStatus] = useState(false);
+  const [activeTab, setActiveTab] = useState("pending");
   const queryClient = useQueryClient();
   const token = localStorage.getItem("authToken");
 
@@ -46,7 +47,7 @@ const BookingDataDoctor = ({
     // You can implement the logic to update booking status here
     console.log(
       `Booking ${bookingId} status changed to:`,
-      isCompleted ? "completed" : "pending"
+      isCompleted ? "finished" : "pending"
     );
   };
 
@@ -64,9 +65,31 @@ const BookingDataDoctor = ({
     (booking) => booking.status === "cancelled"
   );
   const isCanceledDay = doctorsDetails?.canceled_days?.includes(date);
+
+  // Count bookings by status
+  const statusCounts = {
+    finished: filteredBookings.filter((b) => b.status === "finished").length,
+    pending: filteredBookings.filter((b) => b.status === "pending").length,
+    cancelled: filteredBookings.filter((b) => b.status === "cancelled").length,
+  };
+
+  // Filter bookings based on active tab
+  const tabFilteredBookings = filteredBookings.filter((booking) => {
+    switch (activeTab) {
+      case "finished":
+        return booking.status === "finished";
+      case "pending":
+        return booking.status === "pending";
+      case "cancelled":
+        return booking.status === "cancelled";
+      default:
+        return true; // Show all
+    }
+  });
+
   return (
     <>
-      <div className="flex gap-1 justify-between items-end mb-10">
+      <div className="flex gap-1 justify-between items-end mb-4">
         <h2 className="font-medium">حجوزات اليوم</h2>
         <div className="flex gap-1 justify-end items-end">
           {!hasCancelledBooking && !isCanceledDay ? (
@@ -89,13 +112,49 @@ const BookingDataDoctor = ({
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+        <div className="flex">
+          <button
+            onClick={() => setActiveTab("finished")}
+            className={`flex-1 py-3 px-4 text-sm font-medium rounded-r-lg transition-colors ${
+              activeTab === "finished"
+                ? "bg-green-600 text-white"
+                : "text-gray-600 hover:text-green-600 hover:bg-gray-50"
+            }`}
+          >
+            مكتملة ({statusCounts.finished})
+          </button>
+          <button
+            onClick={() => setActiveTab("pending")}
+            className={`flex-1 py-3 px-4 text-sm font-medium border-x border-gray-200 transition-colors ${
+              activeTab === "pending"
+                ? "bg-yellow-600 text-white"
+                : "text-gray-600 hover:text-yellow-600 hover:bg-gray-50"
+            }`}
+          >
+            في الانتظار ({statusCounts.pending})
+          </button>
+          <button
+            onClick={() => setActiveTab("cancelled")}
+            className={`flex-1 py-3 px-4 text-sm font-medium rounded-l-lg transition-colors ${
+              activeTab === "cancelled"
+                ? "bg-red-600 text-white"
+                : "text-gray-600 hover:text-red-600 hover:bg-gray-50"
+            }`}
+          >
+            ملغية ({statusCounts.cancelled})
+          </button>
+        </div>
+      </div>
+
       {isDoctorAbsent ? (
         <p className="text-red-500 text-center my-4">
           الدكتور معتذر عن الحضور لهذا اليوم
         </p>
-      ) : filteredBookings.length > 0 && !isDoctorAbsent ? (
+      ) : tabFilteredBookings.length > 0 && !isDoctorAbsent ? (
         <div className="space-y-4">
-          {filteredBookings.map((booking) => (
+          {tabFilteredBookings.map((booking) => (
             <BookingCard
               key={booking.id}
               booking={booking}
@@ -105,7 +164,9 @@ const BookingDataDoctor = ({
           ))}
         </div>
       ) : (
-        <p className="text-gray-500 text-center my-4">لا توجد حجوزات متاحة</p>
+        <p className="text-gray-500 text-center my-4">
+          لا توجد حجوزات في هذه الفئة
+        </p>
       )}
     </>
   );

@@ -1,6 +1,81 @@
-import Switch from "./Switch";
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  confirmDoctorAttendance,
+  cancelDoctorAttendance,
+} from "../utlis/https";
+import { Snackbar, Alert, Button, ButtonGroup } from "@mui/material";
 
-const BookingCard = ({ booking, showSwitch = true, onStatusChange }) => {
+const BookingCard = ({ booking, showSwitch = true }) => {
+  const queryClient = useQueryClient();
+  const token = localStorage.getItem("authToken");
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  // Confirm attendance mutation
+  const confirmAttendanceMutation = useMutation({
+    mutationFn: ({ bookingId }) =>
+      confirmDoctorAttendance({ token, bookingId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["specialization"]);
+      queryClient.invalidateQueries(["doctor-attendance"]);
+      queryClient.invalidateQueries(["bookings"]);
+      queryClient.invalidateQueries(["all-home-visits"]);
+      setSnackbar({
+        open: true,
+        message: "تم تأكيد حضور الطبيب بنجاح",
+        severity: "success",
+      });
+    },
+    onError: (error) => {
+      setSnackbar({
+        open: true,
+        message: error.message || "فشل في تأكيد حضور الطبيب",
+        severity: "error",
+      });
+    },
+  });
+
+  // Cancel attendance mutation
+  const cancelAttendanceMutation = useMutation({
+    mutationFn: ({ bookingId }) => cancelDoctorAttendance({ token, bookingId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["specialization"]);
+      queryClient.invalidateQueries(["doctor-attendance"]);
+      queryClient.invalidateQueries(["bookings"]);
+      queryClient.invalidateQueries(["all-home-visits"]);
+      setSnackbar({
+        open: true,
+        message: "تم إلغاء حضور الطبيب بنجاح",
+        severity: "success",
+      });
+    },
+    onError: (error) => {
+      setSnackbar({
+        open: true,
+        message: error.message || "فشل في إلغاء حضور الطبيب",
+        severity: "error",
+      });
+    },
+  });
+
+  const handleConfirmAttendance = () => {
+    confirmAttendanceMutation.mutate({ bookingId: booking.id });
+  };
+
+  const handleCancelAttendance = () => {
+    cancelAttendanceMutation.mutate({ bookingId: booking.id });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
   // Format date function
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -38,6 +113,8 @@ const BookingCard = ({ booking, showSwitch = true, onStatusChange }) => {
         return "في الانتظار";
       case "completed":
         return "مكتمل";
+      case "finished":
+        return "مكتمل";
       default:
         return status;
     }
@@ -68,12 +145,6 @@ const BookingCard = ({ booking, showSwitch = true, onStatusChange }) => {
         return "في الانتظار";
       default:
         return status;
-    }
-  };
-
-  const handleSwitchChange = (checked) => {
-    if (onStatusChange) {
-      onStatusChange(booking.id, checked);
     }
   };
 
@@ -171,22 +242,93 @@ const BookingCard = ({ booking, showSwitch = true, onStatusChange }) => {
       )}
 
       {/* Action Section */}
-      {showSwitch && (
-        <div className="border-t pt-3 mt-3">
-          <div className="flex gap-2 justify-between items-center">
-            <div className="flex gap-1 justify-center items-center">
-              <p className="text-[#8F9BB3] text-sm">تأكيد حضور</p>
-              <Switch
-                checked={booking.status === "completed"}
-                onChange={handleSwitchChange}
-              />
+      <div className="border-t pt-3 mt-3">
+        <div className="flex gap-2 justify-between items-center">
+          {booking.status === "pending" && (
+            <ButtonGroup
+              size="small"
+              variant="contained"
+              className="flex gap-3 items-center"
+            >
+              <Button
+                onClick={handleCancelAttendance}
+                disabled={
+                  confirmAttendanceMutation.isPending ||
+                  cancelAttendanceMutation.isPending
+                }
+                color="error"
+                sx={{ fontSize: "0.75rem", minWidth: "120px" }}
+              >
+                {cancelAttendanceMutation.isPending
+                  ? "جاري الإلغاء..."
+                  : "إلغاء الحجز"}
+              </Button>
+              <Button
+                onClick={handleConfirmAttendance}
+                disabled={
+                  confirmAttendanceMutation.isPending ||
+                  cancelAttendanceMutation.isPending
+                }
+                color="success"
+                sx={{ fontSize: "0.75rem", minWidth: "120px" }}
+              >
+                {confirmAttendanceMutation.isPending
+                  ? "جاري التأكيد..."
+                  : "تأكيد الحجز"}
+              </Button>
+            </ButtonGroup>
+          )}
+
+          {booking.status === "cancelled" && (
+            <ButtonGroup
+              size="small"
+              variant="contained"
+              className="flex gap-3 items-center"
+            >
+              <Button
+                onClick={handleCancelAttendance}
+                disabled={
+                  confirmAttendanceMutation.isPending ||
+                  cancelAttendanceMutation.isPending
+                }
+                color="error"
+                sx={{ fontSize: "0.75rem", minWidth: "120px" }}
+              >
+                {cancelAttendanceMutation.isPending
+                  ? "جاري الإلغاء..."
+                  : "إلغاء الحجز"}
+              </Button>
+            </ButtonGroup>
+          )}
+
+          {booking.status === "finished" && (
+            <div className="text-sm text-green-600 font-medium">
+              تم إكمال الحجز
             </div>
-            <div className="text-sm text-gray-500">
-              آخر تحديث: {formatDate(booking.updated_at)}
-            </div>
+          )}
+
+          <div className="text-sm text-gray-500">
+            آخر تحديث: {formatDate(booking.updated_at)}
           </div>
         </div>
-      )}
+      </div>
+
+      {/* MUI Snackbar for notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        dir="rtl"
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
