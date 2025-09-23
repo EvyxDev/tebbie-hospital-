@@ -218,11 +218,15 @@ const BookingCard = ({ booking, showSwitch = true }) => {
             <div>
               <p>
                 <span className="text-gray-500">الاسم:</span>{" "}
-                {booking.user.name || "غير محدد"}
+                {booking.is_for_self
+                  ? booking.user.name || "غير محدد"
+                  : booking.patient?.name || "غير محدد"}
               </p>
               <p>
                 <span className="text-gray-500">رقم الهاتف:</span>{" "}
-                {booking.user.phone || "غير محدد"}
+                {booking.is_for_self
+                  ? booking.user.phone || "غير محدد"
+                  : booking.patient?.phone || "غير محدد"}
               </p>
             </div>
             <div>
@@ -230,6 +234,26 @@ const BookingCard = ({ booking, showSwitch = true }) => {
                 <span className="text-gray-500">نوع الحجز:</span>{" "}
                 {booking.is_for_self ? "لنفسه" : "لشخص آخر"}
               </p>
+              {!booking.is_for_self && (
+                <>
+                  <p>
+                    <span className="text-gray-500">تاريخ الميلاد:</span>{" "}
+                    {booking.patient?.date_of_birth
+                      ? formatDate(booking.patient.date_of_birth)
+                      : "غير محدد"}
+                  </p>
+                  <p>
+                    <span className="text-gray-500">الجنس:</span>{" "}
+                    {booking.patient?.gender
+                      ? booking.patient.gender === "female"
+                        ? "أنثى"
+                        : booking.patient.gender === "male"
+                        ? "ذكر"
+                        : booking.patient.gender
+                      : "غير محدد"}
+                  </p>
+                </>
+              )}
               <p>
                 <span className="text-gray-500">حالة الاسترداد:</span>{" "}
                 {booking.is_refunded === "true"
@@ -286,17 +310,17 @@ const BookingCard = ({ booking, showSwitch = true }) => {
               className="flex gap-3 items-center"
             >
               <Button
-                onClick={handleCancelAttendance}
+                onClick={handleConfirmAttendance}
                 disabled={
                   confirmAttendanceMutation.isPending ||
                   cancelAttendanceMutation.isPending
                 }
-                color="error"
+                color="success"
                 sx={{ fontSize: "0.75rem", minWidth: "120px" }}
               >
-                {cancelAttendanceMutation.isPending
-                  ? "جاري الإلغاء..."
-                  : "إلغاء الحجز"}
+                {confirmAttendanceMutation.isPending
+                  ? "جاري التأكيد..."
+                  : "تأكيد الحجز"}
               </Button>
             </ButtonGroup>
           )}
