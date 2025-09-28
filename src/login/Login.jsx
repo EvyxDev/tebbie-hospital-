@@ -42,7 +42,6 @@ const Login = () => {
         //   vapidKey: import.meta.env.VITE_VAPID_KEY,
         // });
         const webViewFcmToken = Cookies.get("fcm-token");
-        console.log(webViewFcmToken);
         const response = await fetch(`${API_URL}/hospital/login-hospital`, {
           method: "POST",
           headers: {
@@ -63,6 +62,11 @@ const Login = () => {
         if (data.success) {
           localStorage.setItem("authToken", data.data.token);
           localStorage.setItem("hospital_id", data.data.hospital_id);
+          localStorage.setItem("role", data.data.role);
+          localStorage.setItem(
+            "permissions",
+            JSON.stringify(data.data.role.permissions)
+          );
 
           navigate("/");
         } else {

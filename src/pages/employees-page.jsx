@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { User, Phone, Calendar, Plus, Edit, Trash2 } from "lucide-react";
 import { getEmployees, deleteEmployee } from "../utlis/https";
 import EmployeeDialog from "../components/EmployeeFormDialog";
+import { hasPermission } from "../utils/permissionUtils";
 
 export default function EmployeesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -35,16 +36,28 @@ export default function EmployeesPage() {
   });
 
   const handleAddEmployee = () => {
+    if (!hasPermission("add-employees")) {
+      alert("ليس لديك صلاحية لإضافة الموظفين");
+      return;
+    }
     setSelectedEmployee(null);
     setIsDialogOpen(true);
   };
 
   const handleEditEmployee = (employee) => {
+    if (!hasPermission("edit-employees")) {
+      alert("ليس لديك صلاحية لتعديل الموظفين");
+      return;
+    }
     setSelectedEmployee(employee);
     setIsDialogOpen(true);
   };
 
   const handleDeleteEmployee = (employee) => {
+    if (!hasPermission("delete-employees")) {
+      alert("ليس لديك صلاحية لحذف الموظفين");
+      return;
+    }
     const confirmed = window.confirm(
       `هل أنت متأكد من حذف الموظف: ${employee.name}؟`
     );
@@ -103,8 +116,17 @@ export default function EmployeesPage() {
         <h1 className="text-xl font-bold text-gray-900">الموظفين</h1>
         <button
           onClick={handleAddEmployee}
-          className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg shadow transition-colors"
-          disabled={deleteMutation.isPending}
+          className={`p-2 rounded-lg shadow transition-colors ${
+            hasPermission("add-employees")
+              ? "bg-blue-500 hover:bg-blue-600 text-white"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+          disabled={deleteMutation.isPending || !hasPermission("add-employees")}
+          title={
+            !hasPermission("add-employees")
+              ? "ليس لديك صلاحية لإضافة الموظفين"
+              : ""
+          }
         >
           <Plus size={20} />
         </button>
@@ -132,15 +154,39 @@ export default function EmployeesPage() {
                     </span>
                     <button
                       onClick={() => handleEditEmployee(employee)}
-                      className="bg-green-100 hover:bg-green-200 text-green-600 p-1 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={deleteMutation.isPending}
+                      className={`p-1 rounded-full transition-colors ${
+                        hasPermission("edit-employees")
+                          ? "bg-green-100 hover:bg-green-200 text-green-600"
+                          : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      disabled={
+                        deleteMutation.isPending ||
+                        !hasPermission("edit-employees")
+                      }
+                      title={
+                        !hasPermission("edit-employees")
+                          ? "ليس لديك صلاحية لتعديل الموظفين"
+                          : ""
+                      }
                     >
                       <Edit size={16} />
                     </button>
                     <button
                       onClick={() => handleDeleteEmployee(employee)}
-                      className="bg-red-100 hover:bg-red-200 text-red-600 p-1 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={deleteMutation.isPending}
+                      className={`p-1 rounded-full transition-colors ${
+                        hasPermission("delete-employees")
+                          ? "bg-red-100 hover:bg-red-200 text-red-600"
+                          : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      disabled={
+                        deleteMutation.isPending ||
+                        !hasPermission("delete-employees")
+                      }
+                      title={
+                        !hasPermission("delete-employees")
+                          ? "ليس لديك صلاحية لحذف الموظفين"
+                          : ""
+                      }
                     >
                       {deleteMutation.isPending &&
                       deleteMutation.variables?.id === employee.id ? (

@@ -32,6 +32,7 @@ import Services from "./pages/Services";
 import ServiceBookings from "./pages/ServiceBookings";
 import OldWallet from "./components/OldWallet";
 import NewWallet from "./components/NewWallet";
+import PermissionWrapper from "./components/PermissionWrapper";
 
 const queryClient = new QueryClient();
 
@@ -45,19 +46,54 @@ const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { index: true, element: <Dashboard /> },
-          { path: "home-visit", element: <HomeVisit /> },
+          {
+            path: "home-visit",
+            element: (
+              <PermissionWrapper permissionName="get-home-visit">
+                <HomeVisit />
+              </PermissionWrapper>
+            ),
+          },
           { path: "edit-service", element: <EditService /> },
-          { path: "services", element: <Services /> },
+          {
+            path: "services",
+            element: (
+              <PermissionWrapper permissionName="view-home-visit-service">
+                <Services />
+              </PermissionWrapper>
+            ),
+          },
           { path: "service-slots/:serviceId", element: <ServiceSlots /> },
           { path: "service-bookings/:serviceId", element: <ServiceBookings /> },
-          { path: "bookings", element: <BookingsPage /> },
-          { path: "employees", element: <EmployeesPage /> },
+          {
+            path: "bookings",
+            element: (
+              <PermissionWrapper permissionName="get-booking-for-all">
+                <BookingsPage />{" "}
+              </PermissionWrapper>
+            ),
+          },
+          {
+            path: "employees",
+            element: (
+              <PermissionWrapper permissionName="view-employees">
+                <EmployeesPage />
+              </PermissionWrapper>
+            ),
+          },
           { path: "settings", element: <SettingsPage /> },
 
           {
             path: "wallet",
             children: [
-              { index: true, element: <Walett /> },
+              {
+                index: true,
+                element: (
+                  <PermissionWrapper permissionName="get-wallet-total">
+                    <Walett />
+                  </PermissionWrapper>
+                ),
+              },
               {
                 path: "old",
                 children: [
@@ -89,7 +125,14 @@ const router = createBrowserRouter([
         path: "/specialization",
         element: <SecondLayout />,
         children: [
-          { path: ":speizId", element: <Speizlization /> },
+          {
+            path: ":speizId",
+            element: (
+              <PermissionWrapper permissionName="view-specializations">
+                <Speizlization />
+              </PermissionWrapper>
+            ),
+          },
           { path: "refunds", element: <Refunds /> },
           {
             path: "booking",

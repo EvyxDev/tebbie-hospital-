@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getDoctorSlots } from "../utlis/https";
 import IntervalForm from "./Interval-form";
 import SlotForm from "./slot-form";
+import { hasPermission } from "../utils/permissionUtils";
 
 const UpdateSpecializ = ({
   isUpdateModalOpen,
@@ -42,8 +43,15 @@ const UpdateSpecializ = ({
   const hasSlots =
     doctorSlotData?.slots?.some((slot) => slot.slot_type === "slots") || false;
 
+  // Check if user has permission to edit doctor
+  const canEditDoctor = hasPermission("edit-doctor-by-hospital");
+
   // Handle tab switching with warning
   const handleTabSwitch = (tabName) => {
+    if (!canEditDoctor) {
+      alert("ليس لديك صلاحية لتعديل بيانات الدكتور");
+      return;
+    }
     if (tabName === "slots" && hasIntervals) {
       alert("يجب حذف الفترات الزمنية الموجودة أولاً قبل إضافة مواعيد محددة");
       return;
@@ -95,10 +103,16 @@ const UpdateSpecializ = ({
                 type="button"
                 onClick={() => handleTabSwitch("slots")}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === "slots"
+                  !canEditDoctor
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : activeTab === "slots"
                     ? "bg-white text-blue-600 shadow-sm"
                     : "text-gray-500 hover:text-gray-700"
                 }`}
+                disabled={!canEditDoctor}
+                title={
+                  !canEditDoctor ? "ليس لديك صلاحية لتعديل بيانات الدكتور" : ""
+                }
               >
                 مواعيد محددة
               </button>
@@ -106,39 +120,73 @@ const UpdateSpecializ = ({
                 type="button"
                 onClick={() => handleTabSwitch("intervals")}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === "intervals"
+                  !canEditDoctor
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : activeTab === "intervals"
                     ? "bg-white text-blue-600 shadow-sm"
                     : "text-gray-500 hover:text-gray-700"
                 }`}
+                disabled={!canEditDoctor}
+                title={
+                  !canEditDoctor ? "ليس لديك صلاحية لتعديل بيانات الدكتور" : ""
+                }
               >
                 فترات زمنية
               </button>
             </div>
-            {activeTab === "slots" && (
-              <SlotForm
-                {...{
-                  isUpdateModalOpen,
-                  isTimeModalOpen,
-                  setTimeIsModalOpen,
-                  setUpdateModalOpen,
-                  setIsModalOpen,
-                  sId,
-                  selectedDoctorId,
-                }}
-              />
-            )}
-            {activeTab === "intervals" && (
-              <IntervalForm
-                {...{
-                  isUpdateModalOpen,
-                  isTimeModalOpen,
-                  setTimeIsModalOpen,
-                  setUpdateModalOpen,
-                  setIsModalOpen,
-                  sId,
-                  selectedDoctorId,
-                }}
-              />
+            {!canEditDoctor ? (
+              <div className="text-center py-8">
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
+                  <svg
+                    className="h-8 w-8 text-red-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  غير مصرح لك
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  ليس لديك صلاحية لتعديل بيانات الدكتور
+                </p>
+              </div>
+            ) : (
+              <>
+                {activeTab === "slots" && (
+                  <SlotForm
+                    {...{
+                      isUpdateModalOpen,
+                      isTimeModalOpen,
+                      setTimeIsModalOpen,
+                      setUpdateModalOpen,
+                      setIsModalOpen,
+                      sId,
+                      selectedDoctorId,
+                    }}
+                  />
+                )}
+                {activeTab === "intervals" && (
+                  <IntervalForm
+                    {...{
+                      isUpdateModalOpen,
+                      isTimeModalOpen,
+                      setTimeIsModalOpen,
+                      setUpdateModalOpen,
+                      setIsModalOpen,
+                      sId,
+                      selectedDoctorId,
+                    }}
+                  />
+                )}
+              </>
             )}
           </motion.div>
         </div>
