@@ -12,11 +12,14 @@ const BookingDataDoctor = ({
   doctorId,
   doctorsDetails,
 }) => {
-  const date = filteredBookings[0]?.date || format(selectedDate, "yyyy-MM-dd");
+  const date = format(selectedDate, "yyyy-MM-dd");
   const [attendanceStatus, setAttendanceStatus] = useState(false);
   const [activeTab, setActiveTab] = useState("pending");
   const queryClient = useQueryClient();
   const token = localStorage.getItem("authToken");
+
+  // Use the already filtered bookings from parent component
+  const bookingsForSelectedDate = filteredBookings;
 
   const mutation = useMutation({
     mutationFn: attendanceDoctor,
@@ -57,24 +60,27 @@ const BookingDataDoctor = ({
   //   return selectedDateTime > now;
   // };
 
-  const isDoctorAbsent = filteredBookings.some(
+  const isDoctorAbsent = bookingsForSelectedDate.some(
     (booking) =>
       booking.status === "cancelled" && booking.reason === "doctor_absent"
   );
-  const hasCancelledBooking = filteredBookings.some(
+  const hasCancelledBooking = bookingsForSelectedDate.some(
     (booking) => booking.status === "cancelled"
   );
   const isCanceledDay = doctorsDetails?.canceled_days?.includes(date);
 
   // Count bookings by status
   const statusCounts = {
-    finished: filteredBookings.filter((b) => b.status === "finished").length,
-    pending: filteredBookings.filter((b) => b.status === "pending").length,
-    cancelled: filteredBookings.filter((b) => b.status === "cancelled").length,
+    finished: bookingsForSelectedDate.filter((b) => b.status === "finished")
+      .length,
+    pending: bookingsForSelectedDate.filter((b) => b.status === "pending")
+      .length,
+    cancelled: bookingsForSelectedDate.filter((b) => b.status === "cancelled")
+      .length,
   };
 
   // Filter bookings based on active tab
-  const tabFilteredBookings = filteredBookings.filter((booking) => {
+  const tabFilteredBookings = bookingsForSelectedDate.filter((booking) => {
     switch (activeTab) {
       case "finished":
         return booking.status === "finished";
@@ -159,6 +165,7 @@ const BookingDataDoctor = ({
               key={booking.id}
               booking={booking}
               showSwitch={true}
+              doctorId={doctorId}
               onStatusChange={handleBookingStatusChange}
             />
           ))}

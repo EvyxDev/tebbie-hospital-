@@ -4,22 +4,17 @@ import LoaderComponent from "../components/LoaderComponent";
 import { useQuery } from "@tanstack/react-query";
 import DoctorBookingHeader from "../components/DoctorBookingHeader";
 import { useState } from "react";
-import {
-  format,
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  getDay,
-  subMonths,
-  getDate,
-} from "date-fns";
-import { IoChevronForward, IoChevronBack } from "react-icons/io5";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { arSA } from "date-fns/locale";
 import BookingDataDoctor from "../components/BookingDataDoctor";
 
 const DoctorBooking = () => {
   const token = localStorage.getItem("authToken");
   const { doctorId } = useParams();
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(null);
 
   const {
     data: doctorsDetails,
@@ -34,146 +29,128 @@ const DoctorBooking = () => {
       }),
   });
   const bookings = doctorsDetails?.data?.bookings || [];
-  const filteredBookings = selectedDate
-    ? bookings.filter(
-        (booking) => booking.date === format(selectedDate, "yyyy-MM-dd")
-      )
-    : bookings;
 
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const startDay = startOfMonth(currentDate);
-  const endDay = endOfMonth(currentDate);
-  const days = eachDayOfInterval({ start: startDay, end: endDay });
+  // Filter bookings by date range
+  const filteredBookings = bookings.filter((booking) => {
+    if (!startDate || !endDate) return true; // Show all if no range selected
 
-  const prevMonthEnd = endOfMonth(subMonths(currentDate, 1));
-  const emptyDays = Array(getDay(startDay))
-    .fill(null)
-    .map((_, i) => getDate(prevMonthEnd) - (getDay(startDay) - 1) + i);
+    const bookingDate = new Date(booking.created_at)
+      .toISOString()
+      .split("T")[0];
+    const startDateStr = startDate.toISOString().split("T")[0];
+    const endDateStr = endDate.toISOString().split("T")[0];
 
-  const handlePrevMonth = () =>
-    setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)));
-  const handleNextMonth = () =>
-    setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)));
-
-  const handleDayClick = (day) => {
-    setSelectedDate(day);
-  };
+    return bookingDate >= startDateStr && bookingDate <= endDateStr;
+  });
 
   return (
-    <section className="p-4">
-      <DoctorBookingHeader />
-      <div className="flex flex-col overflow-scroll">
-        <div className="flex flex-col h-screen">
-          <div className="w-full bg-white z-10 my-4">
-            <div className="flex justify-between items-center mb-4">
-              <button
-                className="w-10 h-10 flex items-center justify-center border rounded-lg text-gray-600 hover:bg-gray-200"
-                onClick={handlePrevMonth}
-              >
-                <IoChevronForward className="text-xl" />
-              </button>
-              <h5 className="text-lg font-bold text-gray-800">
-                {format(currentDate, "MMMM yyyy")}
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={arSA}>
+      <section className="p-4">
+        <DoctorBookingHeader />
+        <div className="flex flex-col overflow-scroll">
+          <div className="flex flex-col h-screen">
+            <div className="w-full bg-white z-10 my-4 p-4 rounded-lg shadow-sm border border-gray-200">
+              <h5 className="text-lg font-bold text-gray-800 mb-4">
+                اختر الفترة الزمنية
               </h5>
-              <button
-                className="w-10 h-10 flex items-center justify-center border rounded-lg text-gray-600 hover:bg-gray-200"
-                onClick={handleNextMonth}
-              >
-                <IoChevronBack className="text-xl" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-7 gap-2 text-center font-bold text-gray-600 text-xs">
-              {[
-                "الأحد",
-                "الاثنين",
-                "الثلاثاء",
-                "الأربعاء",
-                "الخميس",
-                "الجمعة",
-                "السبت",
-              ].map((day) => (
-                <div key={day}>{day}</div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-7 gap-2 mt-4">
-              {emptyDays.map((day, i) => (
-                <div key={`prev-${i}`} className="text-gray-400">
-                  {day}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    من تاريخ
+                  </label>
+                  <DatePicker
+                    value={startDate}
+                    onChange={(newValue) => setStartDate(newValue)}
+                    format="dd/MM/yyyy"
+                    minDate={new Date()}
+                    sx={{
+                      width: "100%",
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "12px",
+                        backgroundColor: "#f8f9fa",
+                        border: "1px solid #e9ecef",
+                        "&:hover": {
+                          borderColor: "#007bff",
+                        },
+                        "&.Mui-focused": {
+                          borderColor: "#007bff",
+                          boxShadow: "0 0 0 2px rgba(0, 123, 255, 0.25)",
+                        },
+                      },
+                      "& .MuiInputBase-input": {
+                        padding: "12px 16px",
+                        fontSize: "16px",
+                        fontWeight: "500",
+                        color: "#495057",
+                      },
+                      "& .MuiSvgIcon-root": {
+                        color: "#6c757d",
+                        marginRight: "12px",
+                      },
+                    }}
+                  />
                 </div>
-              ))}
-
-              {days.map((day) => {
-                const dayKey = format(day, "yyyy-MM-dd");
-                const bookingsForDay = bookings.filter(
-                  (booking) => booking.date === dayKey
-                );
-                const isCanceled =
-                  doctorsDetails?.data?.canceled_days?.includes(dayKey);
-                const isSelected =
-                  selectedDate &&
-                  format(day, "yyyy-MM-dd") ===
-                    format(selectedDate, "yyyy-MM-dd");
-
-                const isPastDay = day < new Date().setHours(0, 0, 0, 0);
-
-                return (
-                  <button
-                    key={dayKey}
-                    className={`relative h-12 flex flex-col items-center justify-center rounded-lg cursor-pointer
-                    ${bookingsForDay.length > 0 ? "bg-green-100" : ""}
-                    ${isSelected ? "bg-blue-200 border-2 border-blue-300" : ""}
-                    ${isCanceled ? "bg-red-100" : ""}
-                    ${
-                      isPastDay
-                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                        : ""
-                    }`}
-                    onClick={() => !isPastDay && handleDayClick(day)}
-                    disabled={isPastDay}
-                  >
-                    <span className="font-bold">{format(day, "d")}</span>
-                    {bookingsForDay.length > 0 && !isPastDay && (
-                      <div className="absolute bottom-1 flex gap-1">
-                        {bookingsForDay.slice(0, 3).map((_, i) => (
-                          <span
-                            key={i}
-                            className="w-1.5 h-1.5 bg-green-500 rounded-full"
-                          ></span>
-                        ))}
-                      </div>
-                    )}
-                    {isCanceled && !isPastDay && (
-                      <span className="absolute bottom-1 text-xs text-red-600"></span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {isLoading ? (
-            <LoaderComponent />
-          ) : error ? (
-            <div className="flex justify-center items-center text-md text-red-400 h-[30vh]">
-              <p>{error.message}</p>
-            </div>
-          ) : (
-            <>
-              <div className="flex-1 overflow-y-auto my-4">
-                <BookingDataDoctor
-                  filteredBookings={filteredBookings}
-                  selectedDate={selectedDate}
-                  doctorId={doctorId}
-                  doctorsDetails={doctorsDetails}
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    إلى تاريخ
+                  </label>
+                  <DatePicker
+                    value={endDate}
+                    onChange={(newValue) => setEndDate(newValue)}
+                    format="dd/MM/yyyy"
+                    minDate={startDate || new Date()}
+                    sx={{
+                      width: "100%",
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "12px",
+                        backgroundColor: "#f8f9fa",
+                        border: "1px solid #e9ecef",
+                        "&:hover": {
+                          borderColor: "#007bff",
+                        },
+                        "&.Mui-focused": {
+                          borderColor: "#007bff",
+                          boxShadow: "0 0 0 2px rgba(0, 123, 255, 0.25)",
+                        },
+                      },
+                      "& .MuiInputBase-input": {
+                        padding: "12px 16px",
+                        fontSize: "16px",
+                        fontWeight: "500",
+                        color: "#495057",
+                      },
+                      "& .MuiSvgIcon-root": {
+                        color: "#6c757d",
+                        marginRight: "12px",
+                      },
+                    }}
+                  />
+                </div>
               </div>
-            </>
-          )}
+            </div>
+
+            {isLoading ? (
+              <LoaderComponent />
+            ) : error ? (
+              <div className="flex justify-center items-center text-md text-red-400 h-[30vh]">
+                <p>{error.message}</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex-1 overflow-y-auto my-4">
+                  <BookingDataDoctor
+                    filteredBookings={filteredBookings}
+                    selectedDate={startDate || new Date()}
+                    doctorId={doctorId}
+                    doctorsDetails={doctorsDetails}
+                  />
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </LocalizationProvider>
   );
 };
 

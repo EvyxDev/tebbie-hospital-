@@ -1,24 +1,21 @@
 import { Link, useParams } from "react-router-dom";
 import { getSpecialization } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 import LoaderComponent from "./LoaderComponent";
-import BookingCard from "./BookingCard";
-import { bookingIcon, doctorIcon, exportIcon } from "../assets";
+import { doctorIcon, exportIcon } from "../assets";
 
 const Speizlization = () => {
   const { speizId } = useParams();
   const token = localStorage.getItem("authToken");
-  const [activeTab, setActiveTab] = useState("pending");
+  // const [activeTab, setActiveTab] = useState("pending");
 
   // Handle booking status change
-  const handleBookingStatusChange = (bookingId, isCompleted) => {
-    // You can implement the logic to update booking status here
-    console.log(
-      `Booking ${bookingId} status changed to:`,
-      isCompleted ? "finished" : "pending"
-    );
-  };
+  // const handleBookingStatusChange = (bookingId, isCompleted) => {
+  //   console.log(
+  //     `Booking ${bookingId} status changed to:`,
+  //     isCompleted ? "finished" : "pending"
+  //   );
+  // };
 
   const {
     data: specializationData,
@@ -47,30 +44,29 @@ const Speizlization = () => {
   }
 
   // Ensure bookings is an array
-  const bookingsArray = Array.isArray(specializationData.bookings)
-    ? specializationData.bookings
-    : [];
+  // const bookingsArray = Array.isArray(specializationData.bookings)
+  //   ? specializationData.bookings
+  //   : [];
 
   // Count bookings by status
-  const statusCounts = {
-    finished: bookingsArray.filter((b) => b.status === "finished").length,
-    pending: bookingsArray.filter((b) => b.status === "pending").length,
-    cancelled: bookingsArray.filter((b) => b.status === "cancelled").length,
-  };
+  // const statusCounts = {
+  //   finished: bookingsArray.filter((b) => b.status === "finished").length,
+  //   pending: bookingsArray.filter((b) => b.status === "pending").length,
+  //   cancelled: bookingsArray.filter((b) => b.status === "cancelled").length,
+  // };
 
-  // Filter bookings based on active tab
-  const filteredBookings = bookingsArray.filter((booking) => {
-    switch (activeTab) {
-      case "finished":
-        return booking.status === "finished";
-      case "pending":
-        return booking.status === "pending";
-      case "cancelled":
-        return booking.status === "cancelled";
-      default:
-        return true; // Show all
-    }
-  });
+  // const filteredBookings = bookingsArray.filter((booking) => {
+  //   switch (activeTab) {
+  //     case "finished":
+  //       return booking.status === "finished";
+  //     case "pending":
+  //       return booking.status === "pending";
+  //     case "cancelled":
+  //       return booking.status === "cancelled";
+  //     default:
+  //       return true;
+  //   }
+  // });
 
   return (
     <section className="w-full h-full">
@@ -91,14 +87,14 @@ const Speizlization = () => {
         <div className="flex gap-3">
           <Link
             to={`/doctors/${specializationData.specialization.id}`}
-            className="bg-[#EDF0FA] h-36 rounded-md w-full p-4 flex flex-col justify-between"
+            className="bg-[#EDF0FA] h-36 rounded-md w-full p-4 items-center flex flex-col justify-between"
           >
             <div className="h-14">
               <img className="h-12 w-12" alt="Refund Icon" src={doctorIcon} />
             </div>
             <h2 className="text-[#677294] font-[500]">الدكاترة</h2>
           </Link>
-          <Link
+          {/* <Link
             to={`/specialization/booking/${specializationData.specialization.id}`}
             className="bg-[#EDF0FA] h-36 rounded-md w-full p-4 flex flex-col justify-between"
           >
@@ -106,10 +102,10 @@ const Speizlization = () => {
               <img className="h-12 w-12" alt="Booking Icon" src={bookingIcon} />
             </div>
             <h2 className="text-[#677294] font-[500]">الحجوزات</h2>
-          </Link>
+          </Link> */}
           <Link
             to="/specialization/refunds"
-            className="bg-[#EDF0FA] h-36 rounded-md w-full p-4 flex flex-col justify-between"
+            className="bg-[#EDF0FA] h-36 items-center rounded-md w-full p-4 flex flex-col justify-between"
           >
             <div className="h-14">
               <img className="h-12 w-12" alt="Refund Icon" src={exportIcon} />
@@ -118,10 +114,9 @@ const Speizlization = () => {
           </Link>
         </div>
 
-        <div className="w-full h-full">
+        {/* <div className="w-full h-full">
           <h2 className="font-[500] text-lg mb-4">الحجوزات</h2>
 
-          {/* Tabs */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
             <div className="flex">
               <button
@@ -157,7 +152,6 @@ const Speizlization = () => {
             </div>
           </div>
 
-          {/* Bookings List */}
           {filteredBookings.length > 0 ? (
             <div className="space-y-4">
               {filteredBookings.map((booking) => (
@@ -174,7 +168,7 @@ const Speizlization = () => {
               <p>لا توجد حجوزات في هذه الفئة</p>
             </div>
           )}
-        </div>
+        </div> */}
       </div>
     </section>
   );

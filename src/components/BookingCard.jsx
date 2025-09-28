@@ -7,8 +7,9 @@ import {
   cancelDoctorAttendance,
 } from "../utlis/https";
 import { Snackbar, Alert, Button, ButtonGroup } from "@mui/material";
+import RescheduleBooking from "./RescheduleBooking";
 
-const BookingCard = ({ booking, showSwitch = true }) => {
+const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
   const queryClient = useQueryClient();
   const token = localStorage.getItem("authToken");
   const [snackbar, setSnackbar] = useState({
@@ -16,6 +17,7 @@ const BookingCard = ({ booking, showSwitch = true }) => {
     message: "",
     severity: "success",
   });
+  const [showReschedule, setShowReschedule] = useState(false);
 
   // Confirm attendance mutation
   const confirmAttendanceMutation = useMutation({
@@ -74,6 +76,23 @@ const BookingCard = ({ booking, showSwitch = true }) => {
 
   const handleCloseSnackbar = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleReschedule = () => {
+    setShowReschedule(true);
+  };
+
+  const handleRescheduleSuccess = () => {
+    setShowReschedule(false);
+    setSnackbar({
+      open: true,
+      message: "تم إعادة جدولة الحجز بنجاح",
+      severity: "success",
+    });
+  };
+
+  const handleRescheduleCancel = () => {
+    setShowReschedule(false);
   };
 
   // Format date function
@@ -336,6 +355,35 @@ const BookingCard = ({ booking, showSwitch = true }) => {
           </div>
         </div>
       </div>
+
+      {/* Reschedule Button Row */}
+      {booking.status === "pending" && doctorId && !showReschedule && (
+        <div className="border-t pt-3 mt-3 flex justify-center">
+          <div className="flex justify-start">
+            <Button
+              onClick={handleReschedule}
+              variant="outlined"
+              size="small"
+              color="secondary"
+              sx={{ fontSize: "0.75rem", minWidth: "100px" }}
+            >
+              إعادة جدولة
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Reschedule Component */}
+      {showReschedule && doctorId && (
+        <div className="mt-4">
+          <RescheduleBooking
+            bookingId={booking.id}
+            doctorId={doctorId}
+            onSuccess={handleRescheduleSuccess}
+            onCancel={handleRescheduleCancel}
+          />
+        </div>
+      )}
 
       {/* MUI Snackbar for notifications */}
       <Snackbar

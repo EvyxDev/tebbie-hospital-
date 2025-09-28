@@ -1,7 +1,7 @@
-import WalletOptions from "../components/WalletOptions";
+import NewWallet from "../components/NewWallet";
 
 const Walett = () => {
-  return <WalletOptions />;
+  return <NewWallet />;
 };
 
 export default Walett;
