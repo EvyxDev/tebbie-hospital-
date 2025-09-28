@@ -114,7 +114,7 @@ const UpdateSpecializ = ({
                   !canEditDoctor ? "ليس لديك صلاحية لتعديل بيانات الدكتور" : ""
                 }
               >
-                مواعيد محددة
+                فترات زمنية
               </button>
               <button
                 type="button"
@@ -131,7 +131,7 @@ const UpdateSpecializ = ({
                   !canEditDoctor ? "ليس لديك صلاحية لتعديل بيانات الدكتور" : ""
                 }
               >
-                فترات زمنية
+                مواعيد محددة
               </button>
             </div>
             {!canEditDoctor ? (

@@ -193,6 +193,7 @@ export const updateSpecialization = async ({
       end_time: slot.end_time,
     })),
     deleted_slots: deleted_slots.map(Number),
+    slot_type: "slots",
   };
   if (
     waiting_time !== undefined &&
