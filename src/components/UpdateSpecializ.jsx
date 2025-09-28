@@ -1,7 +1,9 @@
 /* eslint-disable react/prop-types */
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getDoctorSlots } from "../utlis/https";
 import IntervalForm from "./Interval-form";
 import SlotForm from "./slot-form";
 
@@ -14,7 +16,44 @@ const UpdateSpecializ = ({
   selectedDoctorId,
   setIsModalOpen,
 }) => {
-  const [activeTab, setActiveTab] = useState("slots");
+  const [activeTab, setActiveTab] = useState(null);
+  const token = localStorage.getItem("authToken");
+
+  // Reset tab when modal closes
+  useEffect(() => {
+    if (!isUpdateModalOpen) {
+      setActiveTab(null);
+    }
+  }, [isUpdateModalOpen]);
+
+  // Fetch doctor slots data to check for existing intervals
+  const { data: doctorSlotData } = useQuery({
+    queryKey: ["doctor-slots-check", selectedDoctorId],
+    queryFn: () => getDoctorSlots({ token, id: selectedDoctorId }),
+    enabled: !!selectedDoctorId && isUpdateModalOpen,
+  });
+
+  // Check if there are existing intervals
+  const hasIntervals =
+    doctorSlotData?.slots?.some((slot) => slot.slot_type === "intervals") ||
+    false;
+
+  // Check if there are existing slots
+  const hasSlots =
+    doctorSlotData?.slots?.some((slot) => slot.slot_type === "slots") || false;
+
+  // Handle tab switching with warning
+  const handleTabSwitch = (tabName) => {
+    if (tabName === "slots" && hasIntervals) {
+      alert("يجب حذف الفترات الزمنية الموجودة أولاً قبل إضافة مواعيد محددة");
+      return;
+    }
+    if (tabName === "intervals" && hasSlots) {
+      alert("يجب حذف المواعيد المحددة الموجودة أولاً قبل إضافة فترات زمنية");
+      return;
+    }
+    setActiveTab(tabName);
+  };
 
   const modalVariants = {
     hidden: { y: "100%", opacity: 0 },
@@ -54,7 +93,7 @@ const UpdateSpecializ = ({
             <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
               <button
                 type="button"
-                onClick={() => setActiveTab("slots")}
+                onClick={() => handleTabSwitch("slots")}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                   activeTab === "slots"
                     ? "bg-white text-blue-600 shadow-sm"
@@ -65,7 +104,7 @@ const UpdateSpecializ = ({
               </button>
               <button
                 type="button"
-                onClick={() => setActiveTab("intervals")}
+                onClick={() => handleTabSwitch("intervals")}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                   activeTab === "intervals"
                     ? "bg-white text-blue-600 shadow-sm"
@@ -75,7 +114,7 @@ const UpdateSpecializ = ({
                 فترات زمنية
               </button>
             </div>
-            {activeTab === "intervals" && (
+            {activeTab === "slots" && (
               <SlotForm
                 {...{
                   isUpdateModalOpen,
@@ -88,7 +127,7 @@ const UpdateSpecializ = ({
                 }}
               />
             )}
-            {activeTab === "slots" && (
+            {activeTab === "intervals" && (
               <IntervalForm
                 {...{
                   isUpdateModalOpen,

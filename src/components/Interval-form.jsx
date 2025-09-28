@@ -186,13 +186,27 @@ export default function IntervalForm({
   };
 
   const handleRemoveInterval = (intervalId) => {
+    // Remove from UI immediately
     setIntervals((prevIntervals) =>
       prevIntervals.filter((interval) => interval.id !== intervalId)
     );
+
+    // Add to deleted intervals
     setDoctorData((prevData) => ({
       ...prevData,
       deleted_intervals: [...prevData.deleted_intervals, intervalId],
     }));
+
+    // Delete immediately using the same endpoint as slots
+    const deleteData = {
+      token: token,
+      doctor_id: doctorSlotData.id,
+      specialization_id: sId,
+      deleted_slots: [intervalId],
+      price: doctorSlotData.price,
+    };
+
+    deleteMutation.mutate(deleteData);
   };
 
   const convertTo12Hour = (timeString) => {
