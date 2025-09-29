@@ -27,6 +27,7 @@ import { setupForegroundNotifications } from "./firebase/fcm";
 import BookingsPage from "./pages/bookings-page";
 import SettingsPage from "./pages/Settings";
 import EmployeesPage from "./pages/employees-page";
+import AddRolePage from "./pages/AddRolePage";
 import ServiceSlots from "./pages/ServiceSlots";
 import Services from "./pages/Services";
 import ServiceBookings from "./pages/ServiceBookings";
@@ -69,7 +70,7 @@ const router = createBrowserRouter([
             path: "bookings",
             element: (
               <PermissionWrapper permissionName="get-booking-for-all">
-                <BookingsPage />{" "}
+                <BookingsPage />
               </PermissionWrapper>
             ),
           },
@@ -78,6 +79,14 @@ const router = createBrowserRouter([
             element: (
               <PermissionWrapper permissionName="view-employees">
                 <EmployeesPage />
+              </PermissionWrapper>
+            ),
+          },
+          {
+            path: "add-role",
+            element: (
+              <PermissionWrapper permissionName="add-employees">
+                <AddRolePage />
               </PermissionWrapper>
             ),
           },

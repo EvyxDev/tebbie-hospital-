@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createEmployee, updateEmployee } from "../utlis/https";
+import RoleSelect from "./RoleSelect";
 
 export default function EmployeeDialog({
   isOpen,
@@ -36,11 +38,14 @@ export default function EmployeeDialog({
 function EmployeeForm({ employee, token, hospital_id, onClose }) {
   const isEdit = !!employee;
   const queryClient = useQueryClient();
+  const [selectedRole, setSelectedRole] = useState(employee?.role || "");
 
   const initialValues = {
     name: employee?.name || "",
     phone: employee?.phone || "",
-    role: employee?.role || "user",
+    email: employee?.email || employee?.user?.email || "",
+    password: employee?.password || employee?.user?.password || "",
+    role: employee?.role || "",
     hospital_id: hospital_id,
   };
 
@@ -75,17 +80,32 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
   const handleSubmit = () => {
     const name = document.getElementById("employee-name").value;
     const phone = document.getElementById("employee-phone").value;
-    const role = document.getElementById("employee-role").value;
+    const email = document.getElementById("employee-email").value;
+    const password = document.getElementById("employee-password").value;
 
-    if (!name || !phone || !role) {
+    if (!name || !phone || !selectedRole) {
       alert("يرجى ملء جميع الحقول المطلوبة");
       return;
+    }
+
+    // For edit mode, email and password are optional
+    if (!isEdit) {
+      if (!email) {
+        alert("يرجى إدخال البريد الإلكتروني");
+        return;
+      }
+      if (!password) {
+        alert("يرجى إدخال كلمة المرور");
+        return;
+      }
     }
 
     const values = {
       name,
       phone,
-      role,
+      email,
+      password,
+      role: selectedRole,
       hospital_id,
     };
 
@@ -149,21 +169,53 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            الدور الوظيفي
+            البريد الإلكتروني
           </label>
-          <select
-            id="employee-role"
-            defaultValue={initialValues.role}
-            required
+          <input
+            id="employee-email"
+            type="email"
+            defaultValue={initialValues.email}
+            required={!isEdit}
             disabled={isLoading}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-          >
-            <option value="user">موظف</option>
-            <option value="doctor">طبيب</option>
-            <option value="nurse">ممرض</option>
-            <option value="admin">إداري</option>
-            <option value="receptionist">استقبال</option>
-          </select>
+            placeholder={
+              isEdit
+                ? "اتركه فارغاً للحفاظ على البريد الإلكتروني الحالي"
+                : "البريد الإلكتروني"
+            }
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            كلمة المرور
+          </label>
+          <input
+            id="employee-password"
+            type="password"
+            defaultValue={initialValues.password}
+            required={!isEdit}
+            disabled={isLoading}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            placeholder={
+              isEdit
+                ? "اتركه فارغاً للحفاظ على كلمة المرور الحالية"
+                : "كلمة المرور"
+            }
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            الدور الوظيفي
+          </label>
+          <RoleSelect
+            value={selectedRole}
+            onChange={setSelectedRole}
+            label="اختر الدور"
+            disabled={isLoading}
+            required
+          />
         </div>
       </div>
 

@@ -1,6 +1,87 @@
 /* eslint-disable no-useless-catch */
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
+// Get employee roles
+export const getEmployeeRoles = async ({ token }) => {
+  try {
+    const response = await fetch(`${API_URL}/hospital/v1/employee-roles`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      throw new Error("Failed to fetch employee roles");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Get employee permissions
+export const getEmployeePermissions = async ({ token }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/employee-permissions`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      throw new Error("Failed to fetch employee permissions");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Create employee role
+export const createEmployeeRole = async ({
+  token,
+  hospital_id,
+  name,
+  display_name,
+  permissions,
+}) => {
+  try {
+    const response = await fetch(`${API_URL}/hospital/v1/employee-roles`, {
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        display_name,
+        permissions,
+        hospital_id,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      throw new Error("Failed to create employee role");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getReviews = async ({ token }) => {
   try {
     const response = await fetch(`${API_URL}/hospital/v1/get-reviews`, {
@@ -1025,6 +1106,8 @@ export const createEmployee = async ({
   token,
   name,
   phone,
+  email,
+  password,
   role,
   hospital_id,
 }) => {
@@ -1034,6 +1117,8 @@ export const createEmployee = async ({
       body: JSON.stringify({
         name,
         phone,
+        email,
+        password,
         role,
         hospital_id,
       }),
@@ -1063,6 +1148,8 @@ export const updateEmployee = async ({
   id,
   name,
   phone,
+  email,
+  password,
   role,
   hospital_id,
 }) => {
@@ -1072,6 +1159,8 @@ export const updateEmployee = async ({
       body: JSON.stringify({
         name,
         phone,
+        email,
+        password,
         role,
         hospital_id,
       }),
@@ -1398,6 +1487,61 @@ export const cancelDoctorAttendance = async ({ token, bookingId }) => {
       throw new Error(
         errorData.message || "Failed to cancel doctor attendance"
       );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Update role permissions
+export const updateRolePermissions = async ({ token, roleId, permissions }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/employee-roles/${roleId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          permissions: permissions,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update role permissions");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Approve booking (for past dates)
+export const approveBooking = async ({ token, bookingId }) => {
+  try {
+    const response = await fetch(`${API_URL}/hospital/v1/approve-booking`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        booking_id: bookingId,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to approve booking");
     }
 
     const data = await response.json();

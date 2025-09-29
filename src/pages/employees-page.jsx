@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { User, Phone, Calendar, Plus, Edit, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  User,
+  Phone,
+  Calendar,
+  Plus,
+  Edit,
+  Trash2,
+  Settings,
+} from "lucide-react";
 import { getEmployees, deleteEmployee } from "../utlis/https";
 import EmployeeDialog from "../components/EmployeeFormDialog";
 import { hasPermission } from "../utils/permissionUtils";
 
 export default function EmployeesPage() {
+  const navigate = useNavigate();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
@@ -70,6 +80,14 @@ export default function EmployeesPage() {
     }
   };
 
+  const handleAddRole = () => {
+    if (!hasPermission("add-employees")) {
+      alert("ليس لديك صلاحية لإضافة الأدوار");
+      return;
+    }
+    navigate("/add-role");
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
@@ -114,22 +132,44 @@ export default function EmployeesPage() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-gray-900">الموظفين</h1>
-        <button
-          onClick={handleAddEmployee}
-          className={`p-2 rounded-lg shadow transition-colors ${
-            hasPermission("add-employees")
-              ? "bg-blue-500 hover:bg-blue-600 text-white"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
-          disabled={deleteMutation.isPending || !hasPermission("add-employees")}
-          title={
-            !hasPermission("add-employees")
-              ? "ليس لديك صلاحية لإضافة الموظفين"
-              : ""
-          }
-        >
-          <Plus size={20} />
-        </button>
+        <div className="flex items-center space-x-2 space-x-reverse">
+          <button
+            onClick={handleAddRole}
+            className={`p-2 rounded-lg shadow transition-colors ${
+              hasPermission("add-employees")
+                ? "bg-green-500 hover:bg-green-600 text-white"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+            disabled={
+              deleteMutation.isPending || !hasPermission("add-employees")
+            }
+            title={
+              !hasPermission("add-employees")
+                ? "ليس لديك صلاحية لإضافة الأدوار"
+                : "إضافة دور جديد"
+            }
+          >
+            <Settings size={20} />
+          </button>
+          <button
+            onClick={handleAddEmployee}
+            className={`p-2 rounded-lg shadow transition-colors ${
+              hasPermission("add-employees")
+                ? "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+            disabled={
+              deleteMutation.isPending || !hasPermission("add-employees")
+            }
+            title={
+              !hasPermission("add-employees")
+                ? "ليس لديك صلاحية لإضافة الموظفين"
+                : "إضافة موظف جديد"
+            }
+          >
+            <Plus size={20} />
+          </button>
+        </div>
       </div>
 
       <div className="space-y-4">

@@ -131,7 +131,6 @@ const WalletDetails = () => {
                   value={endDate}
                   onChange={(newValue) => setEndDate(newValue)}
                   format="dd/MM/yyyy"
-                  minDate={startDate || undefined}
                   sx={{
                     width: "100%",
                     "& .MuiOutlinedInput-root": {

@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   confirmDoctorAttendance,
   cancelDoctorAttendance,
+  approveBooking,
 } from "../utlis/https";
 import { Snackbar, Alert, Button, ButtonGroup } from "@mui/material";
 import RescheduleBooking from "./RescheduleBooking";
@@ -19,25 +20,60 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
   });
   const [showReschedule, setShowReschedule] = useState(false);
 
+  // Check booking date status
+  const getBookingDateStatus = () => {
+    const bookingDate = new Date(booking.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+    bookingDate.setHours(0, 0, 0, 0);
+
+    if (bookingDate < today) {
+      return "past";
+    } else if (bookingDate.getTime() === today.getTime()) {
+      return "today";
+    } else {
+      return "future";
+    }
+  };
+
   // Confirm attendance mutation
   const confirmAttendanceMutation = useMutation({
-    mutationFn: ({ bookingId }) =>
-      confirmDoctorAttendance({ token, bookingId }),
+    mutationFn: ({ bookingId }) => {
+      // Use different endpoint based on booking date
+      const dateStatus = getBookingDateStatus();
+      if (dateStatus === "today") {
+        return confirmDoctorAttendance({ token, bookingId });
+      } else if (dateStatus === "future") {
+        return approveBooking({ token, bookingId });
+      } else {
+        // This shouldn't happen as past dates won't show buttons
+        return confirmDoctorAttendance({ token, bookingId });
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(["specialization"]);
       queryClient.invalidateQueries(["doctor-attendance"]);
       queryClient.invalidateQueries(["bookings"]);
       queryClient.invalidateQueries(["all-home-visits"]);
+      const dateStatus = getBookingDateStatus();
       setSnackbar({
         open: true,
-        message: "تم تأكيد حضور الطبيب بنجاح",
+        message:
+          dateStatus === "today"
+            ? "تم تأكيد حضور الطبيب بنجاح"
+            : "تم تأكيد الحضور بنجاح",
         severity: "success",
       });
     },
     onError: (error) => {
+      const dateStatus = getBookingDateStatus();
       setSnackbar({
         open: true,
-        message: error.message || "فشل في تأكيد حضور الطبيب",
+        message:
+          error.message ||
+          (dateStatus === "today"
+            ? "فشل في تأكيد حضور الطبيب"
+            : "فشل في تأكيد الحضور"),
         severity: "error",
       });
     },
@@ -287,66 +323,78 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
       {/* Action Section */}
       <div className="border-t pt-3 mt-3">
         <div className="flex gap-2 justify-between items-center">
-          {booking.status === "pending" && (
-            <ButtonGroup
-              size="small"
-              variant="contained"
-              className="flex gap-3 items-center"
-            >
-              <Button
-                onClick={handleCancelAttendance}
-                disabled={
-                  confirmAttendanceMutation.isPending ||
-                  cancelAttendanceMutation.isPending
-                }
-                color="error"
-                sx={{ fontSize: "0.75rem", minWidth: "120px" }}
+          {booking.status === "pending" &&
+            getBookingDateStatus() !== "past" && (
+              <ButtonGroup
+                size="small"
+                variant="contained"
+                className="flex gap-3 items-center"
               >
-                {cancelAttendanceMutation.isPending
-                  ? "جاري الإلغاء..."
-                  : "إلغاء الحجز"}
-              </Button>
-              <Button
-                onClick={handleConfirmAttendance}
-                disabled={
-                  confirmAttendanceMutation.isPending ||
-                  cancelAttendanceMutation.isPending
-                }
-                color="success"
-                sx={{ fontSize: "0.75rem", minWidth: "120px" }}
-              >
-                {confirmAttendanceMutation.isPending
-                  ? "جاري التأكيد..."
-                  : "تأكيد الحجز"}
-              </Button>
-            </ButtonGroup>
-          )}
+                <Button
+                  onClick={handleCancelAttendance}
+                  disabled={
+                    confirmAttendanceMutation.isPending ||
+                    cancelAttendanceMutation.isPending
+                  }
+                  color="error"
+                  sx={{ fontSize: "0.75rem", minWidth: "120px" }}
+                >
+                  {cancelAttendanceMutation.isPending
+                    ? "جاري الإلغاء..."
+                    : "إلغاء الحجز"}
+                </Button>
+                <Button
+                  onClick={handleConfirmAttendance}
+                  disabled={
+                    confirmAttendanceMutation.isPending ||
+                    cancelAttendanceMutation.isPending
+                  }
+                  color="success"
+                  sx={{ fontSize: "0.75rem", minWidth: "120px" }}
+                >
+                  {confirmAttendanceMutation.isPending
+                    ? "جاري التأكيد..."
+                    : getBookingDateStatus() === "today"
+                    ? "تأكيد الحجز"
+                    : "تأكيد الحضور"}
+                </Button>
+              </ButtonGroup>
+            )}
 
-          {booking.status === "cancelled" && (
-            <ButtonGroup
-              size="small"
-              variant="contained"
-              className="flex gap-3 items-center"
-            >
-              <Button
-                onClick={handleConfirmAttendance}
-                disabled={
-                  confirmAttendanceMutation.isPending ||
-                  cancelAttendanceMutation.isPending
-                }
-                color="success"
-                sx={{ fontSize: "0.75rem", minWidth: "120px" }}
+          {booking.status === "cancelled" &&
+            getBookingDateStatus() !== "past" && (
+              <ButtonGroup
+                size="small"
+                variant="contained"
+                className="flex gap-3 items-center"
               >
-                {confirmAttendanceMutation.isPending
-                  ? "جاري التأكيد..."
-                  : "تأكيد الحجز"}
-              </Button>
-            </ButtonGroup>
-          )}
+                <Button
+                  onClick={handleConfirmAttendance}
+                  disabled={
+                    confirmAttendanceMutation.isPending ||
+                    cancelAttendanceMutation.isPending
+                  }
+                  color="success"
+                  sx={{ fontSize: "0.75rem", minWidth: "120px" }}
+                >
+                  {confirmAttendanceMutation.isPending
+                    ? "جاري التأكيد..."
+                    : getBookingDateStatus() === "today"
+                    ? "تأكيد الحجز"
+                    : "تأكيد الحضور"}
+                </Button>
+              </ButtonGroup>
+            )}
 
           {booking.status === "finished" && (
             <div className="text-sm text-green-600 font-medium">
               تم إكمال الحجز
+            </div>
+          )}
+
+          {getBookingDateStatus() === "past" && (
+            <div className="text-sm text-gray-500 font-medium">
+              لا يمكن اتخاذ أي إجراء للحجوزات السابقة
             </div>
           )}
 
@@ -357,21 +405,24 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
       </div>
 
       {/* Reschedule Button Row */}
-      {booking.status === "pending" && doctorId && !showReschedule && (
-        <div className="border-t pt-3 mt-3 flex justify-center">
-          <div className="flex justify-start">
-            <Button
-              onClick={handleReschedule}
-              variant="outlined"
-              size="small"
-              color="secondary"
-              sx={{ fontSize: "0.75rem", minWidth: "100px" }}
-            >
-              إعادة جدولة
-            </Button>
+      {booking.status === "pending" &&
+        doctorId &&
+        !showReschedule &&
+        getBookingDateStatus() !== "past" && (
+          <div className="border-t pt-3 mt-3 flex justify-center">
+            <div className="flex justify-start">
+              <Button
+                onClick={handleReschedule}
+                variant="outlined"
+                size="small"
+                color="secondary"
+                sx={{ fontSize: "0.75rem", minWidth: "100px" }}
+              >
+                إعادة جدولة
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Reschedule Component */}
       {showReschedule && doctorId && (

@@ -68,7 +68,6 @@ const AllHomeVisits = () => {
                 value={startDate}
                 onChange={(newValue) => setStartDate(newValue)}
                 format="dd/MM/yyyy"
-                minDate={new Date()}
                 sx={{
                   width: "100%",
                   "& .MuiOutlinedInput-root": {
@@ -104,7 +103,6 @@ const AllHomeVisits = () => {
                 value={endDate}
                 onChange={(newValue) => setEndDate(newValue)}
                 format="dd/MM/yyyy"
-                minDate={startDate || new Date()}
                 sx={{
                   width: "100%",
                   "& .MuiOutlinedInput-root": {
