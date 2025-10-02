@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import {
   getEmployeePermissions,
   getEmployeeRoles,
@@ -123,16 +123,16 @@ export default function AddRolePage() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <div className="flex items-center space-x-4 space-x-reverse mb-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-4 space-x-reverse">
+            <h1 className="text-2xl font-bold text-gray-900">صلاحيات الدور</h1>
+          </div>
           <button
-            onClick={() => navigate("/employees")}
-            className="p-2 rounded-lg bg-white shadow-sm border hover:bg-gray-50 transition-colors"
+            onClick={() => navigate("/add-new-role")}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
           >
-            <ArrowLeft size={20} />
+            إضافة دور جديد
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">
-            تحديث صلاحيات الدور
-          </h1>
         </div>
 
         {/* Form */}

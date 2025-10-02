@@ -28,6 +28,7 @@ import BookingsPage from "./pages/bookings-page";
 import SettingsPage from "./pages/Settings";
 import EmployeesPage from "./pages/employees-page";
 import AddRolePage from "./pages/AddRolePage";
+import AddNewRolePage from "./pages/AddNewRolePage";
 import ServiceSlots from "./pages/ServiceSlots";
 import Services from "./pages/Services";
 import ServiceBookings from "./pages/ServiceBookings";
@@ -87,6 +88,14 @@ const router = createBrowserRouter([
             element: (
               <PermissionWrapper permissionName="add-employees">
                 <AddRolePage />
+              </PermissionWrapper>
+            ),
+          },
+          {
+            path: "add-new-role",
+            element: (
+              <PermissionWrapper permissionName="add-employees">
+                <AddNewRolePage />
               </PermissionWrapper>
             ),
           },

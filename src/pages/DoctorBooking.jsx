@@ -32,15 +32,24 @@ const DoctorBooking = () => {
 
   // Filter bookings by date range
   const filteredBookings = bookings.filter((booking) => {
-    if (!startDate || !endDate) return true; // Show all if no range selected
+    // If no start date selected, show all bookings
+    if (!startDate) return true;
 
-    const bookingDate = new Date(booking.created_at)
-      .toISOString()
-      .split("T")[0];
+    // Get the booking date in YYYY-MM-DD format
+    const bookingDateStr = booking.date; // This should be in format "2025-08-31"
+
+    // Convert start date to YYYY-MM-DD format
     const startDateStr = startDate.toISOString().split("T")[0];
+
+    // If no end date selected, show bookings that match the start date
+    if (!endDate) {
+      return bookingDateStr === startDateStr;
+    }
+
+    // If both start and end dates selected, show bookings within the range
     const endDateStr = endDate.toISOString().split("T")[0];
 
-    return bookingDate >= startDateStr && bookingDate <= endDateStr;
+    return bookingDateStr >= startDateStr && bookingDateStr <= endDateStr;
   });
 
   return (
