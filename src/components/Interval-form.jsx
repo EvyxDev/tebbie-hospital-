@@ -35,7 +35,6 @@ export default function IntervalForm({
   const [newIntervals, setNewIntervals] = useState([]);
   const [doctorData, setDoctorData] = useState({
     specialization_id: "",
-    price: "",
     name: "",
     doctor_id: "",
     intervals: [],
@@ -56,7 +55,6 @@ export default function IntervalForm({
       setDoctorData({
         specialization_id: null,
         name: doctorSlotData.name,
-        price: doctorSlotData.price,
         doctor_id: doctorSlotData.id,
         intervals: (doctorSlotData.intervals || []).map((interval) => ({
           id: interval.id,
@@ -66,7 +64,6 @@ export default function IntervalForm({
           to: interval.to,
           max_capacity: interval.max_capacity,
           relatable_id: interval.relatable_id,
-          price: interval.price,
         })),
         deleted_intervals: [],
       });
@@ -121,7 +118,6 @@ export default function IntervalForm({
       to: values.to,
       max_capacity: parseInt(values.max_capacity),
       relatable_id: doctorSlotData.id,
-      price: parseFloat(values.price),
     };
     setNewIntervals((prev) => [...prev, newInterval]);
     setTimeIsModalOpen(false);
@@ -306,9 +302,7 @@ export default function IntervalForm({
                     <p>
                       <strong>إلى:</strong> {convertTo12Hour(interval.to)}
                     </p>
-                    <p>
-                      <strong>السعر:</strong> {interval.price} جنيه
-                    </p>
+                    {/* price display removed; managed separately */}
                     <p>
                       <strong>معرف الربط:</strong> {interval.relatable_id}
                     </p>
@@ -366,9 +360,7 @@ export default function IntervalForm({
                     <p>
                       <strong>إلى:</strong> {convertTo12Hour(interval.to)}
                     </p>
-                    <p>
-                      <strong>السعر:</strong> {interval.price} جنيه
-                    </p>
+                    {/* price display removed; managed separately */}
                     <p>
                       <strong>معرف الربط:</strong> {interval.relatable_id}
                     </p>
@@ -514,19 +506,7 @@ export default function IntervalForm({
                       />
                     </div>
 
-                    {/* Price */}
-                    <div className="mb-4">
-                      <label className="block my-2 font-semibold">السعر</label>
-                      <Field
-                        type="number"
-                        name="price"
-                        step="0.01"
-                        value={values.price}
-                        onChange={(e) => setFieldValue("price", e.target.value)}
-                        className="border-[1px] bg-[#F4F4F6] rounded-xl py-3 px-5 h-[50px] w-full text-[#677294]"
-                        placeholder="سعر هذه الفترة"
-                      />
-                    </div>
+                    {/* price input removed; managed separately */}
 
                     <button
                       type="button"
@@ -539,7 +519,6 @@ export default function IntervalForm({
                           to: values.to,
                           max_capacity: values.max_capacity,
                           relatable_id: values.relatable_id,
-                          price: values.price,
                         };
 
                         if (isEditMode) {

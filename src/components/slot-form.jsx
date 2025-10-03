@@ -31,7 +31,6 @@ export default function SlotForm({
   ]);
   const [doctorData, setDoctorData] = useState({
     specialization_id: "",
-    price: "",
     name: "",
     doctor_id: "",
     slots: [],
@@ -44,7 +43,6 @@ export default function SlotForm({
       setDoctorData({
         specialization_id: null,
         name: doctorSlotData.name,
-        price: doctorSlotData.price,
         doctor_id: doctorSlotData.id,
         slots: doctorSlotData.slots.map((slot) => ({
           id: slot.id,
@@ -93,7 +91,6 @@ export default function SlotForm({
       token: token,
       doctor_id: doctorSlotData.id,
       specialization_id: sId,
-      price: values.price,
       waiting_time: values.waiting_time,
       deleted_slots: doctorData.deleted_slots,
       slots: newSlots,
@@ -169,7 +166,6 @@ export default function SlotForm({
           start_time: "",
           end_time: "",
           waiting_time: "",
-          price: doctorData.price || "",
         }}
         enableReinitialize={true}
         onSubmit={handleSubmit}
@@ -283,14 +279,7 @@ export default function SlotForm({
               })}
             </div>
 
-            <Field
-              type="text"
-              name="price"
-              value={values.price}
-              onChange={(e) => setFieldValue("price", e.target.value)}
-              className="border-[1px] bg-[#F4F4F6] rounded-xl py-3 px-5 h-[50px] focus:outline-none focus:border-primary w-full text-[#677294] my-3"
-              placeholder=" سعر الكشف"
-            />
+            {/* price moved to header quick editor */}
             {newSlots.length > 0 && (
               <Field
                 type="text"

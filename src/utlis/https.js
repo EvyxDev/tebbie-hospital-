@@ -266,7 +266,6 @@ export const updateSpecialization = async ({
 }) => {
   const payload = {
     specialization_id: Number(specialization_id),
-    price: Number(price),
     doctor_id: Number(doctor_id),
     slots: slots.map((slot) => ({
       day_id: Number(slot.day_id),
@@ -276,6 +275,15 @@ export const updateSpecialization = async ({
     deleted_slots: deleted_slots.map(Number),
     slot_type: "slots",
   };
+  if (
+    price !== undefined &&
+    price !== null &&
+    price !== "" &&
+    !isNaN(Number(price)) &&
+    Number(price) >= 0
+  ) {
+    payload.price = Number(price);
+  }
   if (
     waiting_time !== undefined &&
     waiting_time !== null &&
@@ -352,6 +360,80 @@ export const updateDoctorIntervals = async ({
     }
 
     return true; // success
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+export const updateDoctorSlotIntervals = async ({
+  token,
+  price,
+  doctor_id,
+  intervals,
+  deleted_intervals,
+}) => {
+  try {
+    for (const interval of intervals) {
+      const payload = {
+        price: price ? Number(price) : 0,
+        relatable_id: Number(doctor_id),
+        day_id: Number(interval.day_id),
+        name_slot: interval.name_slot,
+        from: interval.from,
+        to: interval.to,
+        max_capacity: Number(interval.max_capacity),
+        deleted_slots: deleted_intervals ? deleted_intervals.map(Number) : [],
+        slot_type: "slot_intervals",
+      };
+
+      const response = await fetch(`${API_URL}/hospital/v1/store-doctors`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          result.msg ||
+            "An error occurred while updating the doctor slot intervals"
+        );
+      }
+    }
+
+    return true; // success
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
+export const updateDoctorPrice = async ({ token, doctor_id, price }) => {
+  const payload = {
+    doctor_id: Number(doctor_id),
+    price: Number(price),
+  };
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/update-doctors-price`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.msg || "Failed to update doctor price");
+    }
+    return result.data || true;
   } catch (error) {
     console.error("Error:", error);
     throw error;

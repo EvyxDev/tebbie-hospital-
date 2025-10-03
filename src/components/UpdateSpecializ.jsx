@@ -6,6 +6,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getDoctorSlots } from "../utlis/https";
 import IntervalForm from "./Interval-form";
 import SlotForm from "./slot-form";
+import SlotIntervalsForm from "./SlotIntervalsForm";
+// using existing React imports at top
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateDoctorPrice } from "../utlis/https";
 import { hasPermission } from "../utils/permissionUtils";
 
 const UpdateSpecializ = ({
@@ -19,6 +23,8 @@ const UpdateSpecializ = ({
 }) => {
   const [activeTab, setActiveTab] = useState(null);
   const token = localStorage.getItem("authToken");
+  const queryClient = useQueryClient();
+  const [localPrice, setLocalPrice] = useState("");
 
   // Reset tab when modal closes
   useEffect(() => {
@@ -43,8 +49,25 @@ const UpdateSpecializ = ({
   const hasSlots =
     doctorSlotData?.slots?.some((slot) => slot.slot_type === "slots") || false;
 
+  useEffect(() => {
+    if (doctorSlotData?.price !== undefined && doctorSlotData?.price !== null) {
+      setLocalPrice(String(doctorSlotData.price));
+    }
+  }, [doctorSlotData]);
+
   // Check if user has permission to edit doctor
   const canEditDoctor = hasPermission("edit-doctor-by-hospital");
+
+  const priceMutation = useMutation({
+    mutationFn: updateDoctorPrice,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["doctor-slots-check", selectedDoctorId]);
+      alert("تم تحديث السعر بنجاح");
+    },
+    onError: () => {
+      alert("فشل تحديث السعر");
+    },
+  });
 
   // Handle tab switching with warning
   const handleTabSwitch = (tabName) => {
@@ -58,6 +81,24 @@ const UpdateSpecializ = ({
     }
     if (tabName === "intervals" && hasSlots) {
       alert("يجب حذف المواعيد المحددة الموجودة أولاً قبل إضافة فترات زمنية");
+      return;
+    }
+    if (tabName === "slot_intervals" && hasSlots) {
+      alert("يجب حذف المواعيد المحددة الموجودة أولاً قبل إضافة فترات يومية");
+      return;
+    }
+    if (
+      tabName === "slots" &&
+      doctorSlotData?.slots?.some((s) => s.slot_type === "slot_intervals")
+    ) {
+      alert("يجب حذف الفترات اليومية الموجودة أولاً قبل إضافة مواعيد محددة");
+      return;
+    }
+    if (
+      tabName === "intervals" &&
+      doctorSlotData?.slots?.some((s) => s.slot_type === "slot_intervals")
+    ) {
+      alert("يجب حذف الفترات اليومية الموجودة أولاً قبل إضافة فترات بتاريخ");
       return;
     }
     setActiveTab(tabName);
@@ -97,6 +138,30 @@ const UpdateSpecializ = ({
               بيانات الدكتور
             </h2>
 
+            {/* Price quick editor */}
+            <div className="flex items-center gap-2 mb-4">
+              <input
+                type="number"
+                value={localPrice}
+                onChange={(e) => setLocalPrice(e.target.value)}
+                className="border-[1px] bg-[#F4F4F6] w-[70%] rounded-xl py-2 px-3 h-[40px] text-[#677294]"
+                placeholder="سعر الكشف"
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  priceMutation.mutate({
+                    token,
+                    doctor_id: selectedDoctorId,
+                    price: localPrice,
+                  })
+                }
+                className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white py-2 px-3 rounded-lg"
+              >
+                حفظ السعر
+              </button>
+            </div>
+
             {/* Tabs Navigation */}
             <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
               <button
@@ -114,7 +179,7 @@ const UpdateSpecializ = ({
                   !canEditDoctor ? "ليس لديك صلاحية لتعديل بيانات الدكتور" : ""
                 }
               >
-                فترات زمنية
+                مواعيد محددة
               </button>
               <button
                 type="button"
@@ -131,7 +196,24 @@ const UpdateSpecializ = ({
                   !canEditDoctor ? "ليس لديك صلاحية لتعديل بيانات الدكتور" : ""
                 }
               >
-                مواعيد محددة
+                فترات بتاريخ
+              </button>
+              <button
+                type="button"
+                onClick={() => handleTabSwitch("slot_intervals")}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  !canEditDoctor
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : activeTab === "slot_intervals"
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+                disabled={!canEditDoctor}
+                title={
+                  !canEditDoctor ? "ليس لديك صلاحية لتعديل بيانات الدكتور" : ""
+                }
+              >
+                فترات يومية
               </button>
             </div>
             {!canEditDoctor ? (
@@ -175,6 +257,19 @@ const UpdateSpecializ = ({
                 )}
                 {activeTab === "intervals" && (
                   <IntervalForm
+                    {...{
+                      isUpdateModalOpen,
+                      isTimeModalOpen,
+                      setTimeIsModalOpen,
+                      setUpdateModalOpen,
+                      setIsModalOpen,
+                      sId,
+                      selectedDoctorId,
+                    }}
+                  />
+                )}
+                {activeTab === "slot_intervals" && (
+                  <SlotIntervalsForm
                     {...{
                       isUpdateModalOpen,
                       isTimeModalOpen,
