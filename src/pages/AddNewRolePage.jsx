@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save } from "lucide-react";
 import { getEmployeePermissions, createEmployeeRole } from "../utlis/https";
 import { hasPermission } from "../utils/permissionUtils";
+import { Snackbar, Alert } from "@mui/material";
 
 export default function AddNewRolePage() {
   const navigate = useNavigate();
@@ -15,26 +16,55 @@ export default function AddNewRolePage() {
     display_name: "",
     permissions: [],
   });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   // Fetch employee permissions
   const { data: permissionsData, isLoading: permissionsLoading } = useQuery({
     queryKey: ["employee-permissions"],
     queryFn: () => getEmployeePermissions({ token }),
   });
-
-  const permissions = permissionsData?.data || [];
+  const rawPermissions = permissionsData?.data?.data || permissionsData?.data;
+  const isGroupedPermissions =
+    rawPermissions &&
+    !Array.isArray(rawPermissions) &&
+    typeof rawPermissions === "object";
+  const groupedPermissions = isGroupedPermissions
+    ? rawPermissions
+    : {
+        الصلاحيات: Array.isArray(rawPermissions) ? rawPermissions : [],
+      };
+  const flatPermissions = isGroupedPermissions
+    ? Object.entries(groupedPermissions)
+        .filter(
+          ([category]) => typeof category === "string" && category.trim() !== ""
+        )
+        .map(([, perms]) => perms)
+        .flat()
+    : groupedPermissions["الصلاحيات"];
 
   // Create role mutation
   const createRoleMutation = useMutation({
     mutationFn: createEmployeeRole,
     onSuccess: () => {
       queryClient.invalidateQueries(["employee-roles"]);
-      alert("تم إضافة الدور بنجاح");
+      setSnackbar({
+        open: true,
+        message: "تم إضافة الدور بنجاح",
+        severity: "success",
+      });
       navigate("/employees");
     },
     onError: (error) => {
       console.error("Error creating role:", error);
-      alert("حدث خطأ أثناء إضافة الدور");
+      setSnackbar({
+        open: true,
+        message: "حدث خطأ أثناء إضافة الدور",
+        severity: "error",
+      });
     },
   });
 
@@ -62,14 +92,18 @@ export default function AddNewRolePage() {
       !formData.display_name ||
       formData.permissions.length === 0
     ) {
-      alert("يرجى ملء جميع الحقول المطلوبة");
+      setSnackbar({
+        open: true,
+        message: "يرجى ملء جميع الحقول المطلوبة",
+        severity: "error",
+      });
       return;
     }
 
     // Convert permission IDs to permission names
     const permissionNames = formData.permissions
       .map((permissionId) => {
-        const permission = permissions.find((p) => p.id === permissionId);
+        const permission = flatPermissions.find((p) => p.id === permissionId);
         return permission?.name;
       })
       .filter(Boolean);
@@ -183,29 +217,47 @@ export default function AddNewRolePage() {
                   ))}
                 </div>
               ) : (
-                <div className="space-y-2 max-h-64 overflow-y-auto border border-gray-200 rounded-md p-3">
-                  {permissions.map((permission) => (
-                    <label
-                      key={permission.id}
-                      className="flex items-center space-x-3 space-x-reverse p-2 hover:bg-gray-50 rounded cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={formData.permissions.includes(permission.id)}
-                        onChange={() => handlePermissionToggle(permission.id)}
-                        disabled={createRoleMutation.isPending}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      />
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-gray-900">
-                          {permission.display_name}
+                <div className="space-y-4 max-h-64 overflow-y-auto border border-gray-200 rounded-md p-3">
+                  {Object.entries(groupedPermissions)
+                    .filter(
+                      ([category, perms]) =>
+                        typeof category === "string" &&
+                        category.trim() !== "" &&
+                        Array.isArray(perms) &&
+                        perms.length > 0
+                    )
+                    .map(([category, perms]) => (
+                      <div key={category} className="space-y-2">
+                        <div className="inline-block text-sm font-semibold text-white bg-gradient-to-r from-[#33A9C7] to-[#3AAB95] rounded-md px-2 py-1">
+                          {category}
                         </div>
-                        <div className="text-xs text-gray-500">
-                          {permission.name}
+                        <div className="space-y-1">
+                          {perms.map((permission) => (
+                            <label
+                              key={permission.id}
+                              className="flex items-center space-x-3 space-x-reverse p-2 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={formData.permissions.includes(
+                                  permission.id
+                                )}
+                                onChange={() =>
+                                  handlePermissionToggle(permission.id)
+                                }
+                                disabled={createRoleMutation.isPending}
+                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                              />
+                              <div className="flex-1">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {permission.display_name || permission.name}
+                                </div>
+                              </div>
+                            </label>
+                          ))}
                         </div>
                       </div>
-                    </label>
-                  ))}
+                    ))}
                 </div>
               )}
 
@@ -234,6 +286,20 @@ export default function AddNewRolePage() {
           </div>
         </form>
       </div>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar((p) => ({ ...p, open: false }))}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setSnackbar((p) => ({ ...p, open: false }))}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

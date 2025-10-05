@@ -38,8 +38,15 @@ const DoctorBooking = () => {
     // Get the booking date in YYYY-MM-DD format
     const bookingDateStr = booking.date; // This should be in format "2025-08-31"
 
-    // Convert start date to YYYY-MM-DD format
-    const startDateStr = startDate.toISOString().split("T")[0];
+    // Convert dates to local YYYY-MM-DD to avoid timezone shifts
+    const formatLocalYMD = (date) => {
+      if (!date) return null;
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+    const startDateStr = formatLocalYMD(startDate);
 
     // If no end date selected, show bookings that match the start date
     if (!endDate) {
@@ -47,7 +54,7 @@ const DoctorBooking = () => {
     }
 
     // If both start and end dates selected, show bookings within the range
-    const endDateStr = endDate.toISOString().split("T")[0];
+    const endDateStr = formatLocalYMD(endDate);
 
     return bookingDateStr >= startDateStr && bookingDateStr <= endDateStr;
   });

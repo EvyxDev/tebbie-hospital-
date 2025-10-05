@@ -87,6 +87,11 @@ const UpdateSpecializ = ({
       alert("يجب حذف المواعيد المحددة الموجودة أولاً قبل إضافة فترات يومية");
       return;
     }
+    // Prevent opening daily intervals when dated intervals exist
+    if (tabName === "slot_intervals" && hasIntervals) {
+      alert("يجب حذف الفترات بتاريخ الموجودة أولاً قبل إضافة فترات يومية");
+      return;
+    }
     if (
       tabName === "slots" &&
       doctorSlotData?.slots?.some((s) => s.slot_type === "slot_intervals")
