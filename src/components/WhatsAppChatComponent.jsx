@@ -93,7 +93,7 @@ ${visitData.is_rejected_by_user === 1 ? " *تم الإلغاء من قبل ال�
 
   const handleEmployeeSelect = (employee) => {
     const message = generateWhatsAppMessage();
-    const whatsappUrl = `https://wa.me/${employee.phone}?text=${message}`;
+    const whatsappUrl = `https://wa.me/+218${employee.phone}?text=${message}`;
 
     window.open(whatsappUrl, "_blank");
     setIsModalOpen(false);

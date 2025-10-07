@@ -95,9 +95,9 @@ const BookingDataDoctor = ({
 
   return (
     <>
-      <div className="flex gap-1 justify-between items-end mb-4">
+      <div className="flex gap-2 justify-between items-end mb-4">
         <h2 className="font-medium">حجوزات اليوم</h2>
-        <div className="flex gap-1 justify-end items-end">
+        <div className="flex-1 flex gap-2 justify-end items-end">
           {!hasCancelledBooking && !isCanceledDay ? (
             <>
               <p className="text-[#8F9BB3] text-md">تأكيد غياب الدكتور</p>

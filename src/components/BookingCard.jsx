@@ -165,7 +165,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
     const encodedMessage = encodeURIComponent(welcomeMessage);
 
     // Return WhatsApp URL
-    return `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
+    return `https://wa.me/+218${cleanPhone}?text=${encodedMessage}`;
   };
 
   // Handle WhatsApp click
@@ -361,7 +361,12 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
                 <span className="text-gray-500">نوع الحجز:</span>{" "}
                 {booking.is_for_self ? "لنفسه" : "لشخص آخر"}
               </p>
-              {!booking.is_for_self && (
+              {booking.is_for_self ? (
+                <p>
+                  <span className="text-gray-500">العمر:</span>{" "}
+                  {booking.user?.age ?? "غير محدد"}
+                </p>
+              ) : (
                 <>
                   <p>
                     <span className="text-gray-500">تاريخ الميلاد:</span>{" "}

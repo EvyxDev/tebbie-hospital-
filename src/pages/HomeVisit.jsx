@@ -12,14 +12,16 @@ import AllHomeVisits from "../components/AllHomeViste";
 const HomeVisit = () => {
   const token = localStorage.getItem("authToken");
 
+  const [search, setSearch] = useState("");
+  const [pendingSearch, setPendingSearch] = useState("");
   const {
     data: HomeVisitData,
     isLoading,
     error,
     isError,
   } = useQuery({
-    queryKey: ["home-visit"],
-    queryFn: () => getHomeVisit({ token }),
+    queryKey: ["home-visit", search],
+    queryFn: () => getHomeVisit({ token, search: search || undefined }),
   });
 
   const [selectedTab, setSelectedTab] = useState(0);
@@ -48,12 +50,70 @@ const HomeVisit = () => {
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
+    setPendingSearch("");
+    setSearch("");
+  };
+
+  const handleExportCSV = () => {
+    // Choose current tab dataset (skip AllHomeVisits tab)
+    const datasets = [doctorData, nursingData, physiotherapyData];
+    const current =
+      selectedTab >= 0 && selectedTab < 3 ? datasets[selectedTab] : [];
+    const rows = (current || []).map((v) => ({
+      id: v.id,
+      date: v.date,
+      user_name: v.user_name || "",
+      user_phone: v.user_phone || "",
+      service_type: v.service_type || "",
+      price: v.price || "",
+      status: v.status || "",
+      payment_status: v.payment_status || "",
+    }));
+
+    const headers = [
+      "رقم الزيارة",
+      "التاريخ",
+      "اسم المستخدم",
+      "الهاتف",
+      "نوع الخدمة",
+      "السعر",
+      "الحالة",
+      "حالة الدفع",
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((r) =>
+        [
+          r.id,
+          r.date,
+          `"${r.user_name}"`,
+          `"${r.user_phone}"`,
+          `"${r.service_type}"`,
+          r.price,
+          r.status,
+          r.payment_status,
+        ].join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob(["\ufeff" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `home_visit_${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
   const tabComponents = [
     <DoctorComponent data={doctorData} />,
     <NursingComponent data={nursingData} />,
     <PhysiotherapyComponent data={physiotherapyData} />,
-    <AllHomeVisits />,
+    <AllHomeVisits search={search} />,
   ];
 
   return (
@@ -66,6 +126,32 @@ const HomeVisit = () => {
 
       {HomeVisitData?.success && (
         <>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="flex-1" />
+            <input
+              type="text"
+              value={pendingSearch}
+              onChange={(e) => setPendingSearch(e.target.value)}
+              placeholder="بحث في الزيارات المنزلية"
+              className="w-full max-w-md rounded-lg border border-gray-300 bg-[#f8f9fa] px-4 py-2 text-[14px] font-medium text-[#495057] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={() => setSearch(pendingSearch)}
+              className="rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-semibold hover:bg-blue-700"
+            >
+              بحث
+            </button>
+          </div>
+
+          {selectedTab !== 3 && (
+            <button
+              onClick={handleExportCSV}
+              className="rounded-lg bg-green-600 text-white px-4 py-2 text-sm font-semibold hover:bg-green-700 w-full my-3"
+            >
+              تصدير Excel
+            </button>
+          )}
+
           <Tabs
             value={selectedTab}
             variant="fullWidth"

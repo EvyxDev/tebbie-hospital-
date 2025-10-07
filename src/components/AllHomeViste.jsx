@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +10,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { arSA } from "date-fns/locale";
 
-const AllHomeVisits = () => {
+const AllHomeVisits = ({ search }) => {
   const token = localStorage.getItem("authToken");
 
   // date range state
@@ -22,12 +23,13 @@ const AllHomeVisits = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["all-home-visits", startDate, endDate],
+    queryKey: ["all-home-visits", startDate, endDate, search],
     queryFn: () =>
       getAllHomeVists({
         token,
         start: startDate ? format(startDate, "yyyy-MM-dd") : null,
         end: endDate ? format(endDate, "yyyy-MM-dd") : null,
+        search: search || undefined,
       }),
   });
 
@@ -51,6 +53,58 @@ const AllHomeVisits = () => {
           return visitDate >= startDateStr && visitDate <= endDateStr;
         })
       : allVisits;
+
+  const handleExportCSV = () => {
+    const rows = (filteredVisits || []).map((v) => ({
+      id: v.id,
+      date: v.date,
+      user_name: v.user_name || "",
+      user_phone: v.user_phone || "",
+      service_type: v.service_type || "",
+      price: v.price || "",
+      status: v.status || "",
+      payment_status: v.payment_status || "",
+    }));
+
+    const headers = [
+      "رقم الزيارة",
+      "التاريخ",
+      "اسم المستخدم",
+      "الهاتف",
+      "نوع الخدمة",
+      "السعر",
+      "الحالة",
+      "حالة الدفع",
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((r) =>
+        [
+          r.id,
+          r.date,
+          `"${r.user_name}"`,
+          `"${r.user_phone}"`,
+          `"${r.service_type}"`,
+          r.price,
+          r.status,
+          r.payment_status,
+        ].join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob(["\ufeff" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `all_home_visits_${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={arSA}>
@@ -132,6 +186,13 @@ const AllHomeVisits = () => {
             </div>
           </div>
         </div>
+
+        <button
+          onClick={handleExportCSV}
+          className="rounded-lg bg-green-600 text-white px-4 py-2 text-sm font-semibold hover:bg-green-700 w-full my-5"
+        >
+          تصدير Excel
+        </button>
 
         {/* Visits List */}
         <div className="flex-1 overflow-y-auto my-4">

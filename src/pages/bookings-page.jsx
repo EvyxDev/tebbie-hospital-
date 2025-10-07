@@ -16,6 +16,8 @@ const BookingsPage = () => {
   const token = localStorage.getItem("authToken");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(null);
+  const [pendingSearch, setPendingSearch] = useState("");
+  const [search, setSearch] = useState("");
 
   // ✅ New state for specialization filter
   const [activeSpecialization, setActiveSpecialization] = useState(null);
@@ -25,15 +27,23 @@ const BookingsPage = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["bookings", startDate, endDate],
+    queryKey: ["bookings", startDate, endDate, search],
     enabled: true,
-    queryFn: () =>
-      getAllBooking({
+    queryFn: () => {
+      const startYMD = startDate ? format(startDate, "yyyy-MM-dd") : null;
+      const endYMD = endDate
+        ? format(endDate, "yyyy-MM-dd")
+        : startYMD
+        ? format(new Date(), "yyyy-MM-dd")
+        : null;
+      return getAllBooking({
         token,
         id: BookId,
-        start: startDate ? format(startDate, "yyyy-MM-dd") : null,
-        end: endDate ? format(endDate, "yyyy-MM-dd") : null,
-      }),
+        start: startYMD,
+        end: endYMD,
+        search: search || undefined,
+      });
+    },
   });
 
   const { data: SpecializationsData } = useQuery({
@@ -43,6 +53,62 @@ const BookingsPage = () => {
   });
 
   const navigate = useNavigate();
+
+  const handleExportCSV = () => {
+    const rows = (filteredBookings || []).map((b) => ({
+      id: b.id,
+      date: b.date,
+      doctor_name: b.doctor?.name || "",
+      hospital_name: b.hospital?.name || "",
+      patient_name: b.is_for_self ? b.user?.name || "" : b.patient?.name || "",
+      phone: b.is_for_self ? b.user?.phone || "" : b.patient?.phone || "",
+      status: b.status || "",
+      payment_status: b.payment_status || "",
+      price: b.price || "",
+    }));
+
+    const headers = [
+      "رقم الحجز",
+      "التاريخ",
+      "اسم الطبيب",
+      "اسم المستشفى",
+      "اسم المريض",
+      "الهاتف",
+      "الحالة",
+      "حالة الدفع",
+      "السعر",
+    ];
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((r) =>
+        [
+          r.id,
+          r.date,
+          `"${r.doctor_name}"`,
+          `"${r.hospital_name}"`,
+          `"${r.patient_name}"`,
+          `"${r.phone}"`,
+          r.status,
+          r.payment_status,
+          r.price,
+        ].join(",")
+      ),
+    ].join("\n");
+
+    // Add BOM for Arabic in Excel
+    const blob = new Blob(["\ufeff" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bookings_${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   if (isLoading) return <LoaderComponent />;
   if (error) {
@@ -64,7 +130,6 @@ const BookingsPage = () => {
         })
       : bookings;
 
-  // ✅ Apply specialization filter if active
   if (activeSpecialization) {
     filteredBookings = filteredBookings.filter(
       (b) => b.doctor?.specialization_id === activeSpecialization
@@ -93,6 +158,29 @@ const BookingsPage = () => {
                 searchable={true}
               />
             </div>
+
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex-1" />
+              <input
+                type="text"
+                value={pendingSearch}
+                onChange={(e) => setPendingSearch(e.target.value)}
+                placeholder="بحث في الحجوزات"
+                className="w-full max-w-md rounded-lg border border-gray-300 bg-[#f8f9fa] px-4 py-2 text-[14px] font-medium text-[#495057] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                onClick={() => setSearch(pendingSearch)}
+                className="rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-semibold hover:bg-blue-700"
+              >
+                بحث
+              </button>
+            </div>
+            <button
+              onClick={handleExportCSV}
+              className="rounded-lg bg-green-600 text-white px-4 py-2 text-sm font-semibold hover:bg-green-700 w-full my-5"
+            >
+              تصدير Excel
+            </button>
 
             <h5 className="text-lg font-bold text-gray-800 mb-4">
               اختر الفترة الزمنية

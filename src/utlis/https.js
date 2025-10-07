@@ -530,11 +530,12 @@ export const getBooking = async ({ token, id, start, end }) => {
   }
 };
 
-export const getAllBooking = async ({ token, start, end }) => {
+export const getAllBooking = async ({ token, start, end, search }) => {
   try {
     const queryParams = new URLSearchParams();
     if (start) queryParams.append("from_date", start);
     if (end) queryParams.append("to_date", end);
+    if (search) queryParams.append("search", search);
     const response = await fetch(
       `${API_URL}/hospital/v1/get-booking-for-all?${queryParams.toString()}`,
       {
@@ -582,15 +583,20 @@ export const getBookingDetails = async ({ token, id }) => {
     throw error;
   }
 };
-export const getHomeVisit = async ({ token }) => {
+export const getHomeVisit = async ({ token, search }) => {
   try {
-    const response = await fetch(`${API_URL}/hospital/v1/get-home-visit`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const queryParams = new URLSearchParams();
+    if (search) queryParams.append("search", search);
+    const response = await fetch(
+      `${API_URL}/hospital/v1/get-home-visit?${queryParams.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -604,11 +610,12 @@ export const getHomeVisit = async ({ token }) => {
   }
 };
 
-export const getAllHomeVists = async ({ token, start, end }) => {
+export const getAllHomeVists = async ({ token, start, end, search }) => {
   try {
     const queryParams = new URLSearchParams();
     if (start) queryParams.append("from_date", start);
     if (end) queryParams.append("to_date", end);
+    if (search) queryParams.append("search", search);
     const response = await fetch(
       `${API_URL}/hospital/v1/get-home-visit-for-all?${queryParams.toString()}`,
       {
@@ -933,12 +940,20 @@ export const checkToken = async ({ token }) => {
     throw error;
   }
 };
-export const getBookingsAttendance = async ({ token, id, date }) => {
+export const getBookingsAttendance = async ({
+  token,
+  id,
+  start,
+  end,
+  search,
+}) => {
   try {
     const queryParams = new URLSearchParams();
-    if (date) queryParams.append("date", date);
+    if (start) queryParams.append("from_date", start);
+    if (end) queryParams.append("to_date", end);
+    if (search) queryParams.append("search", search);
     const response = await fetch(
-      `${API_URL}/hospital/v1/get-booking-by-doctor-id/${id}`,
+      `${API_URL}/hospital/v1/get-booking-by-doctor-id/${id}?${queryParams.toString()}`,
       {
         method: "GET",
         headers: {

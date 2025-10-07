@@ -15,49 +15,91 @@ const DoctorBooking = () => {
   const { doctorId } = useParams();
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(null);
+  const [search, setSearch] = useState("");
+  const [pendingSearch, setPendingSearch] = useState("");
 
   const {
     data: doctorsDetails,
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["doctor-attendance", doctorId],
-    queryFn: () =>
-      getBookingsAttendance({
+    queryKey: ["doctor-attendance", doctorId, startDate, endDate, search],
+    queryFn: () => {
+      const formatLocalYMD = (date) => {
+        if (!date) return null;
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+      const startYMD = startDate ? formatLocalYMD(startDate) : null;
+      const endYMD = endDate
+        ? formatLocalYMD(endDate)
+        : startYMD
+        ? formatLocalYMD(new Date())
+        : null;
+      return getBookingsAttendance({
         token,
         id: doctorId,
-      }),
+        start: startYMD,
+        end: endYMD,
+        search: search?.trim() || null,
+      });
+    },
   });
   const bookings = doctorsDetails?.data?.bookings || [];
 
-  // Filter bookings by date range
-  const filteredBookings = bookings.filter((booking) => {
-    // If no start date selected, show all bookings
-    if (!startDate) return true;
+  // Backend filters by date; use returned list as-is
+  const filteredBookings = bookings;
 
-    // Get the booking date in YYYY-MM-DD format
-    const bookingDateStr = booking.date; // This should be in format "2025-08-31"
+  const handleExportCSV = () => {
+    const rows = (filteredBookings || []).map((b) => ({
+      id: b.id,
+      date: b.date,
+      patient_name: b.is_for_self ? b.user?.name || "" : b.patient?.name || "",
+      phone: b.is_for_self ? b.user?.phone || "" : b.patient?.phone || "",
+      status: b.status || "",
+      payment_status: b.payment_status || "",
+      price: b.price || "",
+    }));
 
-    // Convert dates to local YYYY-MM-DD to avoid timezone shifts
-    const formatLocalYMD = (date) => {
-      if (!date) return null;
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    };
-    const startDateStr = formatLocalYMD(startDate);
+    const headers = [
+      "رقم الحجز",
+      "التاريخ",
+      "اسم المريض",
+      "الهاتف",
+      "الحالة",
+      "حالة الدفع",
+      "السعر",
+    ];
 
-    // If no end date selected, show bookings that match the start date
-    if (!endDate) {
-      return bookingDateStr === startDateStr;
-    }
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((r) =>
+        [
+          r.id,
+          r.date,
+          `"${r.patient_name}"`,
+          `"${r.phone}"`,
+          r.status,
+          r.payment_status,
+          r.price,
+        ].join(",")
+      ),
+    ].join("\n");
 
-    // If both start and end dates selected, show bookings within the range
-    const endDateStr = formatLocalYMD(endDate);
-
-    return bookingDateStr >= startDateStr && bookingDateStr <= endDateStr;
-  });
+    const blob = new Blob(["\ufeff" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `doctor_bookings_${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={arSA}>
@@ -141,6 +183,27 @@ const DoctorBooking = () => {
                   />
                 </div>
               </div>
+              <div className="flex items-center justify-end gap-2 mt-3">
+                <input
+                  type="text"
+                  value={pendingSearch}
+                  onChange={(e) => setPendingSearch(e.target.value)}
+                  placeholder="بحث بالاسم / الهاتف / الكود"
+                  className="w-full max-w-xs rounded-lg border border-gray-300 bg-[#f8f9fa] px-4 py-2 text-[14px] font-medium text-[#495057] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={() => setSearch(pendingSearch)}
+                  className="rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-semibold hover:bg-blue-700"
+                >
+                  بحث
+                </button>
+              </div>
+              <button
+                onClick={handleExportCSV}
+                className="rounded-lg bg-green-600 text-white px-4 py-2 text-sm font-semibold hover:bg-green-700 w-full my-5"
+              >
+                تصدير Excel
+              </button>
             </div>
 
             {isLoading ? (
