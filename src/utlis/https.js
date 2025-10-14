@@ -1226,11 +1226,10 @@ export const createEmployee = async ({
     });
 
     const result = await response.json();
-
+    console.log(result);
     if (!response.ok) {
-      throw new Error(
-        result.msg || "An error occurred while creating the employee"
-      );
+      // Throw the result object directly to preserve validation errors structure
+      throw result;
     }
 
     return result.data;
@@ -1270,9 +1269,8 @@ export const updateEmployee = async ({
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        result.msg || "An error occurred while updating the employee"
-      );
+      // Throw the result object directly to preserve validation errors structure
+      throw result;
     }
 
     return result.data;

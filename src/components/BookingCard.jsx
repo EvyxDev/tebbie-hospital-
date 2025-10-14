@@ -318,18 +318,18 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
                 <span className="text-gray-500">الاسم:</span>{" "}
                 {booking.is_for_self
                   ? booking.user.name || "غير محدد"
-                  : booking.patient?.name || "غير محدد"}
+                  : booking.patient?.patient_name || "غير محدد"}
               </p>
               <p className="flex items-center text-sm gap-2">
                 <span className="text-gray-500 text-xs">رقم الهاتف:</span>{" "}
                 <span>
                   {booking.is_for_self
                     ? booking.user.phone || "غير محدد"
-                    : booking.patient?.phone || "غير محدد"}
+                    : booking.patient?.patient_phone || "غير محدد"}
                 </span>
                 {(booking.is_for_self
                   ? booking.user.phone
-                  : booking.patient?.phone) && (
+                  : booking.patient?.patient_phone) && (
                   <Tooltip title="إرسال رسالة واتساب" arrow>
                     <IconButton
                       size="small"
@@ -337,10 +337,10 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
                         handleWhatsAppClick(
                           booking.is_for_self
                             ? booking.user.phone
-                            : booking.patient?.phone,
+                            : booking.patient?.patient_phone,
                           booking.is_for_self
                             ? booking.user.name
-                            : booking.patient?.name
+                            : booking.patient?.patient_name
                         )
                       }
                       sx={{
@@ -370,18 +370,18 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
                 <>
                   <p>
                     <span className="text-gray-500">تاريخ الميلاد:</span>{" "}
-                    {booking.patient?.date_of_birth
-                      ? formatDate(booking.patient.date_of_birth)
+                    {booking.patient?.patient_date_of_birth
+                      ? formatDate(booking.patient.patient_date_of_birth)
                       : "غير محدد"}
                   </p>
                   <p>
                     <span className="text-gray-500">الجنس:</span>{" "}
-                    {booking.patient?.gender
-                      ? booking.patient.gender === "female"
+                    {booking.patient?.patient_gender
+                      ? booking.patient.patient_gender === "female"
                         ? "أنثى"
-                        : booking.patient.gender === "male"
+                        : booking.patient.patient_gender === "male"
                         ? "ذكر"
-                        : booking.patient.gender
+                        : booking.patient.patient_gender
                       : "غير محدد"}
                   </p>
                 </>

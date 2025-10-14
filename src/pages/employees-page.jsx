@@ -41,7 +41,7 @@ export default function EmployeesPage() {
     },
     onError: (error) => {
       console.error("Error deleting employee:", error);
-      alert("حدث خطأ أثناء حذف الموظف");
+      alert("error");
     },
   });
 

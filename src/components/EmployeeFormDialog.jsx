@@ -39,6 +39,7 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
   const isEdit = !!employee;
   const queryClient = useQueryClient();
   const [selectedRole, setSelectedRole] = useState(employee?.role || "");
+  const [validationErrors, setValidationErrors] = useState({});
 
   const initialValues = {
     name: employee?.name || "",
@@ -49,17 +50,41 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
     hospital_id: hospital_id,
   };
 
+  // Helper function to extract error messages from API response
+  const extractErrorMessages = (error) => {
+    console.error("Error response:", error);
+
+    // Check if error has the validation error structure
+    if (error?.errors && typeof error.errors === "object") {
+      return error.errors;
+    }
+
+    // Check if error is wrapped in response
+    if (error?.response?.data?.errors) {
+      return error.response.data.errors;
+    }
+
+    return null;
+  };
+
   // Create mutation
   const createMutation = useMutation({
     mutationFn: createEmployee,
     onSuccess: () => {
       queryClient.invalidateQueries(["employees"]);
+      setValidationErrors({});
       alert("تم إضافة الموظف بنجاح");
       onClose();
     },
     onError: (error) => {
       console.error("Error creating employee:", error);
-      alert("حدث خطأ أثناء إضافة الموظف");
+
+      const errors = extractErrorMessages(error);
+      if (errors) {
+        setValidationErrors(errors);
+      } else {
+        alert("حدث خطأ أثناء إضافة الموظف");
+      }
     },
   });
 
@@ -68,16 +93,26 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
     mutationFn: updateEmployee,
     onSuccess: () => {
       queryClient.invalidateQueries(["employees"]);
+      setValidationErrors({});
       alert("تم تحديث الموظف بنجاح");
       onClose();
     },
     onError: (error) => {
       console.error("Error updating employee:", error);
-      alert("حدث خطأ أثناء تحديث الموظف");
+
+      const errors = extractErrorMessages(error);
+      if (errors) {
+        setValidationErrors(errors);
+      } else {
+        alert("حدث خطأ أثناء تحديث الموظف");
+      }
     },
   });
 
   const handleSubmit = () => {
+    // Clear previous validation errors
+    setValidationErrors({});
+
     const name = document.getElementById("employee-name").value;
     const phone = document.getElementById("employee-phone").value;
     const email = document.getElementById("employee-email").value;
@@ -123,6 +158,11 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
     }
   };
 
+  const handleClose = () => {
+    setValidationErrors({});
+    onClose();
+  };
+
   const isLoading = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -131,7 +171,10 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
         <h2 className="text-xl font-bold text-gray-900">
           {isEdit ? "تعديل الموظف" : "إضافة موظف جديد"}
         </h2>
-        <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+        <button
+          onClick={handleClose}
+          className="text-gray-400 hover:text-gray-600"
+        >
           ✕
         </button>
       </div>
@@ -147,9 +190,23 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
             defaultValue={initialValues.name}
             required
             disabled={isLoading}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              validationErrors.name
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-blue-500"
+            }`}
             placeholder="اسم الموظف"
+            onChange={() =>
+              setValidationErrors((prev) => ({ ...prev, name: null }))
+            }
           />
+          {validationErrors.name && (
+            <p className="mt-1 text-sm text-red-600">
+              {Array.isArray(validationErrors.name)
+                ? validationErrors.name[0]
+                : validationErrors.name}
+            </p>
+          )}
         </div>
 
         <div>
@@ -162,9 +219,23 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
             defaultValue={initialValues.phone}
             required
             disabled={isLoading}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              validationErrors.phone
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-blue-500"
+            }`}
             placeholder="رقم الهاتف"
+            onChange={() =>
+              setValidationErrors((prev) => ({ ...prev, phone: null }))
+            }
           />
+          {validationErrors.phone && (
+            <p className="mt-1 text-sm text-red-600">
+              {Array.isArray(validationErrors.phone)
+                ? validationErrors.phone[0]
+                : validationErrors.phone}
+            </p>
+          )}
         </div>
 
         <div>
@@ -177,13 +248,27 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
             defaultValue={initialValues.email}
             required={!isEdit}
             disabled={isLoading}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              validationErrors.email
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-blue-500"
+            }`}
             placeholder={
               isEdit
                 ? "اتركه فارغاً للحفاظ على البريد الإلكتروني الحالي"
                 : "البريد الإلكتروني"
             }
+            onChange={() =>
+              setValidationErrors((prev) => ({ ...prev, email: null }))
+            }
           />
+          {validationErrors.email && (
+            <p className="mt-1 text-sm text-red-600">
+              {Array.isArray(validationErrors.email)
+                ? validationErrors.email[0]
+                : validationErrors.email}
+            </p>
+          )}
         </div>
 
         <div>
@@ -196,13 +281,27 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
             defaultValue={initialValues.password}
             required={!isEdit}
             disabled={isLoading}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              validationErrors.password
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-blue-500"
+            }`}
             placeholder={
               isEdit
                 ? "اتركه فارغاً للحفاظ على كلمة المرور الحالية"
                 : "كلمة المرور"
             }
+            onChange={() =>
+              setValidationErrors((prev) => ({ ...prev, password: null }))
+            }
           />
+          {validationErrors.password && (
+            <p className="mt-1 text-sm text-red-600">
+              {Array.isArray(validationErrors.password)
+                ? validationErrors.password[0]
+                : validationErrors.password}
+            </p>
+          )}
         </div>
 
         <div>
@@ -211,11 +310,21 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
           </label>
           <RoleSelect
             value={selectedRole}
-            onChange={setSelectedRole}
+            onChange={(value) => {
+              setSelectedRole(value);
+              setValidationErrors((prev) => ({ ...prev, role: null }));
+            }}
             label="اختر الدور"
             disabled={isLoading}
             required
           />
+          {validationErrors.role && (
+            <p className="mt-1 text-sm text-red-600">
+              {Array.isArray(validationErrors.role)
+                ? validationErrors.role[0]
+                : validationErrors.role}
+            </p>
+          )}
         </div>
       </div>
 
@@ -237,7 +346,7 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
           )}
         </button>
         <button
-          onClick={onClose}
+          onClick={handleClose}
           disabled={isLoading}
           className="flex-1 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:cursor-not-allowed text-gray-700 py-2 px-4 rounded-md transition-colors"
         >
