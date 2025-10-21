@@ -24,6 +24,7 @@ export default function EmployeeDialog({
       {/* Dialog */}
       <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
         <EmployeeForm
+          key={employee?.id || "new"}
           employee={employee}
           token={token}
           hospital_id={hospital_id}
@@ -245,6 +246,7 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
           <input
             id="employee-email"
             type="email"
+            autoComplete="off"
             defaultValue={initialValues.email}
             required={!isEdit}
             disabled={isLoading}
@@ -278,6 +280,7 @@ function EmployeeForm({ employee, token, hospital_id, onClose }) {
           <input
             id="employee-password"
             type="password"
+            autoComplete="new-password"
             defaultValue={initialValues.password}
             required={!isEdit}
             disabled={isLoading}

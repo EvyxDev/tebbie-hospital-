@@ -55,8 +55,11 @@ const UpdateSpecializ = ({
     }
   }, [doctorSlotData]);
 
-  // Check if user has permission to edit doctor
-  const canEditDoctor = hasPermission("edit-doctor-by-hospital");
+  // Check if user has permission to update price
+  const canUpdatePrice = hasPermission("update-doctors-price");
+
+  // Check if user has permission to update slots
+  const canUpdateSlots = hasPermission("update-doctor-slots");
 
   const priceMutation = useMutation({
     mutationFn: updateDoctorPrice,
@@ -71,8 +74,8 @@ const UpdateSpecializ = ({
 
   // Handle tab switching with warning
   const handleTabSwitch = (tabName) => {
-    if (!canEditDoctor) {
-      alert("ليس لديك صلاحية لتعديل بيانات الدكتور");
+    if (!canUpdateSlots) {
+      alert("ليس لديك صلاحية لتعديل مواعيد الدكتور");
       return;
     }
     if (tabName === "slots" && hasIntervals) {
@@ -143,85 +146,73 @@ const UpdateSpecializ = ({
               بيانات الدكتور
             </h2>
 
-            {/* Price quick editor */}
-            <div className="flex items-center gap-2 mb-4">
-              <input
-                type="number"
-                value={localPrice}
-                onChange={(e) => setLocalPrice(e.target.value)}
-                className="border-[1px] bg-[#F4F4F6] w-[70%] rounded-xl py-2 px-3 h-[40px] text-[#677294]"
-                placeholder="سعر الكشف"
-              />
-              <button
-                type="button"
-                onClick={() =>
-                  priceMutation.mutate({
-                    token,
-                    doctor_id: selectedDoctorId,
-                    price: localPrice,
-                  })
-                }
-                className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white py-2 px-3 rounded-lg"
-              >
-                حفظ السعر
-              </button>
-            </div>
+            {/* Price quick editor - Only show if user has permission */}
+            {canUpdatePrice && (
+              <div className="flex items-center gap-2 mb-4">
+                <input
+                  type="number"
+                  value={localPrice}
+                  onChange={(e) => setLocalPrice(e.target.value)}
+                  className="border-[1px] bg-[#F4F4F6] w-[70%] rounded-xl py-2 px-3 h-[40px] text-[#677294]"
+                  placeholder="سعر الكشف"
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    priceMutation.mutate({
+                      token,
+                      doctor_id: selectedDoctorId,
+                      price: localPrice,
+                    })
+                  }
+                  className="bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white py-2 px-3 rounded-lg"
+                >
+                  حفظ السعر
+                </button>
+              </div>
+            )}
 
-            {/* Tabs Navigation */}
-            <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
-              <button
-                type="button"
-                onClick={() => handleTabSwitch("slots")}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  !canEditDoctor
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : activeTab === "slots"
-                    ? "bg-white text-blue-600 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-                disabled={!canEditDoctor}
-                title={
-                  !canEditDoctor ? "ليس لديك صلاحية لتعديل بيانات الدكتور" : ""
-                }
-              >
-                مواعيد محددة
-              </button>
-              <button
-                type="button"
-                onClick={() => handleTabSwitch("intervals")}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  !canEditDoctor
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : activeTab === "intervals"
-                    ? "bg-white text-blue-600 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-                disabled={!canEditDoctor}
-                title={
-                  !canEditDoctor ? "ليس لديك صلاحية لتعديل بيانات الدكتور" : ""
-                }
-              >
-                فترات بتاريخ
-              </button>
-              <button
-                type="button"
-                onClick={() => handleTabSwitch("slot_intervals")}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  !canEditDoctor
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : activeTab === "slot_intervals"
-                    ? "bg-white text-blue-600 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-                disabled={!canEditDoctor}
-                title={
-                  !canEditDoctor ? "ليس لديك صلاحية لتعديل بيانات الدكتور" : ""
-                }
-              >
-                فترات يومية
-              </button>
-            </div>
-            {!canEditDoctor ? (
+            {/* Tabs Navigation - Only show if user has permission */}
+            {canUpdateSlots && (
+              <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
+                <button
+                  type="button"
+                  onClick={() => handleTabSwitch("slots")}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "slots"
+                      ? "bg-white text-blue-600 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  مواعيد محددة
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTabSwitch("intervals")}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "intervals"
+                      ? "bg-white text-blue-600 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  فترات بتاريخ
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTabSwitch("slot_intervals")}
+                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "slot_intervals"
+                      ? "bg-white text-blue-600 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  فترات يومية
+                </button>
+              </div>
+            )}
+
+            {/* Show message if user has no permissions at all */}
+            {!canUpdatePrice && !canUpdateSlots ? (
               <div className="text-center py-8">
                 <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
                   <svg
@@ -245,7 +236,10 @@ const UpdateSpecializ = ({
                   ليس لديك صلاحية لتعديل بيانات الدكتور
                 </p>
               </div>
-            ) : (
+            ) : null}
+
+            {/* Show slots forms only if user has slots permission */}
+            {canUpdateSlots && (
               <>
                 {activeTab === "slots" && (
                   <SlotForm
