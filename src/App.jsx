@@ -18,6 +18,7 @@ import AddsSecialization from "./pages/AddsSecialization";
 import Search from "./pages/Search";
 import Reviews from "./pages/Reviews";
 import HomeVisitPricing from "./components/HomeVisitPricing";
+import HomeVisitRegions from "./pages/HomeVisitRegions";
 import Doctors from "./pages/Doctors";
 import DoctorBooking from "./pages/DoctorBooking";
 import NotFound from "./components/NotFound";
@@ -138,6 +139,10 @@ const router = createBrowserRouter([
       {
         path: "home-visit-pricing",
         element: <HomeVisitPricing />,
+      },
+      {
+        path: "home-visit-regions",
+        element: <HomeVisitRegions />,
       },
       {
         path: "/specialization",

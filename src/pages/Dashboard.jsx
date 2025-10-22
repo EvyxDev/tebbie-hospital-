@@ -3,7 +3,7 @@ import { IoIosAdd } from "react-icons/io";
 import { useQuery } from "@tanstack/react-query";
 import { getSpecializations } from "../utlis/https";
 import LoaderComponent from "../components/LoaderComponent";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdLocationOn } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
 
 const Dashboard = () => {
@@ -39,9 +39,19 @@ const Dashboard = () => {
           <IoIosAdd size={30} />
           تسعير خدمات الزيارة المنزلية
         </Link>
-        <Link to="/edit-service" className="py-1  flex gap-2 items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-auto shrink-0">
-         <CiEdit size={26} />
-          تعديل الخدمات 
+        <Link
+          to="/edit-service"
+          className="py-1  flex gap-2 items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-auto shrink-0"
+        >
+          <CiEdit size={26} />
+          تعديل الخدمات
+        </Link>
+        <Link
+          to="/home-visit-regions"
+          className="py-1  flex gap-2 items-center bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white rounded-md px-2 w-auto shrink-0"
+        >
+          <MdLocationOn size={26} />
+          مناطق الزيارة المنزلية
         </Link>
       </div>
 

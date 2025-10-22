@@ -1645,3 +1645,160 @@ export const approveBooking = async ({ token, bookingId }) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
+// Get home visit regions list
+export const getHomeVisitRegions = async ({ token }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/home-visit-region/list`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Failed to fetch home visit regions"
+      );
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Add home visit region
+export const addHomeVisitRegion = async ({
+  token,
+  city_id,
+  region_id,
+  location_price,
+  status,
+}) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/home-visit-region/add`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          city_id,
+          region_id,
+          location_price,
+          status,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to add home visit region");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Update home visit region
+export const updateHomeVisitRegion = async ({
+  token,
+  id,
+  city_id,
+  region_id,
+  location_price,
+  status,
+}) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/home-visit-region/update/${id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          city_id,
+          region_id,
+          location_price,
+          status,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Failed to update home visit region"
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Get cities
+export const getCities = async ({ token }) => {
+  try {
+    const response = await fetch(`${API_URL}/hospital/v1/get-cities`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch cities");
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Get regions by city
+export const getRegionsByCity = async ({ token, city_id }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/hospital/v1/get-regoins/${city_id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch regions");
+    }
+
+    const data = await response.json();
+    // Return empty array if status is false or no data found
+    return data.data || [];
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
