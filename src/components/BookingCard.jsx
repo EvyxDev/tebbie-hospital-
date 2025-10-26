@@ -438,31 +438,6 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
               </ButtonGroup>
             )}
 
-          {booking.status === "cancelled" &&
-            getBookingDateStatus() !== "past" && (
-              <ButtonGroup
-                size="small"
-                variant="contained"
-                className="flex gap-3 items-center"
-              >
-                <Button
-                  onClick={handleConfirmAttendance}
-                  disabled={
-                    confirmAttendanceMutation.isPending ||
-                    cancelAttendanceMutation.isPending
-                  }
-                  color="success"
-                  sx={{ fontSize: "0.75rem", minWidth: "120px" }}
-                >
-                  {confirmAttendanceMutation.isPending
-                    ? "جاري التأكيد..."
-                    : getBookingDateStatus() === "today"
-                    ? "تأكيد الحجز"
-                    : "تأكيد الحضور"}
-                </Button>
-              </ButtonGroup>
-            )}
-
           {booking.status === "finished" && (
             <div className="text-sm text-green-600 font-medium">
               تم إكمال الحجز
@@ -482,24 +457,21 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
       </div>
 
       {/* Reschedule Button Row */}
-      {booking.status === "pending" &&
-        doctorId &&
-        !showReschedule &&
-        getBookingDateStatus() !== "past" && (
-          <div className="border-t pt-3 mt-3 flex justify-center">
-            <div className="flex justify-start">
-              <Button
-                onClick={handleReschedule}
-                variant="outlined"
-                size="small"
-                color="secondary"
-                sx={{ fontSize: "0.75rem", minWidth: "100px" }}
-              >
-                إعادة جدولة
-              </Button>
-            </div>
+      {booking.status === "pending" && doctorId && !showReschedule && (
+        <div className="border-t pt-3 mt-3 flex justify-center">
+          <div className="flex justify-start">
+            <Button
+              onClick={handleReschedule}
+              variant="outlined"
+              size="small"
+              color="secondary"
+              sx={{ fontSize: "0.75rem", minWidth: "100px" }}
+            >
+              إعادة جدولة
+            </Button>
           </div>
-        )}
+        </div>
+      )}
 
       {/* Reschedule Component */}
       {showReschedule && doctorId && (

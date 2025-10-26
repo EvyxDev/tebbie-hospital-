@@ -91,6 +91,8 @@ const BookingData = ({
                 booking={booking}
                 showSwitch={false}
                 onStatusChange={handleBookingStatusChange}
+                showReschedule
+                doctorId={booking.doctor_id}
               />
             </div>
           ))}
