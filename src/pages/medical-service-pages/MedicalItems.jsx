@@ -34,7 +34,7 @@ const MedicalItems = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-4">
-          {items && items?.map((item) => (
+          {response && response?.map((item) => (
             <div
               key={item.id}
               className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all mb-4 overflow-hidden"
@@ -139,4 +139,5 @@ const MedicalItems = () => {
 };
 
 export default MedicalItems;
+
 
