@@ -20,7 +20,15 @@ const MedicalPackages = () => {
 
   if (isLoading) return <LoaderComponent />;
 
-  const packages = response || [];
+  const packages = (response || []).map((pkg) => ({
+  ...pkg,
+  items: (pkg.items || []).map((item) => ({
+    ...item,
+    tags: item.tags || [],
+    notes: item.notes || [],
+  })),
+}));
+
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -73,10 +81,10 @@ const MedicalPackages = () => {
               {/* Items List */}
               <div className="p-5">
                 <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <Activity size={16} /> محتويات الباكدج ({pkg.items.length})
+                  <Activity size={16} /> محتويات الباكدج ({pkg.items?.length || 0})
                 </h4>
 
-                {pkg.items.length > 0 ? (
+                {pkg.items?.length > 0 ? (
                   <div className="space-y-4">
                     {pkg.items.map((item) => (
                       <div
@@ -140,3 +148,4 @@ const MedicalPackages = () => {
 };
 
 export default MedicalPackages;
+
