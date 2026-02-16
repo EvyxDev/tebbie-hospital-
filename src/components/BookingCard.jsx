@@ -6,6 +6,8 @@ import {
   confirmDoctorAttendance,
   cancelDoctorAttendance,
   approveBooking,
+  cancelMedicalBooking,
+  confirmMedicalBooking,
 } from "../utlis/https";
 import {
   Snackbar,
@@ -30,7 +32,7 @@ const WhatsAppIcon = ({ size = 18 }) => (
   </svg>
 );
 
-const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
+const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
   const queryClient = useQueryClient();
   const token = localStorage.getItem("authToken");
   const [snackbar, setSnackbar] = useState({
@@ -59,6 +61,10 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
   // Confirm attendance mutation
   const confirmAttendanceMutation = useMutation({
     mutationFn: ({ bookingId }) => {
+      if (type) {
+        confirmMedicalBooking({ token, bookingId });
+        return;
+      }
       // Use different endpoint based on booking date
       const dateStatus = getBookingDateStatus();
       if (dateStatus === "today") {
@@ -71,19 +77,28 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["specialization"]);
-      queryClient.invalidateQueries(["doctor-attendance"]);
-      queryClient.invalidateQueries(["bookings"]);
-      queryClient.invalidateQueries(["all-home-visits"]);
-      const dateStatus = getBookingDateStatus();
-      setSnackbar({
-        open: true,
-        message:
-          dateStatus === "today"
-            ? "تم تأكيد حضور الطبيب بنجاح"
-            : "تم تأكيد الحضور بنجاح",
-        severity: "success",
-      });
+      if (type) {
+        queryClient.invalidateQueries(["medical-bookings"]);
+        setSnackbar({
+          open: true,
+          message: "تم تأكيد الحجز بنجاح",
+          severity: "success",
+        });
+      } else {
+        queryClient.invalidateQueries(["specialization"]);
+        queryClient.invalidateQueries(["doctor-attendance"]);
+        queryClient.invalidateQueries(["bookings"]);
+        queryClient.invalidateQueries(["all-home-visits"]);
+        const dateStatus = getBookingDateStatus();
+        setSnackbar({
+          open: true,
+          message:
+            dateStatus === "today"
+              ? "تم تأكيد حضور الطبيب بنجاح"
+              : "تم تأكيد الحضور بنجاح",
+          severity: "success",
+        });
+      }
     },
     onError: (error) => {
       const dateStatus = getBookingDateStatus();
@@ -101,17 +116,29 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
 
   // Cancel attendance mutation
   const cancelAttendanceMutation = useMutation({
-    mutationFn: ({ bookingId }) => cancelDoctorAttendance({ token, bookingId }),
+    mutationFn: ({ bookingId }) =>
+      type
+        ? cancelMedicalBooking({ token, bookingId })
+        : cancelDoctorAttendance({ token, bookingId }),
     onSuccess: () => {
-      queryClient.invalidateQueries(["specialization"]);
-      queryClient.invalidateQueries(["doctor-attendance"]);
-      queryClient.invalidateQueries(["bookings"]);
-      queryClient.invalidateQueries(["all-home-visits"]);
-      setSnackbar({
-        open: true,
-        message: "تم إلغاء حضور الطبيب بنجاح",
-        severity: "success",
-      });
+      if (type) {
+        queryClient.invalidateQueries(["medical-bookings"]);
+        setSnackbar({
+          open: true,
+          message: "تم إلغاء الحجز بنجاح",
+          severity: "success",
+        });
+      } else {
+        queryClient.invalidateQueries(["specialization"]);
+        queryClient.invalidateQueries(["doctor-attendance"]);
+        queryClient.invalidateQueries(["bookings"]);
+        queryClient.invalidateQueries(["all-home-visits"]);
+        setSnackbar({
+          open: true,
+          message: "تم إلغاء حضور الطبيب بنجاح",
+          severity: "success",
+        });
+      }
     },
     onError: (error) => {
       setSnackbar({
@@ -259,14 +286,14 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
         <div className="flex gap-2">
           <span
             className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-              booking.status
+              booking.status,
             )}`}
           >
             {getStatusText(booking.status)}
           </span>
           <span
             className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(
-              booking.payment_status
+              booking.payment_status,
             )}`}
           >
             {getPaymentStatusText(booking.payment_status)}
@@ -340,7 +367,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
                             : booking.patient?.patient_phone,
                           booking.is_for_self
                             ? booking.user.name
-                            : booking.patient?.patient_name
+                            : booking.patient?.patient_name,
                         )
                       }
                       sx={{
@@ -380,8 +407,8 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
                       ? booking.patient.patient_gender === "female"
                         ? "أنثى"
                         : booking.patient.patient_gender === "male"
-                        ? "ذكر"
-                        : booking.patient.patient_gender
+                          ? "ذكر"
+                          : booking.patient.patient_gender
                       : "غير محدد"}
                   </p>
                 </>
@@ -432,8 +459,8 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
                   {confirmAttendanceMutation.isPending
                     ? "جاري التأكيد..."
                     : getBookingDateStatus() === "today"
-                    ? "تأكيد الحجز"
-                    : "تأكيد الحضور"}
+                      ? "تأكيد الحجز"
+                      : "تأكيد الحضور"}
                 </Button>
               </ButtonGroup>
             )}

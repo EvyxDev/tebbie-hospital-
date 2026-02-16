@@ -3,13 +3,15 @@ import NotificationCard from "./NotificationCard";
 import NotificationsHeader from "./NotificationsHeader";
 import { getNotifications } from "../utlis/https";
 import LoaderComponent from "./LoaderComponent";
-
+import getMedicalStatus from "../utlis/get-medical-status";
 
 const Notifications = () => {
   const token = localStorage.getItem("authToken");
+  const is_medical_service = getMedicalStatus();
   const { data, isLoading, error } = useQuery({
     queryKey: ["notifications"],
     queryFn: () => getNotifications({ token }),
+    enabled: is_medical_service !== "true",
   });
   if (isLoading) {
     return <LoaderComponent />;
@@ -18,9 +20,7 @@ const Notifications = () => {
   if (error) {
     return (
       <div className="h-screen flex justify-center items-center">
-        <p className="text-center text-red-600">
-         {error}
-        </p>
+        <p className="text-center text-red-600">{error}</p>
       </div>
     );
   }
@@ -44,7 +44,10 @@ const Notifications = () => {
   return (
     <section className="p-4">
       <NotificationsHeader />
-      <div >
+
+      {is_medical_service === "true" && null}
+
+      <div>
         {sortedNotifications.map((notification) => (
           <div key={notification.id}>
             <h5 className="text-md font-bold text-gray-800 mb-4 text-right">
@@ -61,7 +64,9 @@ const Notifications = () => {
         ))}
 
         {!data?.length && (
-          <p className="text-right text-gray-500 text-2xl">لا توجد إشعارات حالياً.</p>
+          <p className="text-right text-gray-500 text-2xl">
+            لا توجد إشعارات حالياً.
+          </p>
         )}
       </div>
     </section>

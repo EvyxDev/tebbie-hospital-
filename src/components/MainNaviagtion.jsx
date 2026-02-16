@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { useFormik } from "formik";
-import { logOutIcon, NotificationIcon  } from "../assets";
+import { logOutIcon, NotificationIcon } from "../assets";
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -37,26 +37,31 @@ const MainNavigation = () => {
   };
 
   const handleLogout = async () => {
-    const token = localStorage.getItem("authToken");
-    try {
-      const response = await fetch(`${API_URL}/hospital/v1/logout-hospital`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("is_medical_service");
+    localStorage.removeItem("hospital_id");
+    navigate("/login");
+    // const token = localStorage.getItem("authToken");
+    // try {
+    //   const response = await fetch(`${API_URL}/hospital/v1/logout-hospital`, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //   });
 
-      if (response.ok) {
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("hospital_id");
-        navigate("/login");
-      } else {
-        console.error("Failed to log out:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
+    //   if (response.ok) {
+    //     localStorage.removeItem("authToken");
+    //     localStorage.removeItem("is_medical_service");
+    //     localStorage.removeItem("hospital_id");
+    //     navigate("/login");
+    //   } else {
+    //     console.error("Failed to log out:", response.statusText);
+    //   }
+    // } catch (error) {
+    //   console.error("Error during logout:", error);
+    // }
   };
 
   const formik = useFormik({
@@ -66,7 +71,7 @@ const MainNavigation = () => {
 
   return (
     <div className="w-full text-[#5E5F60] h-16 flex items-center justify-between">
-        <div className="flex text-lg justify-center items-center gap-3">
+      <div className="flex text-lg justify-center items-center gap-3">
         {location.pathname !== "/" && (
           <button onClick={goBack} className="text-lg flex items-center gap-1">
             <FaArrowRightLong />

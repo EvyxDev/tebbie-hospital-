@@ -53,24 +53,37 @@ const Login = () => {
           }),
         });
 
-        const data = await response.json();
+        const payload = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || "خطأ في تسجيل الدخول");
+          throw new Error(payload.message || "خطأ في تسجيل الدخول");
         }
 
-        if (data.success) {
-          localStorage.setItem("authToken", data.data.token);
-          localStorage.setItem("hospital_id", data.data.hospital_id);
-          localStorage.setItem("role", data.data.role);
+        if (payload.success) {
+          if (
+            payload.data.hospital_id &&
+            payload.data.role &&
+            payload.data.hospital_id
+          ) {
+            localStorage.setItem("hospital_id", payload.data.hospital_id);
+            localStorage.setItem("role", payload.data.role);
+            localStorage.setItem(
+              "permissions",
+              JSON.stringify(payload.data.role.permissions),
+            );
+          } else {
+            localStorage.removeItem("hospital_id");
+            localStorage.removeItem("role");
+            localStorage.removeItem("permissions");
+          }
+          localStorage.setItem("authToken", payload.data.token);
           localStorage.setItem(
-            "permissions",
-            JSON.stringify(data.data.role.permissions)
+            "is_medical_service",
+            payload.data.is_medical_service,
           );
-
           navigate("/");
         } else {
-          throw new Error(data.message || "خطأ في تسجيل الدخول");
+          throw new Error(payload.message || "خطأ في تسجيل الدخول");
         }
       } catch (error) {
         if (error.message.includes("email")) {
