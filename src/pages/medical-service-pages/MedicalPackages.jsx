@@ -21,14 +21,13 @@ const MedicalPackages = () => {
   if (isLoading) return <LoaderComponent />;
 
   const packages = (response || []).map((pkg) => ({
-  ...pkg,
-  items: (pkg.items || []).map((item) => ({
-    ...item,
-    tags: item.tags || [],
-    notes: item.notes || [],
-  })),
-}));
-
+    ...pkg,
+    items: (pkg.items || []).map((item) => ({
+      ...item,
+      tags: item.tags || [],
+      notes: item.notes || [],
+    })),
+  }));
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -68,12 +67,12 @@ const MedicalPackages = () => {
                 <div className="flex gap-2 items-center">
                   <p className="text-sm text-gray-500">السعر الكلي:</p>
                   <p className="text-sm font-black text-blue-600 font-mono">
-                    {pkg.price} <span className="text-sm">ج.م</span>
+                    {pkg.price} <span className="text-sm">د.ل</span>
                   </p>
                 </div>
                 {/* <div className="text-right">
                   <p className="text-xs font-bold text-gray-600">
-                    سعر طبي: {pkg.tabi_price} ج.م
+                    سعر طبي: {pkg.tabi_price} د.ل
                   </p>
                 </div> */}
               </div>
@@ -81,7 +80,8 @@ const MedicalPackages = () => {
               {/* Items List */}
               <div className="p-5">
                 <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <Activity size={16} /> محتويات الباكدج ({pkg.items?.length || 0})
+                  <Activity size={16} /> محتويات الباكدج (
+                  {pkg.items?.length || 0})
                 </h4>
 
                 {pkg.items?.length > 0 ? (
@@ -94,7 +94,7 @@ const MedicalPackages = () => {
                         <div className="flex justify-between font-medium text-gray-800">
                           <span>{item.name}</span>
                           <span className="text-blue-600">
-                            {item.price} ج.م
+                            {item.price} د.ل
                           </span>
                         </div>
 
@@ -148,4 +148,3 @@ const MedicalPackages = () => {
 };
 
 export default MedicalPackages;
-
