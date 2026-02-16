@@ -41,13 +41,13 @@ const MedicalWallet = () => {
         </div>
         <div className="flex items-center justify-between">
           <p className="text-2xl text-white my-2"> LD {formattedPrice}</p>
-          <Link
+          {/* <Link
             to="/wallet/new/details"
             className="flex gap-1 items-center text-base text-[#5E5F60] bg-[#D6EEF6] p-2 w-22 rounded-full"
           >
             التفاصيل
             <IoIosArrowBack size={17} />
-          </Link>
+          </Link> */}
         </div>
       </div>
       <h2 className="text-black font-[500] text-lg my-6">المعاملات</h2>
