@@ -6,11 +6,11 @@ import LoaderComponent from "../components/LoaderComponent";
 import { MdEdit, MdLocationOn } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
 import DashboardMedical from "./medical-service-pages/DashboardMedical";
+import getMedicalStatus from "../utlis/get-medical-status";
 
 const Dashboard = () => {
   const token = localStorage.getItem("authToken");
-  const is_medical_service =
-    localStorage.getItem("is_medical_service") || "false";
+  const is_medical_service = getMedicalStatus();
 
   const {
     data: specializationData,
