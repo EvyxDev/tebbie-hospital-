@@ -1,5 +1,6 @@
 const MedicalReviews = () => {
-  return <div>MedicalReviews</div>;
+  return <div>لا توجد تقيمات حاليا</div>;
 };
 
 export default MedicalReviews;
+
