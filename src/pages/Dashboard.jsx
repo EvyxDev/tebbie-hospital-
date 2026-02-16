@@ -5,9 +5,13 @@ import { getSpecializations } from "../utlis/https";
 import LoaderComponent from "../components/LoaderComponent";
 import { MdEdit, MdLocationOn } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
+import DashboardMedical from "./medical-service-pages/DashboardMedical";
 
 const Dashboard = () => {
   const token = localStorage.getItem("authToken");
+  const is_medical_service =
+    localStorage.getItem("is_medical_service") || "false";
+
   const {
     data: specializationData,
     isLoading,
@@ -15,7 +19,12 @@ const Dashboard = () => {
   } = useQuery({
     queryKey: ["specializations"],
     queryFn: () => getSpecializations({ token }),
+    enabled: is_medical_service == "false",
   });
+
+  if (is_medical_service == "true") {
+    return <DashboardMedical />;
+  }
 
   if (isLoading) {
     return <LoaderComponent />;

@@ -34,7 +34,7 @@ export const getEmployeePermissions = async ({ token }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (response.ok) {
@@ -135,7 +135,7 @@ export const getSpecializations = async ({ token }) => {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
-        errorData.message || "Failed to fetch specializations data"
+        errorData.message || "Failed to fetch specializations data",
       );
     }
 
@@ -175,7 +175,7 @@ export const getDoctorsBooking = async ({ token, id }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (response.ok) {
@@ -197,7 +197,7 @@ export const getNotifications = async ({ token }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (response.ok) {
@@ -238,14 +238,14 @@ export const assignSpecialization = async ({
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     const result = await response.json();
 
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while updating the Hospital"
+        result.msg || "An error occurred while updating the Hospital",
       );
     }
 
@@ -307,7 +307,7 @@ export const updateSpecialization = async ({
 
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while updating the doctor slot"
+        result.msg || "An error occurred while updating the doctor slot",
       );
     }
 
@@ -354,7 +354,7 @@ export const updateDoctorIntervals = async ({
 
       if (!response.ok) {
         throw new Error(
-          result.msg || "An error occurred while updating the doctor intervals"
+          result.msg || "An error occurred while updating the doctor intervals",
         );
       }
     }
@@ -399,7 +399,7 @@ export const updateDoctorSlotIntervals = async ({
       if (!response.ok) {
         throw new Error(
           result.msg ||
-            "An error occurred while updating the doctor slot intervals"
+            "An error occurred while updating the doctor slot intervals",
         );
       }
     }
@@ -426,7 +426,7 @@ export const updateDoctorPrice = async ({ token, doctor_id, price }) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
-      }
+      },
     );
 
     const result = await response.json();
@@ -467,7 +467,7 @@ export const DeleteDocktorSlots = async ({
 
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while updating the doctor slot"
+        result.msg || "An error occurred while updating the doctor slot",
       );
     }
     console.log(result);
@@ -510,7 +510,7 @@ export const getSpecialization = async ({ token, id }) => {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
-        errorData.message || "Failed to fetch specializations data"
+        errorData.message || "Failed to fetch specializations data",
       );
     }
 
@@ -534,13 +534,13 @@ export const getBooking = async ({ token, id, start, end }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
         errorData.message ||
-          "Failed to fetch booking for that specialization data"
+          "Failed to fetch booking for that specialization data",
       );
     }
 
@@ -565,13 +565,45 @@ export const getAllBooking = async ({ token, start, end, search }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
         errorData.message ||
-          "Failed to fetch booking for that specialization data"
+          "Failed to fetch booking for that specialization data",
+      );
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getAllMedicalBooking = async ({ token, start, end, search }) => {
+  try {
+    const queryParams = new URLSearchParams();
+    if (start) queryParams.append("from_date", start);
+    if (end) queryParams.append("to_date", end);
+    if (search) queryParams.append("search", search);
+    const response = await fetch(
+      // `${API_URL}/v1/medical-service/bookings?${queryParams.toString()}`,
+      `${API_URL}/v1/medical-service/bookings`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message ||
+          "Failed to fetch booking for that specialization data",
       );
     }
 
@@ -592,7 +624,7 @@ export const getBookingDetails = async ({ token, id }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (response.ok) {
@@ -616,7 +648,7 @@ export const getHomeVisit = async ({ token, search }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -645,13 +677,13 @@ export const getAllHomeVists = async ({ token, start, end, search }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
         errorData.message ||
-          "Failed to fetch HomeVists for that specialization data"
+          "Failed to fetch HomeVists for that specialization data",
       );
     }
 
@@ -690,7 +722,7 @@ export const updateHomeVisit = async ({
 
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while updating the Hospital"
+        result.msg || "An error occurred while updating the Hospital",
       );
     }
 
@@ -716,14 +748,14 @@ export const updateHomeStatus = async ({ token, home_visit_id, status }) => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     const result = await response.json();
 
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while updating the Hospital"
+        result.msg || "An error occurred while updating the Hospital",
       );
     }
 
@@ -768,14 +800,14 @@ export const getWallet = async ({ token, start, end }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     const result = await response.json();
 
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while updating the Hospital"
+        result.msg || "An error occurred while updating the Hospital",
       );
     }
 
@@ -800,7 +832,7 @@ export const getWalletTotal = async ({ token }) => {
 
     if (!response.ok) {
       throw new Error(
-        result.message || "An error occurred while fetching wallet total"
+        result.message || "An error occurred while fetching wallet total",
       );
     }
 
@@ -810,6 +842,32 @@ export const getWalletTotal = async ({ token }) => {
     throw error;
   }
 };
+
+export const getMedicalWallet = async ({ token }) => {
+  try {
+    const response = await fetch(`${API_URL}/v1/medical-service/get-wallet`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || "An error occurred while fetching wallet total",
+      );
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+};
+
 export const getDoctorBooking = async ({ token, id }) => {
   try {
     const response = await fetch(
@@ -820,7 +878,7 @@ export const getDoctorBooking = async ({ token, id }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (response.ok) {
@@ -842,7 +900,7 @@ export const getBookingDoctor = async ({ token, id, date }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -915,14 +973,14 @@ export const assignAllVisitServices = async ({ token, services }) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     const result = await response.json();
 
     if (!response.ok) {
       throw new Error(
-        result.message || "An error occurred while adding the Service"
+        result.message || "An error occurred while adding the Service",
       );
     }
 
@@ -930,7 +988,7 @@ export const assignAllVisitServices = async ({ token, services }) => {
       throw new Error(
         result.message ||
           result.error ||
-          "An error occurred while adding the Service"
+          "An error occurred while adding the Service",
       );
     }
 
@@ -951,7 +1009,7 @@ export const checkToken = async ({ token }) => {
     const result = await response.json();
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while checking the token"
+        result.msg || "An error occurred while checking the token",
       );
     }
 
@@ -981,12 +1039,12 @@ export const getBookingsAttendance = async ({
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
-        errorData.message || "Failed to fetch booking for that doctor "
+        errorData.message || "Failed to fetch booking for that doctor ",
       );
     }
 
@@ -1010,14 +1068,14 @@ export const attendanceDoctor = async ({ token, doctor_id, date }) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     const result = await response.json();
 
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while updating the attendance"
+        result.msg || "An error occurred while updating the attendance",
       );
     }
 
@@ -1058,7 +1116,7 @@ export const getDoctorsBook = async ({ token, id }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (response.ok) {
@@ -1113,14 +1171,14 @@ export const UpdateHomeVisitServices = async ({
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     const result = await response.json();
 
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while updating the home visit service"
+        result.msg || "An error occurred while updating the home visit service",
       );
     }
 
@@ -1145,14 +1203,14 @@ export const UpdateHomeVisitServiceStatus = async ({
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     const result = await response.json();
 
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while updating the service status"
+        result.msg || "An error occurred while updating the service status",
       );
     }
 
@@ -1188,7 +1246,7 @@ export const rescheduleBooking = async ({
 
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while rescheduling the booking"
+        result.msg || "An error occurred while rescheduling the booking",
       );
     }
 
@@ -1209,7 +1267,7 @@ export const getEmployees = async ({ token, hospital_id }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (response.ok) {
@@ -1314,14 +1372,14 @@ export const deleteEmployee = async ({ token, id, hospital_id }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     const result = await response.json();
 
     if (!response.ok) {
       throw new Error(
-        result.msg || "An error occurred while deleting the employee"
+        result.msg || "An error occurred while deleting the employee",
       );
     }
 
@@ -1344,7 +1402,7 @@ export const getServiceSlots = async ({ token, id }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     if (!response.ok) {
       const errorData = await response.json();
@@ -1385,7 +1443,7 @@ export const createServiceIntervals = async ({
       const result = await response.json();
       if (!response.ok) {
         throw new Error(
-          result.msg || result.message || "Failed to create service interval"
+          result.msg || result.message || "Failed to create service interval",
         );
       }
     }
@@ -1422,13 +1480,13 @@ export const updateServiceIntervals = async ({
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
-        }
+        },
       );
 
       const result = await response.json();
       if (!response.ok) {
         throw new Error(
-          result.msg || result.message || "Failed to update service interval"
+          result.msg || result.message || "Failed to update service interval",
         );
       }
     }
@@ -1450,13 +1508,13 @@ export const updateServiceStatus = async ({ token, service_id }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     const result = await response.json();
     if (!response.ok) {
       throw new Error(
-        result.msg || result.message || "Failed to update service status"
+        result.msg || result.message || "Failed to update service status",
       );
     }
     return result.data || true;
@@ -1476,7 +1534,7 @@ export const getServiceBookings = async ({ token, serviceId }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -1510,7 +1568,7 @@ export const completeServiceBooking = async ({ token, bookingId }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -1535,7 +1593,7 @@ export const cancelServiceBooking = async ({ token, bookingId }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -1564,13 +1622,13 @@ export const confirmDoctorAttendance = async ({ token, bookingId }) => {
         body: JSON.stringify({
           booking_id: bookingId,
         }),
-      }
+      },
     );
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
-        errorData.message || "Failed to confirm doctor attendance"
+        errorData.message || "Failed to confirm doctor attendance",
       );
     }
 
@@ -1582,6 +1640,7 @@ export const confirmDoctorAttendance = async ({ token, bookingId }) => {
 };
 
 // Cancel doctor attendance
+
 export const cancelDoctorAttendance = async ({ token, bookingId }) => {
   try {
     const response = await fetch(
@@ -1595,13 +1654,68 @@ export const cancelDoctorAttendance = async ({ token, bookingId }) => {
         body: JSON.stringify({
           booking_id: bookingId,
         }),
-      }
+      },
     );
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
-        errorData.message || "Failed to cancel doctor attendance"
+        errorData.message || "Failed to cancel doctor attendance",
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+// Confirm doctor attendance
+export const confirmMedicalBooking = async ({ token, bookingId }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/v1/medical-service/complete-medical-service-bookings/${bookingId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Failed to confirm doctor attendance",
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const cancelMedicalBooking = async ({ token, bookingId }) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/v1/medical-service/cancel-medical-service-bookings/${bookingId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message || "Failed to cancel doctor attendance",
       );
     }
 
@@ -1626,7 +1740,7 @@ export const updateRolePermissions = async ({ token, roleId, permissions }) => {
         body: JSON.stringify({
           permissions: permissions,
         }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -1678,13 +1792,13 @@ export const getHomeVisitRegions = async ({ token }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
-        errorData.message || "Failed to fetch home visit regions"
+        errorData.message || "Failed to fetch home visit regions",
       );
     }
 
@@ -1720,7 +1834,7 @@ export const addHomeVisitRegion = async ({
           status,
           home_visit_service_id,
         }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -1759,13 +1873,13 @@ export const updateHomeVisitRegion = async ({
           location_price,
           status,
         }),
-      }
+      },
     );
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
-        errorData.message || "Failed to update home visit region"
+        errorData.message || "Failed to update home visit region",
       );
     }
 
@@ -1810,7 +1924,7 @@ export const getHomeServices = async ({ token }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -1836,7 +1950,7 @@ export const getRegionsByCity = async ({ token, city_id }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -1847,6 +1961,54 @@ export const getRegionsByCity = async ({ token, city_id }) => {
     const data = await response.json();
     // Return empty array if status is false or no data found
     return data.data || [];
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getMedicalPackages = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}/v1/medical-service/packages`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message ||
+          "Failed to fetch booking for that specialization data",
+      );
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
+
+export const getMedicalItems = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}/v1/medical-service/items`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message ||
+          "Failed to fetch booking for that specialization data",
+      );
+    }
+
+    const data = await response.json();
+    return data.data;
   } catch (error) {
     throw new Error(error.message || "An unexpected error occurred");
   }
