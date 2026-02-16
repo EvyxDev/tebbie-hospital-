@@ -13,8 +13,13 @@ const data = [
     image: doctorImg,
   },
   {
-    content: "تفاصيل التحاليل",
-    href: "medical-services-details",
+    content: "الباقات الطبية",
+    href: "medical-packages",
+    image: doctorImg,
+  },
+  {
+    content: "العناصر الطبية",
+    href: "medical-items",
     image: doctorImg,
   },
   {
