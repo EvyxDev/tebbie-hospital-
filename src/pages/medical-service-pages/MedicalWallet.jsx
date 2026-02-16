@@ -1,10 +1,9 @@
-import { Link } from "react-router-dom";
-import { IoIosArrowBack } from "react-icons/io";
 import { useQuery } from "@tanstack/react-query";
 import { getMedicalWallet } from "../../utlis/https";
 import LoaderComponent from "../../components/LoaderComponent";
 import { dollarIcon, statics } from "../../assets";
-
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 const MedicalWallet = () => {
   const token = localStorage.getItem("authToken");
 
@@ -32,6 +31,35 @@ const MedicalWallet = () => {
     );
   }
 
+  const handleExportExcel = () => {
+    if (!walletData?.data || walletData.data.length === 0) return;
+
+    const formattedData = walletData.data.map((wallet) => ({
+      الاسم: wallet?.user_name || wallet?.model_name || "غير معروف",
+      نوع_المعاملة: wallet?.model_name || "معاملة أخرى",
+      المبلغ: wallet?.money || "0.00",
+      التاريخ: wallet?.date || wallet?.created_at?.split("T")[0] || "غير محدد",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+
+    worksheet["!cols"] = [{ wch: 30 }, { wch: 20 }, { wch: 15 }, { wch: 18 }];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Medical Wallet");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const fileData = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    });
+
+    saveAs(fileData, "medical_wallet.xlsx");
+  };
+
   return (
     <section className="z-10">
       <div className="sticky top-0 bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] h-28 rounded-2xl p-4 z-10">
@@ -41,16 +69,18 @@ const MedicalWallet = () => {
         </div>
         <div className="flex items-center justify-between">
           <p className="text-2xl text-white my-2"> LD {formattedPrice}</p>
-          {/* <Link
-            to="/wallet/new/details"
-            className="flex gap-1 items-center text-base text-[#5E5F60] bg-[#D6EEF6] p-2 w-22 rounded-full"
-          >
-            التفاصيل
-            <IoIosArrowBack size={17} />
-          </Link> */}
         </div>
       </div>
-      <h2 className="text-black font-[500] text-lg my-6">المعاملات</h2>
+
+      <div className="flex justify-between items-center">
+        <h2 className="text-black font-[500] text-lg my-6">المعاملات</h2>
+        <button
+          onClick={handleExportExcel}
+          className="text-sm bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white px-4 py-2 rounded-lg shadow-sm border border-gray-200"
+        >
+          تصدير إكسيل
+        </button>
+      </div>
 
       {walletData?.data && walletData.data.length > 0 ? (
         walletData.data.map((wallet) => {
