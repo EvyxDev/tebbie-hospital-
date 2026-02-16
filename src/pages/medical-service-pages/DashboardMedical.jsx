@@ -1,31 +1,37 @@
 import { Link } from "react-router-dom";
-import { doctorImg } from "../../assets";
+import {
+  booking,
+  reviewsIcon,
+  walletIcon,
+  itemIcon,
+  packageIcon,
+} from "../../assets";
 
 const data = [
   {
     content: "الحجوزات",
     href: "medical-bookings",
-    image: doctorImg,
+    image: booking,
   },
   {
     content: "المحفظة",
     href: "medical-wallet",
-    image: doctorImg,
+    image: walletIcon,
   },
   {
     content: "الباقات الطبية",
     href: "medical-packages",
-    image: doctorImg,
+    image: packageIcon,
   },
   {
     content: "العناصر الطبية",
     href: "medical-items",
-    image: doctorImg,
+    image: itemIcon,
   },
   {
     content: "التقييمات",
     href: "medical-reviews",
-    image: doctorImg,
+    image: reviewsIcon,
   },
 ];
 
@@ -40,11 +46,7 @@ const DashboardMedical = () => {
             className="bg-[#F3F3F3] flex-col w-[49%] flex gap-2 rounded-lg text-center justify-center items-center py-8 relative"
           >
             <div className="w-16">
-              <img
-                src={item.image}
-                alt={item.content}
-                className="w-16 rounded-full"
-              />
+              <img src={item.image} alt={item.content} className="w-16" />
             </div>
             <h2 className="text-black font-[500]"> {item.content}</h2>
           </Link>

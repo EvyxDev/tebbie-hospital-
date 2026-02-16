@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMedicalItems } from "../../utlis/https";
-import { Microscope, Activity, Tag, AlertCircle } from "lucide-react";
+import { Microscope, Activity, AlertCircle } from "lucide-react";
 import LoaderComponent from "../../components/LoaderComponent";
 
 const MedicalItems = () => {
@@ -103,30 +103,12 @@ const MedicalItems = () => {
                   )}
 
                   <div className="bg-gray-50 rounded-xl p-3 flex items-center justify-between">
-                    <div className="flex flex-col items-end gap-1">
+                    <div className="flex justify-between items-center w-full gap-1">
                       <p className="text-[12px] mb-1 text-gray-600 font-medium">
                         سعر الخدمة:
                       </p>
                       <p className="text-[12px] font-black text-center leading-none text-gray-800">
                         {item.service_price} د.ل
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col items-end gap-1">
-                      <p className="text-[12px] mb-1 text-gray-600 font-medium">
-                        سعر طبي:
-                      </p>
-                      <p className="text-[12px] font-black text-center leading-none text-gray-800 ">
-                        {item.tabi_price} د.ل
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col">
-                      <span className="text-[12px] mb-1 text-gray-600 font-medium">
-                        إجمالي السعر
-                      </span>
-                      <p className="text-[12px] mt-1 text-center font-black leading-none text-gray-800 ">
-                        {item.price} د.ل
                       </p>
                     </div>
                   </div>
