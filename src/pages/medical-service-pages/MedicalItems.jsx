@@ -73,7 +73,7 @@ const MedicalItems = () => {
                     </div>
 
                     <div className="flex flex-wrap gap-1.5 mt-2">
-                      {item.tags.map((tag, idx) => (
+                      {(item.tags || []).map((tag, idx) => (
                         <span
                           key={idx}
                           className="text-[10px] bg-gray-50 text-gray-500 px-2 py-0.5 rounded-md border border-gray-100"
@@ -85,7 +85,7 @@ const MedicalItems = () => {
                   </div>
                 </div>
 
-                {item.notes && item.notes.length > 0 && (
+                {(item.notes || []) && item?.notes.length > 0 && (
                   <div className="bg-amber-50/60 rounded-xl p-3 border-r-4 border-amber-400">
                     <p className="text-[11px] font-bold text-amber-800 mb-1 flex items-center gap-1">
                       <AlertCircle size={12} /> تعليمات هامة:
@@ -139,5 +139,6 @@ const MedicalItems = () => {
 };
 
 export default MedicalItems;
+
 
 
