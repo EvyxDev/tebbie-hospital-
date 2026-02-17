@@ -8,7 +8,15 @@ import {
   approveBooking,
   cancelMedicalBooking,
   confirmMedicalBooking,
+  uploadMedicalPdfs,
 } from "../utlis/https";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+
 import {
   Snackbar,
   Alert,
@@ -35,12 +43,24 @@ const WhatsAppIcon = ({ size = 18 }) => (
 const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
   const queryClient = useQueryClient();
   const token = localStorage.getItem("authToken");
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success",
   });
   const [showReschedule, setShowReschedule] = useState(false);
+  const [showUploadPdfs, setShowUploadPdfs] = useState(false);
+  const hasUploadedPdfs =
+    Array.isArray(booking.lab_results_files) &&
+    booking.lab_results_files.length > 0;
+
+  const canUploadLabResults =
+    booking.status === "confirmed" ||
+    booking.status === "completed" ||
+    booking.status === "finished";
 
   // Check booking date status
   const getBookingDateStatus = () => {
@@ -149,8 +169,52 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
     },
   });
 
+  const { mutate: uploadPdfsMutation, isPending: isUploadingPdfs } =
+    useMutation({
+      mutationFn: ({ bookingId, data }) => {
+        return uploadMedicalPdfs({ token, bookingId, data });
+      },
+      onSuccess: () => {
+        alert("تم رفع التحاليل الطبية بنجاح");
+        queryClient.invalidateQueries(["medical-bookings"]);
+        setShowUploadPdfs(false);
+        setSelectedFiles([]);
+      },
+    });
+
   const handleConfirmAttendance = () => {
     confirmAttendanceMutation.mutate({ bookingId: booking.id });
+  };
+
+  const handleUploadPdfs = async () => {
+    if (!selectedFiles.length) {
+      alert("من فضلك اختر ملفات PDF أولاً");
+      return;
+    }
+
+    const formData = new FormData();
+    selectedFiles.forEach((fileObj) => formData.append("pdf", fileObj.file));
+
+    try {
+      setIsUploading(true); // حالة loading
+      await uploadMedicalPdfs({ token, bookingId: booking.id, data: formData });
+      setSnackbar({
+        open: true,
+        message: "تم رفع جميع الملفات بنجاح",
+        severity: "success",
+      });
+      queryClient.invalidateQueries(["medical-bookings"]);
+      setShowUploadPdfs(false);
+      setSelectedFiles([]);
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: err.message || "فشل في رفع الملفات",
+        severity: "error",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleCancelAttendance = () => {
@@ -336,7 +400,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
       </div>
 
       {/* Patient Details */}
-      {booking.user && (
+      {booking?.user && (
         <div className="border-t pt-3">
           <h4 className="font-medium text-gray-700 mb-2">تفاصيل المريض</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -424,6 +488,50 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
         </div>
       )}
 
+      {/* Lab Results Files */}
+      {hasUploadedPdfs && (
+        <div className="border-t pt-3 mt-3">
+          <h4 className="font-medium text-gray-700 mb-2">التحاليل المرفوعة</h4>
+
+          <div className="space-y-2">
+            {booking.lab_results_files.map((file, index) => {
+              const fileName = file.split("/").pop();
+
+              return (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-gray-50 border rounded-md px-3 py-2 text-sm"
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <span>📄</span>
+                    <span className="truncate max-w-[200px]">{fileName}</span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => window.open(file, "_blank")}
+                    >
+                      عرض
+                    </Button>
+
+                    {/* <Button
+                      size="small"
+                      variant="contained"
+                      color="primary"
+                      onClick={() => window.open(file, "_blank")}
+                    >
+                      تحميل
+                    </Button> */}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Action Section */}
       <div className="border-t pt-3 mt-3">
         <div className="flex gap-2 justify-between items-center">
@@ -477,9 +585,18 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
             </div>
           )}
 
-          <div className="text-sm text-gray-500">
-            آخر تحديث: {formatDate(booking.updated_at)}
-          </div>
+          {canUploadLabResults && (
+            <Button
+              onClick={() => setShowUploadPdfs(true)}
+              disabled={hasUploadedPdfs}
+              color="success"
+              variant="contained"
+              size="small"
+              sx={{ fontSize: "0.75rem", minWidth: "140px" }}
+            >
+              {hasUploadedPdfs ? "تم رفع التحاليل" : "رفع التحاليل الطبية"}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -528,6 +645,95 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      <Dialog
+        open={showUploadPdfs}
+        onClose={() => setShowUploadPdfs(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>رفع التحاليل الطبية (PDF فقط)</DialogTitle>
+
+        <DialogContent>
+          <Button variant="outlined" component="label" fullWidth>
+            اختر ملفات PDF
+            <input
+              type="file"
+              hidden
+              accept="application/pdf"
+              multiple
+              onChange={(e) => {
+                const MAX_SIZE_MB = 10;
+                const files = Array.from(e.target.files)
+                  .filter((file) => file.type === "application/pdf")
+                  .map((file) => {
+                    if (file.size / 1024 / 1024 > MAX_SIZE_MB) {
+                      return {
+                        file,
+                        status: "error",
+                        errorMsg:
+                          "حجم الملف أكبر من 10 ميجابايت يرجى اختيار ملف أصغر",
+                      };
+                    }
+                    return { file, status: "pending" };
+                  });
+                setSelectedFiles(files);
+              }}
+            />
+          </Button>
+
+          {selectedFiles.length > 0 && (
+            <div style={{ marginTop: "10px", fontSize: "14px" }}>
+              {selectedFiles.map((file, index) => (
+                <div key={index}>{file.name}</div>
+              ))}
+            </div>
+          )}
+
+          {selectedFiles.length > 0 && (
+            <div style={{ marginTop: "10px", fontSize: "14px" }}>
+              {selectedFiles.map((fileObj, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center gap-2"
+                >
+                  <span>{fileObj.file.name}</span>
+                  {fileObj.status === "error" && (
+                    <span className="text-red-600 text-xs">
+                      {fileObj.errorMsg}
+                    </span>
+                  )}
+                  <button
+                    onClick={() => {
+                      setSelectedFiles((prev) =>
+                        prev.filter((_, i) => i !== index),
+                      );
+                    }}
+                    className="text-red-500 text-2xl font-bold hover:text-red-700 transition-colors"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={() => setShowUploadPdfs(false)} color="error">
+            إلغاء
+          </Button>
+
+          <Button
+            onClick={handleUploadPdfs}
+            disabled={isUploading}
+            color="success"
+            variant="contained"
+          >
+            {isUploading ? "جاري الرفع..." : "رفع الملفات"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

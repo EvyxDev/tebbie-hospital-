@@ -2013,3 +2013,34 @@ export const getMedicalItems = async (token) => {
     throw new Error(error.message || "An unexpected error occurred");
   }
 };
+
+export const uploadMedicalPdfs = async ({ token, bookingId, data }) => {
+  const formData = new FormData();
+  data.forEach((file) => {
+    formData.append(`lab_results[]`, file);
+  });
+  try {
+    const response = await fetch(
+      `${API_URL}/v1/medical-service/bookings/${bookingId}/upload-lab-results`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      },
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(
+        errorData.message ||
+          "Failed to fetch booking for that specialization data",
+      );
+    }
+
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    throw new Error(error.message || "An unexpected error occurred");
+  }
+};
