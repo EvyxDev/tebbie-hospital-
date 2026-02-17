@@ -515,15 +515,6 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
                     >
                       عرض
                     </Button>
-
-                    {/* <Button
-                      size="small"
-                      variant="contained"
-                      color="primary"
-                      onClick={() => window.open(file, "_blank")}
-                    >
-                      تحميل
-                    </Button> */}
                   </div>
                 </div>
               );
