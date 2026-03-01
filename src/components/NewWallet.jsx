@@ -116,7 +116,7 @@ const NewWallet = () => {
                   <p className="text-xl font-semibold">{amount} دينار ليبي</p>
                   <div className="flex justify-between items-center w-full">
                     <p className="text-sm text-gray-500 flex-shrink-0">
-                      {modelName}
+                      {wallet?.doctor_name || ""}
                     </p>
                     <p className="text-xs text-gray-400 flex-shrink-0">
                       {date}
