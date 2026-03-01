@@ -47,8 +47,8 @@ const WalletDetails = () => {
           ? walletData.total || 0
           : walletData.reduce(
               (acc, transaction) => acc + parseFloat(transaction.price || 0),
-              0
-            )
+              0,
+            ),
       )
     : 0;
 
