@@ -5,6 +5,7 @@ import {
   updateHomeVisitRegion,
   getCities,
   getRegionsByCity,
+  getHomeServices,
 } from "../utlis/https";
 import LoaderComponent from "../components/LoaderComponent";
 import { MdLocationOn, MdEdit } from "react-icons/md";
@@ -30,6 +31,7 @@ const HomeVisitRegions = () => {
   const [selectedServiceId, setSelectedServiceId] = useState("");
   const [locationPrice, setLocationPrice] = useState("");
   const [status, setStatus] = useState("active");
+  console.log(selectedServiceId);
 
   const {
     data: regions,
@@ -45,6 +47,14 @@ const HomeVisitRegions = () => {
     queryKey: ["cities"],
     queryFn: () => getCities({ token }),
   });
+
+  // Fetch cities
+  const { data: homeServices } = useQuery({
+    queryKey: ["home-services"],
+    queryFn: () => getHomeServices({ token }),
+  });
+
+  console.log(homeServices);
 
   // Fetch regions based on selected city
   const { data: cityRegions, isLoading: isLoadingRegions } = useQuery({
@@ -237,7 +247,25 @@ const HomeVisitRegions = () => {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+              {/* Get correct service name */}
+              {(() => {
+                const service = homeServices?.find(
+                  (s) => s.id === region.home_visit_service_id
+                );
+                return (
+                  <div className="flex items-center justify-between pt-3 mt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <BiShekel size={20} className="text-gray-600" />
+                      <span className="text-gray-600 text-sm">اسم الخدمة:</span>
+                    </div>
+                    <span className="text-2xl font-bold text-gradient-to-bl from-[#33A9C7] to-[#3AAB95]">
+                      {service?.name || "لا يوجد"}
+                    </span>
+                  </div>
+                );
+              })()}
+
+              <div className="flex items-center justify-between pt-3 mt-3 border-t border-gray-100">
                 <div className="flex items-center gap-2">
                   <BiShekel size={20} className="text-gray-600" />
                   <span className="text-gray-600 text-sm">سعر المنطقة:</span>
@@ -414,13 +442,13 @@ const HomeVisitRegions = () => {
                     <option value="">
                       {isLoadingRegions ? "جاري التحميل..." : "اختر الخدمة"}
                     </option>
-                    {regions?.map((region) => (
+                    {homeServices?.map((service) => (
                       <option
-                        key={region.service.id}
+                        key={service.id}
                         className="text-black"
-                        value={region.service.id}
+                        value={service.id}
                       >
-                        {region.service.name}
+                        {service.name}
                       </option>
                     ))}
                   </select>

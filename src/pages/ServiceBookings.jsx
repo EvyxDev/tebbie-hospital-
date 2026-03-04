@@ -57,7 +57,7 @@ export default function ServiceBookings() {
   });
 
   const currentService = allServices?.find(
-    (s) => String(s.id) === String(serviceId)
+    (s) => String(s.id) === String(serviceId),
   );
 
   // Ensure bookings is an array
@@ -259,14 +259,14 @@ export default function ServiceBookings() {
                 <div className="flex gap-2">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                      booking.status
+                      booking.status,
                     )}`}
                   >
                     {getStatusText(booking.status)}
                   </span>
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(
-                      booking.payment_status
+                      booking.payment_status,
                     )}`}
                   >
                     {getPaymentStatusText(booking.payment_status)}

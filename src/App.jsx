@@ -36,6 +36,11 @@ import ServiceBookings from "./pages/ServiceBookings";
 import OldWallet from "./components/OldWallet";
 import NewWallet from "./components/NewWallet";
 import PermissionWrapper from "./components/PermissionWrapper";
+import MedicalBookings from "./pages/medical-service-pages/medical-bookings";
+import MedicalReviews from "./pages/medical-service-pages/MedicalReviews";
+import MedicalWallet from "./pages/medical-service-pages/MedicalWallet";
+import MedicalPackages from "./pages/medical-service-pages/MedicalPackages";
+import MedicalItems from "./pages/medical-service-pages/MedicalItems";
 
 const queryClient = new QueryClient();
 
@@ -132,6 +137,28 @@ const router = createBrowserRouter([
           {
             path: "search",
             element: <Search />,
+          },
+
+          // medical service routes
+          {
+            path: "medical-bookings",
+            element: <MedicalBookings />,
+          },
+          {
+            path: "medical-wallet",
+            element: <MedicalWallet />,
+          },
+          {
+            path: "medical-packages",
+            element: <MedicalPackages />,
+          },
+          {
+            path: "medical-items",
+            element: <MedicalItems />,
+          },
+          {
+            path: "medical-reviews",
+            element: <MedicalReviews />,
           },
         ],
       },

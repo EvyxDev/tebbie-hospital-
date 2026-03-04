@@ -24,7 +24,7 @@ const HomeVisit = () => {
     queryFn: () => getHomeVisit({ token, search: search || undefined }),
   });
 
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(3);
   if (isLoading) {
     return <LoaderComponent />;
   }
@@ -93,7 +93,7 @@ const HomeVisit = () => {
           r.price,
           r.status,
           r.payment_status,
-        ].join(",")
+        ].join(","),
       ),
     ].join("\n");
 

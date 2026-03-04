@@ -1,13 +1,10 @@
-import { Link } from "react-router-dom";
-import { IoIosArrowBack } from "react-icons/io";
-import { getWalletTotal } from "../utlis/https";
 import { useQuery } from "@tanstack/react-query";
-import LoaderComponent from "./LoaderComponent";
-import { dollarIcon, statics } from "../assets";
+import { getMedicalWallet } from "../../utlis/https";
+import LoaderComponent from "../../components/LoaderComponent";
+import { dollarIcon, statics } from "../../assets";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-
-const NewWallet = () => {
+const MedicalWallet = () => {
   const token = localStorage.getItem("authToken");
 
   const {
@@ -15,8 +12,8 @@ const NewWallet = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["new-wallet"],
-    queryFn: () => getWalletTotal({ token }),
+    queryKey: ["medical-wallet"],
+    queryFn: () => getMedicalWallet({ token }),
   });
 
   const totalPrice = walletData?.total || 0;
@@ -72,15 +69,9 @@ const NewWallet = () => {
         </div>
         <div className="flex items-center justify-between">
           <p className="text-2xl text-white my-2"> LD {formattedPrice}</p>
-          <Link
-            to="/wallet/new/details"
-            className="flex gap-1 items-center text-base text-[#5E5F60] bg-[#D6EEF6] p-2 w-22 rounded-full"
-          >
-            التفاصيل
-            <IoIosArrowBack size={17} />
-          </Link>
         </div>
       </div>
+
       <div className="flex justify-between items-center">
         <h2 className="text-black font-[500] text-lg my-6">المعاملات</h2>
         <button
@@ -116,7 +107,7 @@ const NewWallet = () => {
                   <p className="text-xl font-semibold">{amount} دينار ليبي</p>
                   <div className="flex justify-between items-center w-full">
                     <p className="text-sm text-gray-500 flex-shrink-0">
-                      {wallet?.doctor_name || ""}
+                      {modelName}
                     </p>
                     <p className="text-xs text-gray-400 flex-shrink-0">
                       {date}
@@ -136,4 +127,4 @@ const NewWallet = () => {
   );
 };
 
-export default NewWallet;
+export default MedicalWallet;

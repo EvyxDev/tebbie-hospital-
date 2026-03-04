@@ -6,6 +6,7 @@ import BookingCard from "./BookingCard";
 const BookingData = ({
   filteredBookings,
   SpecializationsData,
+  type,
   // handleBookingClick,
 }) => {
   console.log(SpecializationsData);
@@ -13,16 +14,18 @@ const BookingData = ({
 
   // Handle booking status change
   const handleBookingStatusChange = (bookingId, isCompleted) => {
+    setActiveTab("completed");
     // You can implement the logic to update booking status here
     console.log(
       `Booking ${bookingId} status changed to:`,
-      isCompleted ? "finished" : "pending"
+      isCompleted ? "finished" : "pending",
     );
   };
 
   // Count bookings by status
   const statusCounts = {
     finished: filteredBookings.filter((b) => b.status === "finished").length,
+    completed: filteredBookings.filter((b) => b.status === "completed").length,
     pending: filteredBookings.filter((b) => b.status === "pending").length,
     cancelled: filteredBookings.filter((b) => b.status === "cancelled").length,
   };
@@ -32,6 +35,8 @@ const BookingData = ({
     switch (activeTab) {
       case "finished":
         return booking.status === "finished";
+      case "completed":
+        return booking.status === "completed";
       case "pending":
         return booking.status === "pending";
       case "cancelled":
@@ -46,16 +51,30 @@ const BookingData = ({
       {/* Tabs */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
         <div className="flex">
-          <button
-            onClick={() => setActiveTab("finished")}
-            className={`flex-1 py-3 px-4 text-sm font-medium rounded-r-lg transition-colors ${
-              activeTab === "finished"
-                ? "bg-green-600 text-white"
-                : "text-gray-600 hover:text-green-600 hover:bg-gray-50"
-            }`}
-          >
-            مكتملة ({statusCounts.finished})
-          </button>
+          {type ? (
+            <button
+              onClick={() => setActiveTab("completed")}
+              className={`flex-1 py-3 px-4 text-sm font-medium rounded-r-lg transition-colors ${
+                activeTab === "completed"
+                  ? "bg-green-600 text-white"
+                  : "text-gray-600 hover:text-green-600 hover:bg-gray-50"
+              }`}
+            >
+              مكتملة ({statusCounts.completed})
+            </button>
+          ) : (
+            <button
+              onClick={() => setActiveTab("finished")}
+              className={`flex-1 py-3 px-4 text-sm font-medium rounded-r-lg transition-colors ${
+                activeTab === "finished"
+                  ? "bg-green-600 text-white"
+                  : "text-gray-600 hover:text-green-600 hover:bg-gray-50"
+              }`}
+            >
+              مكتملة ({statusCounts.finished})
+            </button>
+          )}
+
           <button
             onClick={() => setActiveTab("pending")}
             className={`flex-1 py-3 px-4 text-sm font-medium border-x border-gray-200 transition-colors ${
@@ -93,6 +112,7 @@ const BookingData = ({
                 onStatusChange={handleBookingStatusChange}
                 showReschedule
                 doctorId={booking.doctor_id}
+                type={type}
               />
             </div>
           ))}

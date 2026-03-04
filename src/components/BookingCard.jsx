@@ -6,7 +6,17 @@ import {
   confirmDoctorAttendance,
   cancelDoctorAttendance,
   approveBooking,
+  cancelMedicalBooking,
+  confirmMedicalBooking,
+  uploadMedicalPdfs,
 } from "../utlis/https";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+
 import {
   Snackbar,
   Alert,
@@ -30,15 +40,27 @@ const WhatsAppIcon = ({ size = 18 }) => (
   </svg>
 );
 
-const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
+const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
   const queryClient = useQueryClient();
   const token = localStorage.getItem("authToken");
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success",
   });
   const [showReschedule, setShowReschedule] = useState(false);
+  const [showUploadPdfs, setShowUploadPdfs] = useState(false);
+  const hasUploadedPdfs =
+    Array.isArray(booking.lab_results_files) &&
+    booking.lab_results_files.length > 0;
+
+  const canUploadLabResults =
+    booking.status === "confirmed" ||
+    booking.status === "completed" ||
+    booking.status === "finished";
 
   // Check booking date status
   const getBookingDateStatus = () => {
@@ -59,6 +81,10 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
   // Confirm attendance mutation
   const confirmAttendanceMutation = useMutation({
     mutationFn: ({ bookingId }) => {
+      if (type) {
+        confirmMedicalBooking({ token, bookingId });
+        return;
+      }
       // Use different endpoint based on booking date
       const dateStatus = getBookingDateStatus();
       if (dateStatus === "today") {
@@ -71,19 +97,28 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["specialization"]);
-      queryClient.invalidateQueries(["doctor-attendance"]);
-      queryClient.invalidateQueries(["bookings"]);
-      queryClient.invalidateQueries(["all-home-visits"]);
-      const dateStatus = getBookingDateStatus();
-      setSnackbar({
-        open: true,
-        message:
-          dateStatus === "today"
-            ? "تم تأكيد حضور الطبيب بنجاح"
-            : "تم تأكيد الحضور بنجاح",
-        severity: "success",
-      });
+      if (type) {
+        queryClient.invalidateQueries(["medical-bookings"]);
+        setSnackbar({
+          open: true,
+          message: "تم تأكيد الحجز بنجاح",
+          severity: "success",
+        });
+      } else {
+        queryClient.invalidateQueries(["specialization"]);
+        queryClient.invalidateQueries(["doctor-attendance"]);
+        queryClient.invalidateQueries(["bookings"]);
+        queryClient.invalidateQueries(["all-home-visits"]);
+        const dateStatus = getBookingDateStatus();
+        setSnackbar({
+          open: true,
+          message:
+            dateStatus === "today"
+              ? "تم تأكيد حضور الطبيب بنجاح"
+              : "تم تأكيد الحضور بنجاح",
+          severity: "success",
+        });
+      }
     },
     onError: (error) => {
       const dateStatus = getBookingDateStatus();
@@ -101,17 +136,29 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
 
   // Cancel attendance mutation
   const cancelAttendanceMutation = useMutation({
-    mutationFn: ({ bookingId }) => cancelDoctorAttendance({ token, bookingId }),
+    mutationFn: ({ bookingId }) =>
+      type
+        ? cancelMedicalBooking({ token, bookingId })
+        : cancelDoctorAttendance({ token, bookingId }),
     onSuccess: () => {
-      queryClient.invalidateQueries(["specialization"]);
-      queryClient.invalidateQueries(["doctor-attendance"]);
-      queryClient.invalidateQueries(["bookings"]);
-      queryClient.invalidateQueries(["all-home-visits"]);
-      setSnackbar({
-        open: true,
-        message: "تم إلغاء حضور الطبيب بنجاح",
-        severity: "success",
-      });
+      if (type) {
+        queryClient.invalidateQueries(["medical-bookings"]);
+        setSnackbar({
+          open: true,
+          message: "تم إلغاء الحجز بنجاح",
+          severity: "success",
+        });
+      } else {
+        queryClient.invalidateQueries(["specialization"]);
+        queryClient.invalidateQueries(["doctor-attendance"]);
+        queryClient.invalidateQueries(["bookings"]);
+        queryClient.invalidateQueries(["all-home-visits"]);
+        setSnackbar({
+          open: true,
+          message: "تم إلغاء حضور الطبيب بنجاح",
+          severity: "success",
+        });
+      }
     },
     onError: (error) => {
       setSnackbar({
@@ -122,8 +169,52 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
     },
   });
 
+  const { mutate: uploadPdfsMutation, isPending: isUploadingPdfs } =
+    useMutation({
+      mutationFn: ({ bookingId, data }) => {
+        return uploadMedicalPdfs({ token, bookingId, data });
+      },
+      onSuccess: () => {
+        alert("تم رفع التحاليل الطبية بنجاح");
+        queryClient.invalidateQueries(["medical-bookings"]);
+        setShowUploadPdfs(false);
+        setSelectedFiles([]);
+      },
+    });
+
   const handleConfirmAttendance = () => {
     confirmAttendanceMutation.mutate({ bookingId: booking.id });
+  };
+
+  const handleUploadPdfs = async () => {
+    if (!selectedFiles.length) {
+      alert("من فضلك اختر ملفات PDF أولاً");
+      return;
+    }
+
+    const formData = new FormData();
+    selectedFiles.forEach((fileObj) => formData.append("pdf", fileObj.file));
+
+    try {
+      setIsUploading(true); // حالة loading
+      await uploadMedicalPdfs({ token, bookingId: booking.id, data: formData });
+      setSnackbar({
+        open: true,
+        message: "تم رفع جميع الملفات بنجاح",
+        severity: "success",
+      });
+      queryClient.invalidateQueries(["medical-bookings"]);
+      setShowUploadPdfs(false);
+      setSelectedFiles([]);
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: err.message || "فشل في رفع الملفات",
+        severity: "error",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleCancelAttendance = () => {
@@ -259,14 +350,14 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
         <div className="flex gap-2">
           <span
             className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-              booking.status
+              booking.status,
             )}`}
           >
             {getStatusText(booking.status)}
           </span>
           <span
             className={`px-2 py-1 rounded-full text-xs font-medium ${getPaymentStatusColor(
-              booking.payment_status
+              booking.payment_status,
             )}`}
           >
             {getPaymentStatusText(booking.payment_status)}
@@ -309,7 +400,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
       </div>
 
       {/* Patient Details */}
-      {booking.user && (
+      {booking?.user && (
         <div className="border-t pt-3">
           <h4 className="font-medium text-gray-700 mb-2">تفاصيل المريض</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -340,7 +431,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
                             : booking.patient?.patient_phone,
                           booking.is_for_self
                             ? booking.user.name
-                            : booking.patient?.patient_name
+                            : booking.patient?.patient_name,
                         )
                       }
                       sx={{
@@ -380,8 +471,8 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
                       ? booking.patient.patient_gender === "female"
                         ? "أنثى"
                         : booking.patient.patient_gender === "male"
-                        ? "ذكر"
-                        : booking.patient.patient_gender
+                          ? "ذكر"
+                          : booking.patient.patient_gender
                       : "غير محدد"}
                   </p>
                 </>
@@ -393,6 +484,41 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
                   : "لم يتم الاسترداد"}
               </p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lab Results Files */}
+      {hasUploadedPdfs && (
+        <div className="border-t pt-3 mt-3">
+          <h4 className="font-medium text-gray-700 mb-2">التحاليل المرفوعة</h4>
+
+          <div className="space-y-2">
+            {booking.lab_results_files.map((file, index) => {
+              const fileName = file.split("/").pop();
+
+              return (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-gray-50 border rounded-md px-3 py-2 text-sm"
+                >
+                  <div className="flex items-center gap-2 truncate">
+                    <span>📄</span>
+                    <span className="truncate max-w-[200px]">{fileName}</span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => window.open(file, "_blank")}
+                    >
+                      عرض
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -432,8 +558,8 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
                   {confirmAttendanceMutation.isPending
                     ? "جاري التأكيد..."
                     : getBookingDateStatus() === "today"
-                    ? "تأكيد الحجز"
-                    : "تأكيد الحضور"}
+                      ? "تأكيد الحجز"
+                      : "تأكيد الحضور"}
                 </Button>
               </ButtonGroup>
             )}
@@ -450,9 +576,18 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
             </div>
           )}
 
-          <div className="text-sm text-gray-500">
-            آخر تحديث: {formatDate(booking.updated_at)}
-          </div>
+          {canUploadLabResults && (
+            <Button
+              onClick={() => setShowUploadPdfs(true)}
+              disabled={hasUploadedPdfs}
+              color="success"
+              variant="contained"
+              size="small"
+              sx={{ fontSize: "0.75rem", minWidth: "140px" }}
+            >
+              {hasUploadedPdfs ? "تم رفع التحاليل" : "رفع التحاليل الطبية"}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -501,6 +636,95 @@ const BookingCard = ({ booking, showSwitch = true, doctorId }) => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      <Dialog
+        open={showUploadPdfs}
+        onClose={() => setShowUploadPdfs(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>رفع التحاليل الطبية (PDF فقط)</DialogTitle>
+
+        <DialogContent>
+          <Button variant="outlined" component="label" fullWidth>
+            اختر ملفات PDF
+            <input
+              type="file"
+              hidden
+              accept="application/pdf"
+              multiple
+              onChange={(e) => {
+                const MAX_SIZE_MB = 10;
+                const files = Array.from(e.target.files)
+                  .filter((file) => file.type === "application/pdf")
+                  .map((file) => {
+                    if (file.size / 1024 / 1024 > MAX_SIZE_MB) {
+                      return {
+                        file,
+                        status: "error",
+                        errorMsg:
+                          "حجم الملف أكبر من 10 ميجابايت يرجى اختيار ملف أصغر",
+                      };
+                    }
+                    return { file, status: "pending" };
+                  });
+                setSelectedFiles(files);
+              }}
+            />
+          </Button>
+
+          {selectedFiles.length > 0 && (
+            <div style={{ marginTop: "10px", fontSize: "14px" }}>
+              {selectedFiles.map((file, index) => (
+                <div key={index}>{file.name}</div>
+              ))}
+            </div>
+          )}
+
+          {selectedFiles.length > 0 && (
+            <div style={{ marginTop: "10px", fontSize: "14px" }}>
+              {selectedFiles.map((fileObj, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center gap-2"
+                >
+                  <span>{fileObj.file.name}</span>
+                  {fileObj.status === "error" && (
+                    <span className="text-red-600 text-xs">
+                      {fileObj.errorMsg}
+                    </span>
+                  )}
+                  <button
+                    onClick={() => {
+                      setSelectedFiles((prev) =>
+                        prev.filter((_, i) => i !== index),
+                      );
+                    }}
+                    className="text-red-500 text-2xl font-bold hover:text-red-700 transition-colors"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={() => setShowUploadPdfs(false)} color="error">
+            إلغاء
+          </Button>
+
+          <Button
+            onClick={handleUploadPdfs}
+            disabled={isUploading}
+            color="success"
+            variant="contained"
+          >
+            {isUploading ? "جاري الرفع..." : "رفع الملفات"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

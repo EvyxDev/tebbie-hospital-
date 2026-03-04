@@ -32,7 +32,7 @@ const WalletData = ({ walletData, isNewWallet = false }) => {
                     <p className="text-xl font-semibold">{amount} دينار ليبي</p>
                     <div className="flex justify-between items-center w-full">
                       <p className="text-sm font-normal flex-shrink-0">
-                        {description}
+                        {transaction.doctor_name}
                       </p>
                       {isNewWallet && transaction.date && (
                         <p className="text-xs text-gray-500 flex-shrink-0">

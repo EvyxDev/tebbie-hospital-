@@ -8,6 +8,7 @@ import {
   getDoctorSlots,
   updateDoctorSlotIntervals,
   DeleteDocktorSlots,
+  updateMaxUsedDoctor,
 } from "../utlis/https";
 import { CustomTimeField } from "./CustomTimePicker";
 
@@ -20,6 +21,8 @@ export default function SlotIntervalsForm({
 }) {
   const token = localStorage.getItem("authToken");
   const queryClient = useQueryClient();
+  const [editingIntervalId, setEditingIntervalId] = useState(null);
+  const [originalCapacity, setOriginalCapacity] = useState(null);
 
   const { data: doctorSlotData, isLoading: doctorSlotLoading } = useQuery({
     queryKey: ["doctors-slot-intervals", selectedDoctorId],
@@ -30,9 +33,9 @@ export default function SlotIntervalsForm({
   const slotIntervalsData = useMemo(
     () =>
       doctorSlotData?.slots?.filter(
-        (slot) => slot.slot_type === "slot_intervals"
+        (slot) => slot.slot_type === "slot_intervals",
       ) || [],
-    [doctorSlotData]
+    [doctorSlotData],
   );
 
   const [slotIntervals, setSlotIntervals] = useState(slotIntervalsData || []);
@@ -49,8 +52,8 @@ export default function SlotIntervalsForm({
     if (doctorSlotData) {
       setSlotIntervals(
         doctorSlotData.slots?.filter(
-          (slot) => slot.slot_type === "slot_intervals"
-        ) || []
+          (slot) => slot.slot_type === "slot_intervals",
+        ) || [],
       );
       setDoctorData({
         specialization_id: null,
@@ -99,6 +102,20 @@ export default function SlotIntervalsForm({
     },
     onError: () => {
       alert("فشل حذف الفترات");
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: updateMaxUsedDoctor,
+    onSuccess: () => {
+      queryClient.invalidateQueries([
+        "doctors-slot-intervals",
+        selectedDoctorId,
+      ]);
+      alert("تم تعديل السعة القصوي بنجاح");
+    },
+    onError: () => {
+      alert("فشل التعديل");
     },
   });
 
@@ -165,13 +182,13 @@ export default function SlotIntervalsForm({
 
   const handleRemoveNewInterval = (indexToRemove) => {
     setNewSlotIntervals((prevIntervals) =>
-      prevIntervals.filter((_, index) => index !== indexToRemove)
+      prevIntervals.filter((_, index) => index !== indexToRemove),
     );
   };
 
   const handleRemoveInterval = (intervalId) => {
     setSlotIntervals((prevIntervals) =>
-      prevIntervals.filter((interval) => interval.id !== intervalId)
+      prevIntervals.filter((interval) => interval.id !== intervalId),
     );
     setDoctorData((prevData) => ({
       ...prevData,
@@ -186,6 +203,14 @@ export default function SlotIntervalsForm({
       price: doctorSlotData.price,
     };
     deleteMutation.mutate(deleteData);
+  };
+
+  const handleUpdateInterval = (interval) => {
+    updateMutation.mutate({
+      token,
+      slot_id: interval.id,
+      max_capacity: interval.max_capacity,
+    });
   };
 
   const convertTo12Hour = (timeString) => {
@@ -259,12 +284,36 @@ export default function SlotIntervalsForm({
                       {interval.name_slot}
                     </h4>
                     <div className="flex gap-2">
+                      {editingIntervalId === interval.id ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleUpdateInterval(interval);
+                            setEditingIntervalId(null);
+                          }}
+                          className="bg-green-600 hover:bg-green-700 text-white rounded-full px-3 py-1 text-xs"
+                        >
+                          حفظ
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOriginalCapacity(interval.max_capacity);
+                            setEditingIntervalId(interval.id);
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-3 py-1 text-xs"
+                        >
+                          تعديل
+                        </button>
+                      )}
+
                       <button
                         type="button"
                         onClick={() => handleRemoveInterval(interval.id)}
-                        className="bg-red-500 hover:bg-red-700 font-medium rounded-full text-white py-1 px-2 text-sm"
+                        className="bg-red-600 hover:bg-red-700 text-white rounded-full px-3 py-1 text-xs"
                       >
-                        إزالة
+                        حذف
                       </button>
                     </div>
                   </div>
@@ -272,8 +321,29 @@ export default function SlotIntervalsForm({
                     <p>
                       <strong>اليوم:</strong> {getDayName(interval.day_id)}
                     </p>
-                    <p>
-                      <strong>السعة القصوى:</strong> {interval.max_capacity}
+                    <p className="flex gap-1 items-center">
+                      <strong>السعة القصوى:</strong>{" "}
+                      <input
+                        className="transparent w-[50px]"
+                        type="number"
+                        min={originalCapacity}
+                        disabled={editingIntervalId !== interval.id}
+                        value={interval.max_capacity}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+
+                          if (value < originalCapacity) return;
+
+                          setSlotIntervals((prev) =>
+                            prev.map((item) =>
+                              item.id === interval.id
+                                ? { ...item, max_capacity: value }
+                                : item,
+                            ),
+                          );
+                        }}
+                      />
+                      {/* {interval.max_capacity} */}
                     </p>
                     <p>
                       <strong>من:</strong> {convertTo12Hour(interval.from)}
@@ -282,9 +352,6 @@ export default function SlotIntervalsForm({
                       <strong>إلى:</strong> {convertTo12Hour(interval.to)}
                     </p>
                     {/* price display removed */}
-                    <p>
-                      <strong>معرف الربط:</strong> {interval.relatable_id}
-                    </p>
                   </div>
                 </div>
               ))}
@@ -352,7 +419,7 @@ export default function SlotIntervalsForm({
               </button>
             </div>
 
-            <button
+            {/* <button
               type="button"
               onClick={handleSubmit}
               disabled={
@@ -366,7 +433,25 @@ export default function SlotIntervalsForm({
               }`}
             >
               حفظ الفترات
-            </button>
+            </button> */}
+
+            <div className="sticky -bottom-3 bg-white pt-3 pb-2">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={
+                  doctorData.deleted_intervals.length === 0 &&
+                  newSlotIntervals.length === 0
+                }
+                className={`bg-gradient-to-bl from-[#33A9C7] to-[#3AAB95] text-white py-3 px-4 rounded-bl-lg rounded-tr-lg w-full ${
+                  doctorData.deleted_intervals.length === 0 &&
+                  newSlotIntervals.length === 0 &&
+                  "cursor-not-allowed opacity-70"
+                }`}
+              >
+                حفظ الفترات
+              </button>
+            </div>
 
             {/* Modal */}
             <AnimatePresence>
