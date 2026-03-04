@@ -64,7 +64,7 @@ const Dashboard = () => {
         </Link>
       </div>
 
-      {specializationData.length > 0 ? (
+      {specializationData?.length > 0 ? (
         <div className="grid grid-cols-2 gap-4">
           {specializationData.map((data) => (
             <Link

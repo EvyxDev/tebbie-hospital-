@@ -42,6 +42,9 @@ const WhatsAppIcon = ({ size = 18 }) => (
 
 const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
   const queryClient = useQueryClient();
+  const is_medical_service = JSON.parse(
+    localStorage.getItem("is_medical_service"),
+  );
   const token = localStorage.getItem("authToken");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -274,7 +277,23 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
       day: "numeric",
     });
   };
+  // Format time range function
+  function formatTimeRange(from, to) {
+    const format = (time) => {
+      let [hours, minutes] = time.split(":").map(Number);
 
+      const period = hours >= 12 ? "م" : "ص";
+
+      hours = hours % 12;
+      hours = hours === 0 ? 12 : hours;
+
+      return `${hours.toString().padStart(2, "0")}:${minutes
+        .toString()
+        .padStart(2, "0")} ${period}`;
+    };
+
+    return `${format(from)} - ${format(to)}`;
+  }
   // Get status color
   const getStatusColor = (status) => {
     switch (status) {
@@ -367,40 +386,55 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
 
       {/* Doctor and Hospital Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-        <div>
-          <h4 className="font-medium text-gray-700 mb-2">تفاصيل الطبيب</h4>
-          <div className="space-y-1 text-sm">
-            <p>
-              <span className="text-gray-500">الاسم:</span>{" "}
-              {booking.doctor?.name || "غير محدد"}
-            </p>
-            <p>
-              <span className="text-gray-500">المستشفى:</span>{" "}
-              {booking.hospital?.name || "غير محدد"}
-            </p>
+        {!is_medical_service && (
+          <div>
+            <h4 className="font-medium text-gray-700 mb-2">تفاصيل الطبيب</h4>
+            <div className="space-y-1 text-sm">
+              <p>
+                <span className="text-gray-500">الاسم:</span>{" "}
+                {booking.doctor?.name || "غير محدد"}
+              </p>
+              <p>
+                <span className="text-gray-500">المستشفى:</span>{" "}
+                {booking.hospital?.name || "غير محدد"}
+              </p>
+            </div>
           </div>
-        </div>
-
+        )}
+        {is_medical_service && (
+          <div>
+            <h4 className="font-medium text-gray-700 mb-2">تفاصيل الخدمة</h4>
+            <div className="space-y-1 text-sm">
+              {booking?.items?.map((item) => (
+                <p>
+                  <span className="text-gray-500">الاسم:</span>{" "}
+                  {item?.name || "غير محدد"}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
         <div>
           <h4 className="font-medium text-gray-700 mb-2">تفاصيل الموعد</h4>
           <div className="space-y-1 text-sm">
             <p>
               <span className="text-gray-500">التاريخ:</span>{" "}
-              {formatDate(booking.date)}
+              {!is_medical_service
+                ? formatDate(booking?.date)
+                : formatDate(booking?.appointment?.date)}
             </p>
             <p>
-              <span className="text-gray-500">السعر:</span> {booking.price} جنيه
-            </p>
-            <p>
-              <span className="text-gray-500">نقاط مستخدمة:</span>{" "}
-              {booking.value_used_points || 0}
+              <span className="text-gray-500">الوقت:</span>{" "}
+              {!is_medical_service
+                ? formatTimeRange(booking?.slot?.from, booking?.slot?.to)
+                : booking?.appointment?.time}
             </p>
           </div>
         </div>
       </div>
 
       {/* Patient Details */}
-      {booking?.user && (
+      {booking?.user && !is_medical_service && (
         <div className="border-t pt-3">
           <h4 className="font-medium text-gray-700 mb-2">تفاصيل المريض</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -482,6 +516,56 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
                 {booking.is_refunded === "true"
                   ? "تم الاسترداد"
                   : "لم يتم الاسترداد"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      {booking?.patient && is_medical_service && (
+        <div className="border-t pt-3">
+          <h4 className="font-medium text-gray-700 mb-2">تفاصيل المريض</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <p>
+                <span className="text-gray-500">الاسم:</span>{" "}
+                {booking.patient?.name || "غير محدد"}
+              </p>
+              <p className="flex items-center text-sm gap-2">
+                <span className="text-gray-500 text-xs">رقم الهاتف:</span>{" "}
+                <span>{booking.patient?.phone || "غير محدد"}</span>
+              </p>
+            </div>
+            <div>
+              <p>
+                <span className="text-gray-500">نوع الحجز:</span>{" "}
+                {booking.is_for_self ? "لنفسه" : "لشخص آخر"}
+              </p>
+              {booking.is_for_self ? (
+                <p>
+                  <span className="text-gray-500">العمر:</span>{" "}
+                  {booking.patient?.age ?? "غير محدد"}
+                </p>
+              ) : (
+                <>
+                  <p>
+                    <span className="text-gray-500"> العمر:</span>{" "}
+                    {booking.patient?.age ? booking?.patient?.age : "غير محدد"}
+                  </p>
+                  <p>
+                    <span className="text-gray-500">الجنس:</span>{" "}
+                    {booking.patient?.gender
+                      ? booking.patient?.gender === "female"
+                        ? "أنثى"
+                        : booking.patient?.gender === "male"
+                          ? "ذكر"
+                          : booking.patient?.gender
+                      : "غير محدد"}
+                  </p>
+                </>
+              )}
+              <p>
+                <span className="text-gray-500">حالة الاسترداد:</span>{" "}
+                {booking.is_refunded ? "تم الاسترداد" : "لم يتم الاسترداد"}
               </p>
             </div>
           </div>
