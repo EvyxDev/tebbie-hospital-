@@ -326,13 +326,11 @@ export default function SlotIntervalsForm({
                       <input
                         className="transparent w-[50px]"
                         type="number"
-                        min={originalCapacity}
+                        min={1}
                         disabled={editingIntervalId !== interval.id}
                         value={interval.max_capacity}
                         onChange={(e) => {
                           const value = Number(e.target.value);
-
-                          if (value < originalCapacity) return;
 
                           setSlotIntervals((prev) =>
                             prev.map((item) =>
