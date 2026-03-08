@@ -51,7 +51,7 @@ export default function ServiceSlots() {
   const [isTimeModalOpen, setTimeIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingIntervalId, setEditingIntervalId] = useState(null);
-
+  const today = new Date().toISOString().split("T")[0];
   useEffect(() => {
     if (serviceSlotsData) {
       let currentIntervals = [];
@@ -105,8 +105,30 @@ export default function ServiceSlots() {
   });
 
   const handleAddInterval = (values) => {
+    if (values.from_date && values.from_date < today) {
+      alert("تاريخ بداية الفترة لا يمكن أن يكون في الماضي");
+      return;
+    }
+    if (values.to_date && values.to_date < today) {
+      alert("تاريخ نهاية الفترة لا يمكن أن يكون في الماضي");
+      return;
+    }
+    if (
+      values.from_date &&
+      values.to_date &&
+      values.from_date > values.to_date
+    ) {
+      alert("تاريخ بداية الفترة لا يمكن أن يكون أكبر من تاريخ نهاية الفترة");
+      return;
+    }
+    if (values.from && values.to && values.from > values.to) {
+      alert("وقت بداية الفترة لا يمكن أن يكون أكبر من وقت نهاية الفترة");
+      return;
+    }
+
     const newInterval = {
-      date: values.date,
+      from_date: values.from_date,
+      to_date: values.to_date,
       name_slot: values.name_slot,
       from: values.from,
       to: values.to,
@@ -181,6 +203,8 @@ export default function ServiceSlots() {
     <Box sx={{ maxHeight: "100vh", overflow: "auto", width: "100%", p: 3 }}>
       <Formik
         initialValues={{
+          from_date: "",
+          to_date: "",
           date: "",
           name_slot: "",
           from: "",
@@ -288,15 +312,15 @@ export default function ServiceSlots() {
                                   setFieldValue("date", interval.date || "");
                                   setFieldValue(
                                     "name_slot",
-                                    interval.name_slot || ""
+                                    interval.name_slot || "",
                                   );
                                   setFieldValue(
                                     "from",
-                                    (interval.from || "").slice(0, 5)
+                                    (interval.from || "").slice(0, 5),
                                   );
                                   setFieldValue(
                                     "to",
-                                    (interval.to || "").slice(0, 5)
+                                    (interval.to || "").slice(0, 5),
                                   );
                                   setTimeIsModalOpen(true);
                                 }}
@@ -325,13 +349,13 @@ export default function ServiceSlots() {
                               </Typography>
                             </Box>
                           </Grid>
-                          <Grid item xs={6} sm={3}>
+                          <Grid item xs={12} sm={12}>
                             <Typography variant="body2" color="text.secondary">
                               🕘 <strong>من:</strong>{" "}
                               {convertTo12Hour(interval.from)}
                             </Typography>
                           </Grid>
-                          <Grid item xs={6} sm={3}>
+                          <Grid item xs={12} sm={12}>
                             <Typography variant="body2" color="text.secondary">
                               🕙 <strong>إلى:</strong>{" "}
                               {convertTo12Hour(interval.to)}
@@ -400,8 +424,16 @@ export default function ServiceSlots() {
                         <Grid container spacing={2}>
                           <Grid item xs={12} sm={6}>
                             <Typography variant="body2" color="text.secondary">
-                              📅 <strong>التاريخ:</strong>{" "}
-                              {formatDate(interval.date)}
+                              📅 <strong>من تاريخ:</strong>{" "}
+                              {formatDate(interval.from_date)}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              className="mt-2"
+                              color="text.secondary"
+                            >
+                              📅 <strong>إلى تاريخ:</strong>{" "}
+                              {formatDate(interval.to_date)}
                             </Typography>
                           </Grid>
 
@@ -443,6 +475,8 @@ export default function ServiceSlots() {
                 setIsEditing(false);
                 setEditingIntervalId(null);
                 setFieldValue("date", "");
+                setFieldValue("from_date", "");
+                setFieldValue("to_date", "");
                 setFieldValue("name_slot", "");
                 setFieldValue("from", "");
                 setFieldValue("to", "");
@@ -524,16 +558,52 @@ export default function ServiceSlots() {
                     </h2>
 
                     <div className="mb-4">
-                      <label className="block my-2 font-semibold">
-                        التاريخ
-                      </label>
-                      <Field
-                        type="date"
-                        name="date"
-                        value={values.date}
-                        onChange={(e) => setFieldValue("date", e.target.value)}
-                        className="border-[1px] bg-[#F4F4F6] rounded-xl py-3 px-5 h-[50px] w-full text-[#677294]"
-                      />
+                      {isEditing && (
+                        <>
+                          {" "}
+                          <label className="block my-2 font-semibold">
+                            التاريخ
+                          </label>
+                          <Field
+                            type="date"
+                            name="date"
+                            value={values.date}
+                            onChange={(e) =>
+                              setFieldValue("date", e.target.value)
+                            }
+                            className="border-[1px] bg-[#F4F4F6] rounded-xl py-3 px-5 h-[50px] w-full text-[#677294]"
+                          />
+                        </>
+                      )}
+                      {!isEditing && (
+                        <>
+                          <label className="block my-2 font-semibold">
+                            تاريخ بداية الفترة
+                          </label>
+                          <Field
+                            type="date"
+                            name="from_date"
+                            min={today}
+                            value={values.from_date}
+                            onChange={(e) =>
+                              setFieldValue("from_date", e.target.value)
+                            }
+                            className="border-[1px] bg-[#F4F4F6] rounded-xl py-3 px-5 h-[50px] w-full text-[#677294]"
+                          />
+                          <label className="block my-2 font-semibold">
+                            تاريخ نهاية الفترة
+                          </label>
+                          <Field
+                            type="date"
+                            name="to_date"
+                            value={values.to_date}
+                            onChange={(e) =>
+                              setFieldValue("to_date", e.target.value)
+                            }
+                            className="border-[1px] bg-[#F4F4F6] rounded-xl py-3 px-5 h-[50px] w-full text-[#677294]"
+                          />
+                        </>
+                      )}
                     </div>
 
                     <div className="mb-4">
@@ -590,7 +660,8 @@ export default function ServiceSlots() {
                               {
                                 id: editingIntervalId,
                                 name_slot: values.name_slot,
-                                date: values.date,
+                                from_date: values.from_date,
+                                to_date: values.to_date,
                                 from: values.from,
                                 to: values.to,
                               },
@@ -601,6 +672,8 @@ export default function ServiceSlots() {
                           const intervalValues = {
                             date: values.date,
                             name_slot: values.name_slot,
+                            from_date: values.from_date,
+                            to_date: values.to_date,
                             from: values.from,
                             to: values.to,
                           };

@@ -1425,12 +1425,12 @@ export const createServiceIntervals = async ({
     for (const interval of intervals) {
       const payload = {
         hospital_service_id: Number(service_id),
-        date: interval.date,
+        from_date: interval.from_date,
+        to_date: interval.to_date,
         name_slot: interval.name_slot,
         from: interval.from,
         to: interval.to,
       };
-
       const response = await fetch(`${API_URL}/hospital/v1/service-slots`, {
         method: "POST",
         headers: {
