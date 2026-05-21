@@ -49,7 +49,6 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
   const token = localStorage.getItem("authToken");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
-  console.log(is_medical_service);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -296,6 +295,18 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
 
     return `${format(from)} - ${format(to)}`;
   }
+
+  const isToday = (date) => {
+    const today = new Date();
+    const bookingDate = new Date(date);
+
+    return (
+      today.getFullYear() === bookingDate.getFullYear() &&
+      today.getMonth() === bookingDate.getMonth() &&
+      today.getDate() === bookingDate.getDate()
+    );
+  };
+
   // Get status color
   const getStatusColor = (status) => {
     switch (status) {
@@ -647,7 +658,25 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
                     ? "جاري الإلغاء..."
                     : "إلغاء الحجز"}
                 </Button>
+
                 <Button
+                  onClick={handleConfirmAttendance}
+                  disabled={
+                    confirmAttendanceMutation.isPending ||
+                    cancelAttendanceMutation.isPending ||
+                    !isToday(booking.date)
+                  }
+                  color="success"
+                  sx={{ fontSize: "0.75rem", minWidth: "120px" }}
+                >
+                  {confirmAttendanceMutation.isPending
+                    ? "جاري التأكيد..."
+                    : isToday(booking.date)
+                      ? "تأكيد الحضور"
+                      : "تأكيد الحجز"}
+                </Button>
+
+                {/* <Button
                   onClick={handleConfirmAttendance}
                   disabled={
                     confirmAttendanceMutation.isPending ||
@@ -661,7 +690,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
                     : getBookingDateStatus() === "today"
                       ? "تأكيد الحجز"
                       : "تأكيد الحضور"}
-                </Button>
+                </Button> */}
               </ButtonGroup>
             )}
 

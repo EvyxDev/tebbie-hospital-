@@ -120,8 +120,6 @@ const MedicalBookings = () => {
         })
       : bookings;
 
-  console.log("filteredBookings filteredBookings", filteredBookings);
-
   const handleBookingClick = (booking) => {
     localStorage.setItem("selectedDate", JSON.stringify(booking));
     navigate(`/specialization/booking/details/${booking.medical_service?.id}`);
