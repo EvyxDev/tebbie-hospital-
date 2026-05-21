@@ -37,7 +37,7 @@ const RescheduleBooking = ({ bookingId, doctorId, onSuccess, onCancel }) => {
     }
 
     const selectedSlot = availableSlots.find(
-      (slot) => slot.id.toString() === selectedNewSlotId
+      (slot) => slot.id.toString() === selectedNewSlotId,
     );
 
     const payload = {
@@ -84,19 +84,22 @@ const RescheduleBooking = ({ bookingId, doctorId, onSuccess, onCancel }) => {
   };
 
   const getSlotDisplayText = (slot) => {
-    if (slot.slot_type === "slots" && slot.day_id) {
+    if (slot.slot_type === "slots") {
       const dayName = dayNames[slot.day_id] || "";
-      return `${dayName} - ${convertTo12Hour(
-        slot.start_time
-      )} إلى ${convertTo12Hour(slot.end_time)}`;
+      return `${dayName} - ${slot.start_time} إلى ${slot.end_time}`;
     }
 
     if (slot.slot_type === "intervals") {
-      return slot.date;
+      // return slot.date;
+      return `${slot.date} - ${convertTo12Hour(slot.from)} إلى ${convertTo12Hour(slot.to)}`;
+    }
+    if (slot.slot_type === "slot_intervals") {
+      const dayName = dayNames[slot.day_id] || "";
+      return `${dayName} - ${convertTo12Hour(slot.from)} إلى ${convertTo12Hour(slot.to)}`;
     }
 
     return `${slot.date} - ${convertTo12Hour(
-      slot.start_time
+      slot.start_time,
     )} إلى ${convertTo12Hour(slot.end_time)}`;
   };
 

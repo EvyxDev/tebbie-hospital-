@@ -675,22 +675,6 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
                       ? "تأكيد الحضور"
                       : "تأكيد الحجز"}
                 </Button>
-
-                {/* <Button
-                  onClick={handleConfirmAttendance}
-                  disabled={
-                    confirmAttendanceMutation.isPending ||
-                    cancelAttendanceMutation.isPending
-                  }
-                  color="success"
-                  sx={{ fontSize: "0.75rem", minWidth: "120px" }}
-                >
-                  {confirmAttendanceMutation.isPending
-                    ? "جاري التأكيد..."
-                    : getBookingDateStatus() === "today"
-                      ? "تأكيد الحجز"
-                      : "تأكيد الحضور"}
-                </Button> */}
               </ButtonGroup>
             )}
 
