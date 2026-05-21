@@ -357,8 +357,6 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
     }
   };
 
-  console.log("booking booking booking", booking);
-
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
       {/* Booking Header */}
@@ -386,7 +384,6 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
           </span>
         </div>
       </div>
-      {console.log("is_medical_service is_medical_service", is_medical_service)}
       {/* Doctor and Hospital Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
         {/* {!is_medical_service && ( */}
@@ -422,21 +419,26 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
           <div className="space-y-1 text-sm">
             <p>
               <span className="text-gray-500">التاريخ:</span>{" "}
-              {!is_medical_service
+              {is_medical_service // false
                 ? formatDate(booking?.date)
                 : formatDate(booking?.appointment?.date)}
             </p>
             <p>
               <span className="text-gray-500">الوقت:</span>{" "}
-              {!is_medical_service
-                ? formatTimeRange(booking?.slot?.from, booking?.slot?.to)
+              {is_medical_service // false
+                ? booking?.slot?.slot_type == "slots"
+                  ? formatTimeRange(
+                      booking?.slot?.start_time,
+                      booking?.slot?.end_time,
+                    )
+                  : formatTimeRange(booking?.slot?.from, booking?.slot?.to)
                 : booking?.appointment?.time}
             </p>
           </div>
         </div>
       </div>
       {/* Patient Details */}
-      {booking?.user && (
+      {booking?.is_for_self === true && booking?.user && (
         <div className="border-t pt-3">
           <h4 className="font-medium text-gray-700 mb-2">تفاصيل المريض</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -523,21 +525,21 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
           </div>
         </div>
       )}
-      {booking?.patient && (
+      {booking?.is_for_self === false && booking?.patient && (
         <div className="border-t pt-3">
           <h4 className="font-medium text-gray-700 mb-2">تفاصيل المريض</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
+            <div className="space-y-2">
               <p>
                 <span className="text-gray-500">الاسم:</span>{" "}
-                {booking?.patient?.name || "غير محدد"}
+                {booking?.patient?.patient_name || "غير محدد"}
               </p>
               <p className="flex items-center text-sm gap-2">
                 <span className="text-gray-500 text-xs">رقم الهاتف:</span>{" "}
-                <span>{booking?.patient?.phone || "غير محدد"}</span>
+                <span>{booking?.patient?.patient_phone || "غير محدد"}</span>
               </p>
             </div>
-            <div>
+            <div className="space-y-2">
               <p>
                 <span className="text-gray-500">نوع الحجز:</span>{" "}
                 {booking?.is_for_self ? "لنفسه" : "لشخص آخر"}
@@ -545,22 +547,22 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
               {booking?.is_for_self ? (
                 <p>
                   <span className="text-gray-500">العمر:</span>{" "}
-                  {booking?.patient?.age ?? "غير محدد"}
+                  {booking?.patient?.patient_date_of_birth ?? "غير محدد"}
                 </p>
               ) : (
                 <>
-                  <p>
+                  {/* <p>
                     <span className="text-gray-500"> العمر:</span>{" "}
                     {booking?.patient?.age ? booking?.patient?.age : "غير محدد"}
-                  </p>
+                  </p> */}
                   <p>
                     <span className="text-gray-500">الجنس:</span>{" "}
-                    {booking?.patient?.gender
-                      ? booking?.patient?.gender === "female"
+                    {booking?.patient?.patient_gender
+                      ? booking?.patient?.patient_gender === "female"
                         ? "أنثى"
-                        : booking?.patient?.gender === "male"
+                        : booking?.patient?.patient_gender === "male"
                           ? "ذكر"
-                          : booking?.patient?.gender
+                          : booking?.patient?.patient_gender
                       : "غير محدد"}
                   </p>
                 </>

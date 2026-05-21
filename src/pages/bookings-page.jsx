@@ -52,8 +52,6 @@ const BookingsPage = () => {
     },
   });
 
-  console.log("DataBooking DataBooking", DataBooking);
-
   const { data: SpecializationsData } = useQuery({
     queryKey: ["AllSpecializations"],
     enabled: true,
