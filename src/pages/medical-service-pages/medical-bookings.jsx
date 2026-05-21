@@ -113,18 +113,18 @@ const MedicalBookings = () => {
   let filteredBookings =
     startDate && endDate
       ? bookings.filter((booking) => {
-          const bookingDate = booking.date;
+          const bookingDate = booking?.appointment?.date;
           const startDateStr = format(startDate, "yyyy-MM-dd");
           const endDateStr = format(endDate, "yyyy-MM-dd");
           return bookingDate >= startDateStr && bookingDate <= endDateStr;
         })
       : bookings;
 
+  console.log("filteredBookings filteredBookings", filteredBookings);
+
   const handleBookingClick = (booking) => {
     localStorage.setItem("selectedDate", JSON.stringify(booking));
-    navigate(
-      `/specialization/booking/details/${booking.doctor.specialization_id}`,
-    );
+    navigate(`/specialization/booking/details/${booking.medical_service?.id}`);
     console.log(booking);
   };
 
@@ -232,7 +232,6 @@ const MedicalBookings = () => {
               </div>
             </div>
           </div>
-
           {/* Bookings list */}
           <div className="flex-1 overflow-y-auto my-4">
             <BookingData

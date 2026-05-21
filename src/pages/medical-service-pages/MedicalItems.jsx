@@ -14,6 +14,11 @@ const MedicalItems = () => {
   if (isLoading) return <LoaderComponent />;
 
   const items = response || [];
+  // const items = (response || []).map((item) => ({
+  //   ...item,
+  //   tags: typeof item?.tags == "string" ? item?.tags : [item?.tags],
+  //   notes: typeof item?.notes == "string" ? item?.notes : [item?.notes],
+  // }));
 
   return (
     <div className="p-4 md:p-8 bg-gray-50 min-h-screen">
@@ -50,7 +55,7 @@ const MedicalItems = () => {
                           : "bg-blue-50 text-blue-600"
                       }`}
                     >
-                      {item.type === "radiology" ? (
+                      {item?.type === "radiology" ? (
                         <Activity size={20} />
                       ) : (
                         <Microscope size={20} />
@@ -60,47 +65,64 @@ const MedicalItems = () => {
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
                         <h3 className="text-md font-bold text-gray-900 mt-3 mb-2 leading-tight">
-                          {item.name}
+                          {item?.name}
                         </h3>
                         <span
                           className={`text-[9px] px-2 py-0.5 rounded-md font-bold uppercase ${
-                            item.type === "radiology"
+                            item?.type === "radiology"
                               ? "bg-purple-100 text-purple-700"
                               : "bg-blue-100 text-blue-700"
                           }`}
                         >
-                          {item.type === "radiology" ? "أشعة" : "تحليل"}
+                          {item?.type === "radiology" ? "أشعة" : "تحليل"}
                         </span>
                       </div>
 
                       <div className="flex flex-wrap gap-1.5 mt-2">
-                        {(item.tags || []).map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="text-[10px] bg-gray-50 text-gray-500 px-2 py-0.5 rounded-md border border-gray-100"
-                          >
-                            #{tag}
+                        {typeof item.tags == "string" && item.tags ? (
+                          <span className="text-[10px] bg-gray-50 text-gray-500 px-2 py-0.5 rounded-md border border-gray-100">
+                            #{item.tags}
                           </span>
-                        ))}
+                        ) : (
+                          (item?.tags || []).map((tag, idx) => (
+                            <span
+                              key={idx}
+                              className="text-[10px] bg-gray-50 text-gray-500 px-2 py-0.5 rounded-md border border-gray-100"
+                            >
+                              #{tag}
+                            </span>
+                          ))
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  {(item?.notes || []) && item?.notes?.length > 0 && (
-                    <div className="bg-amber-50/60 rounded-xl p-3 border-r-4 border-amber-400">
-                      <p className="text-[11px] font-bold text-amber-800 mb-1 flex items-center gap-1">
-                        <AlertCircle size={12} /> تعليمات هامة:
-                      </p>
-                      <ul className="text-[10px] text-amber-900/80 space-y-0.5">
-                        {item.notes.map((note, idx) => (
-                          <li key={idx} className="flex items-start gap-1">
-                            <span>•</span>
-                            <span>{note}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  {item?.notes &&
+                    (typeof item.notes === "string"
+                      ? item.notes
+                      : item.notes.length > 0) && (
+                      <div className="bg-amber-50/60 rounded-xl p-3 border-r-4 border-amber-400">
+                        <p className="text-[11px] font-bold text-amber-800 mb-1 flex items-center gap-1">
+                          <AlertCircle size={12} /> تعليمات هامة:
+                        </p>
+
+                        <ul className="text-[10px] text-amber-900/80 space-y-0.5">
+                          {typeof item.notes === "string" ? (
+                            <li className="flex items-start gap-1">
+                              <span>•</span>
+                              <span>{item.notes}</span>
+                            </li>
+                          ) : (
+                            item.notes.map((note, idx) => (
+                              <li key={idx} className="flex items-start gap-1">
+                                <span>•</span>
+                                <span>{note}</span>
+                              </li>
+                            ))
+                          )}
+                        </ul>
+                      </div>
+                    )}
 
                   <div className="bg-gray-50 rounded-xl p-3 flex items-center justify-between">
                     <div className="flex justify-between items-center w-full gap-1">

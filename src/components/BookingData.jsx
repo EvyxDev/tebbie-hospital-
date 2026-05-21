@@ -26,7 +26,10 @@ const BookingData = ({
   const statusCounts = {
     finished: filteredBookings.filter((b) => b.status === "finished").length,
     completed: filteredBookings.filter((b) => b.status === "completed").length,
-    pending: filteredBookings.filter((b) => b.status === "pending").length,
+    // pending: filteredBookings.filter((b) => b.status === "pending").length,
+    pending: filteredBookings.filter(
+      (b) => b.status === "pending" || b.status === "confirmed",
+    ).length,
     cancelled: filteredBookings.filter((b) => b.status === "cancelled").length,
   };
 
@@ -38,7 +41,7 @@ const BookingData = ({
       case "completed":
         return booking.status === "completed";
       case "pending":
-        return booking.status === "pending";
+        return booking.status === "pending" || booking.status === "confirmed";
       case "cancelled":
         return booking.status === "cancelled";
       default:
@@ -98,7 +101,7 @@ const BookingData = ({
         </div>
       </div>
 
-      {tabFilteredBookings.length > 0 ? (
+      {tabFilteredBookings && tabFilteredBookings?.length > 0 ? (
         <div className="space-y-4">
           {tabFilteredBookings.map((booking) => (
             <div

@@ -49,6 +49,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
   const token = localStorage.getItem("authToken");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  console.log(is_medical_service);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -386,25 +387,38 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
       </div>
       {/* Doctor and Hospital Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-        {/* {!is_medical_service && ( */}
-        <div>
-          <h4 className="font-medium text-gray-700 mb-2">تفاصيل الطبيب</h4>
-          <div className="space-y-1 text-sm">
-            <p>
-              <span className="text-gray-500">الاسم:</span>{" "}
-              {booking?.doctor?.name || "غير محدد"}
-            </p>
-            <p>
-              <span className="text-gray-500">المستشفى:</span>{" "}
-              {booking?.hospital?.name || "غير محدد"}
-            </p>
+        {is_medical_service == "false" && (
+          <div>
+            <h4 className="font-medium text-gray-700 mb-2">تفاصيل الطبيب</h4>
+            <div className="space-y-1 text-sm">
+              <p>
+                <span className="text-gray-500">الاسم:</span>{" "}
+                {booking?.doctor?.name || "غير محدد"}
+              </p>
+              <p>
+                <span className="text-gray-500">المستشفى:</span>{" "}
+                {booking?.hospital?.name || "غير محدد"}
+              </p>
+            </div>
           </div>
-        </div>
-        {/* )} */}
+        )}
+        {/* for lab */}
+        {is_medical_service == "true" && (
+          <div>
+            <h4 className="font-medium text-gray-700 mb-2">تفاصيل المستشفي</h4>
+            <div className="space-y-1 text-sm">
+              <p>
+                <span className="text-gray-500">الاسم:</span>{" "}
+                {booking?.hospital?.name || "غير محدد"}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* {is_medical_service && ( */}
         <div>
           <h4 className="font-medium text-gray-700 mb-2">تفاصيل الخدمة</h4>
-          <div className="space-y-1 text-sm">
+          <div className="space-y-1 text-sm  rounded-md border-gray-200 p-2">
             {booking?.items?.map((item) => (
               <p key={item.id}>
                 <span className="text-gray-500">الاسم:</span>{" "}
@@ -419,13 +433,13 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
           <div className="space-y-1 text-sm">
             <p>
               <span className="text-gray-500">التاريخ:</span>{" "}
-              {is_medical_service // false
+              {is_medical_service == "false" // false
                 ? formatDate(booking?.date)
                 : formatDate(booking?.appointment?.date)}
             </p>
             <p>
               <span className="text-gray-500">الوقت:</span>{" "}
-              {is_medical_service // false
+              {is_medical_service == "false" // false
                 ? booking?.slot?.slot_type == "slots"
                   ? formatTimeRange(
                       booking?.slot?.start_time,
@@ -525,6 +539,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
           </div>
         </div>
       )}
+
       {booking?.is_for_self === false && booking?.patient && (
         <div className="border-t pt-3">
           <h4 className="font-medium text-gray-700 mb-2">تفاصيل المريض</h4>
