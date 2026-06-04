@@ -28,7 +28,11 @@ const WalletDetails = () => {
     ],
     queryFn: () => {
       if (isNewWallet) {
-        return getWalletTotal({ token });
+        return getWalletTotal({
+          token,
+          start: startDate ? format(startDate, "yyyy-MM-dd") : null,
+          end: endDate ? format(endDate, "yyyy-MM-dd") : null,
+        });
       } else {
         return getWallet({
           token,
@@ -38,6 +42,8 @@ const WalletDetails = () => {
       }
     },
   });
+
+  console.log("Wallet Data:", walletData);
 
   const totalAmount = walletData
     ? new Intl.NumberFormat("ar-EG", {
