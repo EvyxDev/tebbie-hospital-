@@ -11,6 +11,7 @@ import {
   updateServiceStatus,
   getAllServices,
   updateServiceIntervals,
+  deleteServiceIntervals,
 } from "../utlis/https";
 import {
   Box,
@@ -93,6 +94,15 @@ export default function ServiceSlots() {
       setEditingIntervalId(null);
     },
     onError: () => alert("فشل تعديل الفترة"),
+  });
+
+  const deleteIntervalsMutation = useMutation({
+    mutationFn: (service_id) => deleteServiceIntervals({ service_id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["service-intervals", serviceId]);
+      setEditingIntervalId(null);
+    },
+    onError: () => alert("فشل حذف الفترة"),
   });
 
   const statusMutation = useMutation({
@@ -301,34 +311,53 @@ export default function ServiceSlots() {
                           >
                             {interval.name_slot}
                           </Typography>
-                          <Box>
-                            {interval.id && (
-                              <Button
-                                variant="outlined"
-                                size="small"
-                                onClick={() => {
-                                  setIsEditing(true);
-                                  setEditingIntervalId(interval.id);
-                                  setFieldValue("date", interval.date || "");
-                                  setFieldValue(
-                                    "name_slot",
-                                    interval.name_slot || "",
-                                  );
-                                  setFieldValue(
-                                    "from",
-                                    (interval.from || "").slice(0, 5),
-                                  );
-                                  setFieldValue(
-                                    "to",
-                                    (interval.to || "").slice(0, 5),
-                                  );
-                                  setTimeIsModalOpen(true);
-                                }}
-                              >
-                                تعديل
-                              </Button>
-                            )}
-                          </Box>
+                          <div className="flex gap-2">
+                            <Box>
+                              {interval.id && (
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  onClick={() => {
+                                    setIsEditing(true);
+                                    setEditingIntervalId(interval.id);
+                                    setFieldValue("date", interval.date || "");
+                                    setFieldValue(
+                                      "name_slot",
+                                      interval.name_slot || "",
+                                    );
+                                    setFieldValue(
+                                      "from",
+                                      (interval.from || "").slice(0, 5),
+                                    );
+                                    setFieldValue(
+                                      "to",
+                                      (interval.to || "").slice(0, 5),
+                                    );
+                                    setTimeIsModalOpen(true);
+                                  }}
+                                >
+                                  تعديل
+                                </Button>
+                              )}
+                            </Box>
+                            <Box>
+                              {interval.id && (
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  onClick={() =>
+                                    deleteIntervalsMutation.mutate(interval.id)
+                                  }
+                                >
+                                  {deleteIntervalsMutation.isPending &&
+                                  deleteIntervalsMutation.variables ===
+                                    interval.id
+                                    ? "جاري الحذف..."
+                                    : "حذف"}
+                                </Button>
+                              )}
+                            </Box>
+                          </div>
                         </Box>
 
                         <Grid container spacing={2}>

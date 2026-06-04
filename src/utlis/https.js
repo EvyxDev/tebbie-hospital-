@@ -1499,6 +1499,27 @@ export const updateServiceIntervals = async ({
   }
 };
 
+export const deleteServiceIntervals = async ({ service_id }) => {
+  const token = localStorage.getItem("authToken");
+  const response = await fetch(
+    `${API_URL}/hospital/v1/service-slots/delete/${service_id}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(
+      result.msg || result.message || "Failed to update service interval",
+    );
+  }
+};
+
 export const updateServiceStatus = async ({ token, service_id }) => {
   try {
     const response = await fetch(
