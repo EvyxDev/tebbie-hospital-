@@ -22,10 +22,20 @@ const MedicalPackages = () => {
 
   const packages = (response || []).map((pkg) => ({
     ...pkg,
-    items: (pkg.items || []).map((item) => ({
+    items: (pkg?.items || []).map((item) => ({
       ...item,
-      tags: item.tags || [],
-      notes: item.notes || [],
+
+      tags: Array.isArray(item?.tags)
+        ? item.tags
+        : item?.tags
+          ? [item.tags]
+          : [],
+
+      notes: Array.isArray(item?.notes)
+        ? item.notes
+        : item?.notes
+          ? [item.notes]
+          : [],
     })),
   }));
 
@@ -42,7 +52,7 @@ const MedicalPackages = () => {
         </header>
 
         <div className="grid grid-cols-1 gap-6">
-          {packages.map((pkg) => (
+          {packages?.map((pkg) => (
             <div
               key={pkg.id}
               className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
@@ -54,20 +64,20 @@ const MedicalPackages = () => {
                     <Package size={18} />
                   </div>
                   <span
-                    className={`px-3  rounded-full text-xs font-medium ${pkg.status ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                    className={`px-3  rounded-full text-xs font-medium ${pkg?.status ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
                   >
-                    {pkg.status ? "Active" : "Inactive"}
+                    {pkg?.status ? "Active" : "Inactive"}
                   </span>
                 </div>
-                <h3 className="text-md font-bold text-gray-900">{pkg.name}</h3>
+                <h3 className="text-md font-bold text-gray-900">{pkg?.name}</h3>
               </div>
 
               {/* Pricing Section */}
-              <div className="px-5 -mt-1 bg-gray-50/50 flex justify-between items-center">
+              <div className="px-5 py-2 -mt-1 bg-gray-50/50 flex justify-between items-center">
                 <div className="flex gap-2 items-center">
                   <p className="text-sm text-gray-500">السعر الكلي:</p>
                   <p className="text-sm font-black text-blue-600 font-mono">
-                    {pkg.price} <span className="text-sm">د.ل</span>
+                    {pkg?.price} <span className="text-sm">د.ل</span>
                   </p>
                 </div>
                 {/* <div className="text-right">
@@ -81,12 +91,12 @@ const MedicalPackages = () => {
               <div className="p-5">
                 <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                   <Activity size={16} /> محتويات الباكدج (
-                  {pkg.items?.length || 0})
+                  {pkg?.items?.length || 0})
                 </h4>
 
-                {pkg.items?.length > 0 ? (
+                {pkg?.items?.length > 0 ? (
                   <div className="space-y-4">
-                    {pkg.items.map((item) => (
+                    {pkg?.items?.map((item) => (
                       <div
                         key={item.id}
                         className="text-sm border-l-2 border-blue-200 pl-3 py-1"
@@ -100,7 +110,7 @@ const MedicalPackages = () => {
 
                         {/* Tags */}
                         <div className="flex flex-wrap gap-1 mt-2">
-                          {item.tags.map((tag, idx) => (
+                          {item?.tags?.map((tag, idx) => (
                             <span
                               key={idx}
                               className="bg-gray-100 text-[10px] px-2 py-0.5 rounded text-gray-500 uppercase tracking-wider"
@@ -111,9 +121,9 @@ const MedicalPackages = () => {
                         </div>
 
                         {/* Notes */}
-                        {item.notes.length > 0 && (
+                        {item?.notes?.length > 0 && (
                           <div className="mt-2 text-[12px] text-gray-500 bg-blue-50/50 p-2 rounded">
-                            {item.notes.map((note, idx) => (
+                            {item?.notes?.map((note, idx) => (
                               <p
                                 key={idx}
                                 className="flex items-center gap-1 italic"

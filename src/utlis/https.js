@@ -790,8 +790,8 @@ export const getRefunds = async ({ token }) => {
 export const getWallet = async ({ token, start, end }) => {
   try {
     const queryParams = new URLSearchParams();
-    if (start) queryParams.append("start", start);
-    if (end) queryParams.append("end", end);
+    if (start) queryParams.append("date_from", start);
+    if (end) queryParams.append("date_to", end);
 
     const response = await fetch(
       `${API_URL}/hospital/v1/get-wallet?${queryParams.toString()}`,
@@ -819,15 +819,22 @@ export const getWallet = async ({ token, start, end }) => {
   }
 };
 
-export const getWalletTotal = async ({ token }) => {
+export const getWalletTotal = async ({ token, start, end }) => {
   try {
-    const response = await fetch(`${API_URL}/hospital/v1/get-wallet-total`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const queryParams = new URLSearchParams();
+    if (start) queryParams.append("date_from", start);
+    if (end) queryParams.append("date_to", end);
+
+    const response = await fetch(
+      `${API_URL}/hospital/v1/get-wallet-total?${queryParams.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     const result = await response.json();
 
@@ -1496,6 +1503,27 @@ export const updateServiceIntervals = async ({
   } catch (error) {
     console.error("Error:", error);
     throw error;
+  }
+};
+
+export const deleteServiceIntervals = async ({ service_id }) => {
+  const token = localStorage.getItem("authToken");
+  const response = await fetch(
+    `${API_URL}/hospital/v1/service-slots/delete/${service_id}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(
+      result.msg || result.message || "Failed to update service interval",
+    );
   }
 };
 
