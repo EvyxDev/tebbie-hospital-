@@ -68,7 +68,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
 
   // Check booking date status
   const getBookingDateStatus = () => {
-    const bookingDate = new Date(booking.date);
+    const bookingDate = new Date(booking.appointment.date || booking.date);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
     bookingDate.setHours(0, 0, 0, 0);
@@ -377,9 +377,9 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
           <h3 className="font-semibold text-gray-900">حجز رقم #{booking.id}</h3>
           <p className="text-sm text-gray-500">
             {/* {formatDate(booking?.created_at)} */}
-{is_medical_service == "false" // false
-                ? formatDate(booking?.date)
-                : formatDate(booking?.appointment?.date)}
+            {is_medical_service == "false" // false
+              ? formatDate(booking?.date)
+              : formatDate(booking?.appointment?.date)}
           </p>
         </div>
         <div className="flex gap-2">
@@ -641,21 +641,22 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
       {/* Action Section */}
       <div className="pt-3 mt-3 border-t">
         <div className="flex items-center justify-between gap-2">
-          {booking.status === "confirmed" && getBookingDateStatus() === "future"&& (
-                <Button
-                  onClick={handleCancelAttendance}
-                  disabled={
-                    confirmAttendanceMutation.isPending ||
-                    cancelAttendanceMutation.isPending
-                  }
-                  color="error"
-                  sx={{ fontSize: "0.75rem", minWidth: "120px" }}
-                >
-                  {cancelAttendanceMutation.isPending
-                    ? "جاري الإلغاء..."
-                    : "إلغاء الحجز"}
-                </Button>
-          )}
+          {booking.status === "confirmed" &&
+            getBookingDateStatus() !== "past" && (
+              <Button
+                onClick={handleCancelAttendance}
+                disabled={
+                  confirmAttendanceMutation.isPending ||
+                  cancelAttendanceMutation.isPending
+                }
+                color="error"
+                sx={{ fontSize: "0.75rem", minWidth: "120px" }}
+              >
+                {cancelAttendanceMutation.isPending
+                  ? "جاري الإلغاء..."
+                  : "إلغاء الحجز"}
+              </Button>
+            )}
           {booking.status === "pending" &&
             getBookingDateStatus() !== "past" && (
               <ButtonGroup
