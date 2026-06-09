@@ -370,13 +370,16 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+    <div className="p-4 transition-shadow bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md">
       {/* Booking Header */}
-      <div className="flex justify-between items-start mb-3">
+      <div className="flex items-start justify-between mb-3">
         <div>
           <h3 className="font-semibold text-gray-900">حجز رقم #{booking.id}</h3>
           <p className="text-sm text-gray-500">
-            {formatDate(booking?.created_at)}
+            {/* {formatDate(booking?.created_at)} */}
+{is_medical_service == "false" // false
+                ? formatDate(booking?.date)
+                : formatDate(booking?.appointment?.date)}
           </p>
         </div>
         <div className="flex gap-2">
@@ -397,10 +400,10 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
         </div>
       </div>
       {/* Doctor and Hospital Details */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+      <div className="grid grid-cols-1 gap-4 mb-3 md:grid-cols-2">
         {is_medical_service == "false" && (
           <div>
-            <h4 className="font-medium text-gray-700 mb-2">تفاصيل الطبيب</h4>
+            <h4 className="mb-2 font-medium text-gray-700">تفاصيل الطبيب</h4>
             <div className="space-y-1 text-sm">
               <p>
                 <span className="text-gray-500">الاسم:</span>{" "}
@@ -416,7 +419,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
         {/* for lab */}
         {is_medical_service == "true" && (
           <div>
-            <h4 className="font-medium text-gray-700 mb-2">تفاصيل المستشفي</h4>
+            <h4 className="mb-2 font-medium text-gray-700">تفاصيل المستشفي</h4>
             <div className="space-y-1 text-sm">
               <p>
                 <span className="text-gray-500">الاسم:</span>{" "}
@@ -428,8 +431,8 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
 
         {/* {is_medical_service && ( */}
         <div>
-          <h4 className="font-medium text-gray-700 mb-2">تفاصيل الخدمة</h4>
-          <div className="space-y-1 text-sm  rounded-md border-gray-200 p-2">
+          <h4 className="mb-2 font-medium text-gray-700">تفاصيل الخدمة</h4>
+          <div className="p-2 space-y-1 text-sm border-gray-200 rounded-md">
             {booking?.items?.map((item) => (
               <p key={item.id}>
                 <span className="text-gray-500">الاسم:</span>{" "}
@@ -440,7 +443,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
         </div>
         {/* )} */}
         <div>
-          <h4 className="font-medium text-gray-700 mb-2">تفاصيل الموعد</h4>
+          <h4 className="mb-2 font-medium text-gray-700">تفاصيل الموعد</h4>
           <div className="space-y-1 text-sm">
             <p>
               <span className="text-gray-500">التاريخ:</span>{" "}
@@ -464,9 +467,9 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
       </div>
       {/* Patient Details */}
       {booking?.is_for_self === true && booking?.user && (
-        <div className="border-t pt-3">
-          <h4 className="font-medium text-gray-700 mb-2">تفاصيل المريض</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div className="pt-3 border-t">
+          <h4 className="mb-2 font-medium text-gray-700">تفاصيل المريض</h4>
+          <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
             <div>
               <p>
                 <span className="text-gray-500">الاسم:</span>{" "}
@@ -474,8 +477,8 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
                   ? booking?.user?.name || "غير محدد"
                   : booking?.patient?.patient_name || "غير محدد"}
               </p>
-              <p className="flex items-center text-sm gap-2">
-                <span className="text-gray-500 text-xs">رقم الهاتف:</span>{" "}
+              <p className="flex items-center gap-2 text-sm">
+                <span className="text-xs text-gray-500">رقم الهاتف:</span>{" "}
                 <span>
                   {booking?.is_for_self
                     ? booking?.user?.phone || "غير محدد"
@@ -552,16 +555,16 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
       )}
 
       {booking?.is_for_self === false && booking?.patient && (
-        <div className="border-t pt-3">
-          <h4 className="font-medium text-gray-700 mb-2">تفاصيل المريض</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div className="pt-3 border-t">
+          <h4 className="mb-2 font-medium text-gray-700">تفاصيل المريض</h4>
+          <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
             <div className="space-y-2">
               <p>
                 <span className="text-gray-500">الاسم:</span>{" "}
                 {booking?.patient?.patient_name || "غير محدد"}
               </p>
-              <p className="flex items-center text-sm gap-2">
-                <span className="text-gray-500 text-xs">رقم الهاتف:</span>{" "}
+              <p className="flex items-center gap-2 text-sm">
+                <span className="text-xs text-gray-500">رقم الهاتف:</span>{" "}
                 <span>{booking?.patient?.patient_phone || "غير محدد"}</span>
               </p>
             </div>
@@ -603,8 +606,8 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
       )}
       {/* Lab Results Files */}
       {hasUploadedPdfs && (
-        <div className="border-t pt-3 mt-3">
-          <h4 className="font-medium text-gray-700 mb-2">التحاليل المرفوعة</h4>
+        <div className="pt-3 mt-3 border-t">
+          <h4 className="mb-2 font-medium text-gray-700">التحاليل المرفوعة</h4>
 
           <div className="space-y-2">
             {booking.lab_results_files.map((file, index) => {
@@ -613,7 +616,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
               return (
                 <div
                   key={index}
-                  className="flex items-center justify-between bg-gray-50 border rounded-md px-3 py-2 text-sm"
+                  className="flex items-center justify-between px-3 py-2 text-sm border rounded-md bg-gray-50"
                 >
                   <div className="flex items-center gap-2 truncate">
                     <span>📄</span>
@@ -636,14 +639,29 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
         </div>
       )}
       {/* Action Section */}
-      <div className="border-t pt-3 mt-3">
-        <div className="flex gap-2 justify-between items-center">
+      <div className="pt-3 mt-3 border-t">
+        <div className="flex items-center justify-between gap-2">
+          {booking.status === "confirmed" && getBookingDateStatus() === "future"&& (
+                <Button
+                  onClick={handleCancelAttendance}
+                  disabled={
+                    confirmAttendanceMutation.isPending ||
+                    cancelAttendanceMutation.isPending
+                  }
+                  color="error"
+                  sx={{ fontSize: "0.75rem", minWidth: "120px" }}
+                >
+                  {cancelAttendanceMutation.isPending
+                    ? "جاري الإلغاء..."
+                    : "إلغاء الحجز"}
+                </Button>
+          )}
           {booking.status === "pending" &&
             getBookingDateStatus() !== "past" && (
               <ButtonGroup
                 size="small"
                 variant="contained"
-                className="flex gap-3 items-center"
+                className="flex items-center gap-3"
               >
                 <Button
                   onClick={handleCancelAttendance}
@@ -679,18 +697,18 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
             )}
 
           {booking.status === "finished" && (
-            <div className="text-sm text-green-600 font-medium">
+            <div className="text-sm font-medium text-green-600">
               تم إكمال الحجز
             </div>
           )}
 
           {getBookingDateStatus() === "past" && (
-            <div className="text-sm text-gray-500 font-medium">
+            <div className="text-sm font-medium text-gray-500">
               لا يمكن اتخاذ أي إجراء للحجوزات السابقة
             </div>
           )}
 
-          {canUploadLabResults && (
+          {canUploadLabResults && getBookingDateStatus() !== "future" && (
             <Button
               onClick={() => setShowUploadPdfs(true)}
               disabled={hasUploadedPdfs}
@@ -706,7 +724,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
       </div>
       {/* Reschedule Button Row */}
       {booking?.status === "pending" && doctorId && !showReschedule && (
-        <div className="border-t pt-3 mt-3 flex justify-center">
+        <div className="flex justify-center pt-3 mt-3 border-t">
           <div className="flex justify-start">
             <Button
               onClick={handleReschedule}
@@ -796,11 +814,11 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
               {selectedFiles.map((fileObj, index) => (
                 <div
                   key={index}
-                  className="flex justify-between items-center gap-2"
+                  className="flex items-center justify-between gap-2"
                 >
                   <span>{fileObj.file.name}</span>
                   {fileObj.status === "error" && (
-                    <span className="text-red-600 text-xs">
+                    <span className="text-xs text-red-600">
                       {fileObj.errorMsg}
                     </span>
                   )}
@@ -810,7 +828,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
                         prev.filter((_, i) => i !== index),
                       );
                     }}
-                    className="text-red-500 text-2xl font-bold hover:text-red-700 transition-colors"
+                    className="text-2xl font-bold text-red-500 transition-colors hover:text-red-700"
                   >
                     ×
                   </button>
