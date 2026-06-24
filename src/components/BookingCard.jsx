@@ -683,7 +683,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
                   disabled={
                     confirmAttendanceMutation.isPending ||
                     cancelAttendanceMutation.isPending ||
-                    !isToday(booking.date)
+                    (booking?.payment_status !== "paid" && !isToday(booking.date))
                   }
                   color="success"
                   sx={{ fontSize: "0.75rem", minWidth: "120px" }}
