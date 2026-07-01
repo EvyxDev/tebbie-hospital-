@@ -9,7 +9,6 @@ const BookingData = ({
   type,
   // handleBookingClick,
 }) => {
-  console.log(SpecializationsData);
   const [activeTab, setActiveTab] = useState("pending");
 
   // Handle booking status change
@@ -57,22 +56,20 @@ const BookingData = ({
           {type ? (
             <button
               onClick={() => setActiveTab("completed")}
-              className={`flex-1 py-3 px-4 text-sm font-medium rounded-r-lg transition-colors ${
-                activeTab === "completed"
+              className={`flex-1 py-3 px-4 text-sm font-medium rounded-r-lg transition-colors ${activeTab === "completed"
                   ? "bg-green-600 text-white"
                   : "text-gray-600 hover:text-green-600 hover:bg-gray-50"
-              }`}
+                }`}
             >
               مكتملة ({statusCounts.completed})
             </button>
           ) : (
             <button
               onClick={() => setActiveTab("finished")}
-              className={`flex-1 py-3 px-4 text-sm font-medium rounded-r-lg transition-colors ${
-                activeTab === "finished"
+              className={`flex-1 py-3 px-4 text-sm font-medium rounded-r-lg transition-colors ${activeTab === "finished"
                   ? "bg-green-600 text-white"
                   : "text-gray-600 hover:text-green-600 hover:bg-gray-50"
-              }`}
+                }`}
             >
               مكتملة ({statusCounts.finished})
             </button>
@@ -80,21 +77,19 @@ const BookingData = ({
 
           <button
             onClick={() => setActiveTab("pending")}
-            className={`flex-1 py-3 px-4 text-sm font-medium border-x border-gray-200 transition-colors ${
-              activeTab === "pending"
+            className={`flex-1 py-3 px-4 text-sm font-medium border-x border-gray-200 transition-colors ${activeTab === "pending"
                 ? "bg-yellow-600 text-white"
                 : "text-gray-600 hover:text-yellow-600 hover:bg-gray-50"
-            }`}
+              }`}
           >
             في الانتظار ({statusCounts.pending})
           </button>
           <button
             onClick={() => setActiveTab("cancelled")}
-            className={`flex-1 py-3 px-4 text-sm font-medium rounded-l-lg transition-colors ${
-              activeTab === "cancelled"
+            className={`flex-1 py-3 px-4 text-sm font-medium rounded-l-lg transition-colors ${activeTab === "cancelled"
                 ? "bg-red-600 text-white"
                 : "text-gray-600 hover:text-red-600 hover:bg-gray-50"
-            }`}
+              }`}
           >
             ملغية ({statusCounts.cancelled})
           </button>

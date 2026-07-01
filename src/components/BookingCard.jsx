@@ -714,13 +714,13 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
             </div>
           )}
 
-          {getBookingDateStatus() === "past" && (
+          {getBookingDateStatus() === "past" && type == "medical" && (
             <div className="text-sm font-medium text-gray-500">
               لا يمكن اتخاذ أي إجراء للحجوزات السابقة
             </div>
           )}
 
-          {canUploadLabResults && getBookingDateStatus() !== "future" && (
+          {canUploadLabResults && getBookingDateStatus() !== "future" && type == "medical" && (
             <Button
               onClick={() => setShowUploadPdfs(true)}
               disabled={hasUploadedPdfs}
@@ -732,6 +732,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
               {hasUploadedPdfs ? "تم رفع التحاليل" : "رفع التحاليل الطبية"}
             </Button>
           )}
+
         </div>
       </div>
       {/* Reschedule Button Row */}
