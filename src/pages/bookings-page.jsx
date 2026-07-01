@@ -62,9 +62,9 @@ const BookingsPage = () => {
 
   const handleExportCSV = () => {
     const rows = (filteredBookings || []).map((b) => ({
-      id: b.id,
-      date: b.date,
-      doctor_name: b.doctor?.name || "",
+      id: b?.id,
+      date: b?.date,
+      doctor_name: b?.doctor?.name || "",
       hospital_name: b.hospital?.name || "",
       patient_name: b.is_for_self ? b.user?.name || "" : b.patient?.name || "",
       phone: b.is_for_self ? b.user?.phone || "" : b.patient?.phone || "",
@@ -129,7 +129,7 @@ const BookingsPage = () => {
   let filteredBookings =
     startDate && endDate
       ? bookings.filter((booking) => {
-          const bookingDate = booking.date;
+          const bookingDate = booking?.date;
           const startDateStr = format(startDate, "yyyy-MM-dd");
           const endDateStr = format(endDate, "yyyy-MM-dd");
           return bookingDate >= startDateStr && bookingDate <= endDateStr;

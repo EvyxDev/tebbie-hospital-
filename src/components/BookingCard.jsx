@@ -68,7 +68,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
 
   // Check booking date status
   const getBookingDateStatus = () => {
-    const bookingDate = new Date(booking.appointment.date || booking.date);
+    const bookingDate = new Date(booking?.appointment?.date || booking?.date);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
     bookingDate.setHours(0, 0, 0, 0);
@@ -252,9 +252,8 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
     const cleanPhone = phoneNumber.replace(/\D/g, "");
 
     // Create welcome message
-    const welcomeMessage = `مرحباً ${
-      patientName || "عزيزي المريض"
-    }، شكراً لك على حجزك معنا. نحن سعداء بخدمتك ونتمنى لك الشفاء العاجل.`;
+    const welcomeMessage = `مرحباً ${patientName || "عزيزي المريض"
+      }، شكراً لك على حجزك معنا. نحن سعداء بخدمتك ونتمنى لك الشفاء العاجل.`;
 
     // Encode the message for URL
     const encodedMessage = encodeURIComponent(welcomeMessage);
@@ -278,9 +277,9 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
       day: "numeric",
     });
   };
-  // Format time range function
   function formatTimeRange(from, to) {
     const format = (time) => {
+      if (!time) return "غير محدد";
       let [hours, minutes] = time.split(":").map(Number);
 
       const period = hours >= 12 ? "م" : "ص";
@@ -429,19 +428,20 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
           </div>
         )}
 
-        {/* {is_medical_service && ( */}
-        <div>
-          <h4 className="mb-2 font-medium text-gray-700">تفاصيل الخدمة</h4>
-          <div className="p-2 space-y-1 text-sm border-gray-200 rounded-md">
-            {booking?.items?.map((item) => (
-              <p key={item.id}>
-                <span className="text-gray-500">الاسم:</span>{" "}
-                {item?.name || "غير محدد"}
-              </p>
-            ))}
+        {is_medical_service == "true" && (
+          <div>
+            <h4 className="mb-2 font-medium text-gray-700">تفاصيل الخدمة</h4>
+            <div className="p-2 space-y-1 text-sm border-gray-200 rounded-md">
+              {booking?.items?.map((item) => (
+                <p key={item.id}>
+                  <span className="text-gray-500">الاسم:</span>{" "}
+                  {item?.name || "غير محدد"}
+                </p>
+              ))}
+            </div>
           </div>
-        </div>
-        {/* )} */}
+        )}
+
         <div>
           <h4 className="mb-2 font-medium text-gray-700">تفاصيل الموعد</h4>
           <div className="space-y-1 text-sm">
@@ -456,15 +456,26 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
               {is_medical_service == "false" // false
                 ? booking?.slot?.slot_type == "slots"
                   ? formatTimeRange(
-                      booking?.slot?.start_time,
-                      booking?.slot?.end_time,
-                    )
+                    booking?.slot?.start_time,
+                    booking?.slot?.end_time,
+                  )
                   : formatTimeRange(booking?.slot?.from, booking?.slot?.to)
                 : booking?.appointment?.time}
             </p>
           </div>
         </div>
       </div>
+
+      {booking?.is_for_self === false && booking?.user && (
+        <div className="py-3 border-t">
+          <h4 className="mb-2 font-medium text-gray-700">صاحب الاكونت</h4>
+          <p>
+            <span className="text-gray-500">الاسم:</span>{" "}
+            {booking?.user?.name || "غير محدد"}
+          </p>
+        </div>
+      )}
+
       {/* Patient Details */}
       {booking?.is_for_self === true && booking?.user && (
         <div className="pt-3 border-t">
@@ -487,30 +498,30 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
                 {(booking?.is_for_self
                   ? booking?.user?.phone
                   : booking?.patient?.patient_phone) && (
-                  <Tooltip title="إرسال رسالة واتساب" arrow>
-                    <IconButton
-                      size="small"
-                      onClick={() =>
-                        handleWhatsAppClick(
-                          booking?.is_for_self
-                            ? booking?.user?.phone
-                            : booking?.patient?.patient_phone,
-                          booking?.is_for_self
-                            ? booking?.user?.name
-                            : booking?.patient?.patient_name,
-                        )
-                      }
-                      sx={{
-                        color: "#25D366",
-                        "&:hover": {
-                          backgroundColor: "rgba(37, 211, 102, 0.1)",
-                        },
-                      }}
-                    >
-                      <WhatsAppIcon size={16} />
-                    </IconButton>
-                  </Tooltip>
-                )}
+                    <Tooltip title="إرسال رسالة واتساب" arrow>
+                      <IconButton
+                        size="small"
+                        onClick={() =>
+                          handleWhatsAppClick(
+                            booking?.is_for_self
+                              ? booking?.user?.phone
+                              : booking?.patient?.patient_phone,
+                            booking?.is_for_self
+                              ? booking?.user?.name
+                              : booking?.patient?.patient_name,
+                          )
+                        }
+                        sx={{
+                          color: "#25D366",
+                          "&:hover": {
+                            backgroundColor: "rgba(37, 211, 102, 0.1)",
+                          },
+                        }}
+                      >
+                        <WhatsAppIcon size={16} />
+                      </IconButton>
+                    </Tooltip>
+                  )}
               </p>
             </div>
             <div>
@@ -611,7 +622,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
 
           <div className="space-y-2">
             {booking.lab_results_files.map((file, index) => {
-              const fileName = file.split("/").pop();
+              const fileName = file ? file.split("/").pop() : "ملف مجهول";
 
               return (
                 <div
@@ -703,13 +714,13 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
             </div>
           )}
 
-          {getBookingDateStatus() === "past" && (
+          {getBookingDateStatus() === "past" && type == "medical" && (
             <div className="text-sm font-medium text-gray-500">
               لا يمكن اتخاذ أي إجراء للحجوزات السابقة
             </div>
           )}
 
-          {canUploadLabResults && getBookingDateStatus() !== "future" && (
+          {canUploadLabResults && getBookingDateStatus() !== "future" && type == "medical" && (
             <Button
               onClick={() => setShowUploadPdfs(true)}
               disabled={hasUploadedPdfs}
@@ -721,6 +732,7 @@ const BookingCard = ({ booking, showSwitch = true, doctorId, type }) => {
               {hasUploadedPdfs ? "تم رفع التحاليل" : "رفع التحاليل الطبية"}
             </Button>
           )}
+
         </div>
       </div>
       {/* Reschedule Button Row */}
